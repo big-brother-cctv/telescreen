@@ -4,10 +4,9 @@ import numpy as np
 
 RTSP_URL = "rtsp://mediamtx.local/stream"
 
-st.set_page_config(page_title="QR Code Generator", page_icon="🎥")
+st.set_page_config(page_title="Motion Detector", page_icon="🎥")
 
 st.title("Motion Detector")
-st.markdown("Visualiza el stream RTSP en esta página:")
 
 video_placeholder = st.empty()
 
