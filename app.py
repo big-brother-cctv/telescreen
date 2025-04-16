@@ -1,8 +1,9 @@
+import os
 import cv2
 import streamlit as st
 import numpy as np
 
-RTSP_URL = "rtsp://mediamtx.local/stream"
+RTSP_URL = os.getenv("RTSP_URL", "rtsp://mediamtx:8554/stream")
 
 st.set_page_config(page_title="Motion Detector", page_icon="🎥")
 
