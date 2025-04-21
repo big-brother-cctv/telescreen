@@ -9,11 +9,11 @@ RUN npm install --frozen-lockfile
 
 COPY . .
 
-RUN npm run build --configuration production
+RUN npm run build --configuration=production
 
 FROM nginx:alpine
 
-COPY --from=build /app/dist/video-stream-frontend /usr/share/nginx/html
+COPY --from=build /app/dist/live-stream-viewer /usr/share/nginx/html
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
