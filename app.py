@@ -1,30 +1,15 @@
 import os
-import cv2
 import streamlit as st
-import numpy as np
 
-RTSP_URL = os.getenv("RTSP_URL", "rtsp://mediamtx:8554/stream")
+STREAM_URL = os.getenv("RTSP_URL", "http://mediamtx:8888/stream.m3u8")
 
-st.set_page_config(page_title="Motion Detector", page_icon="🎥")
+st.set_page_config(page_title="Gaticam", page_icon="🎥")
 
-st.title("Motion Detector")
+st.title("Gaticam")
 
-video_placeholder = st.empty()
-
-cap = cv2.VideoCapture(RTSP_URL)
-
-if not cap.isOpened():
-    st.error("Could not open stream.")
-else:
-    while True:
-        ret, frame = cap.read()
-        
-        if not ret:
-            st.warning("Stream off.")
-            break
-        
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        
-        video_placeholder.image(frame_rgb, channels="RGB", use_container_width=True)
-
-cap.release()
+st.markdown(f"""
+    <video width="640" height="480" controls>
+        <source src="{STREAM_URL}" type="application/x-mpegURL">
+        Your browser does not support the video tag.
+    </video>
+""", unsafe_allow_html=True)
