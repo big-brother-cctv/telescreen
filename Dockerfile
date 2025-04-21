@@ -1,18 +1,22 @@
-FROM python:3.9-slim
-
-RUN apt-get update && apt-get install -y \
-    libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender1 \
-    && rm -rf /var/lib/apt/lists/*
+# Etapa 1: Construcción de la app Angular
+FROM node:18 AS build
 
 WORKDIR /app
 
+COPY package.json package-lock.json ./
+
+RUN npm install --frozen-lockfile
+
 COPY . .
 
-RUN pip install -r requirements.txt --no-cache-dir
+RUN npm run build --configuration production
 
-EXPOSE 8501
+FROM nginx:alpine
 
-CMD ["streamlit", "run", "app.py", "--server.port=8080", "--server.address=0.0.0.0", "--server.enableCORS=false"]
+COPY --from=build /app/dist/video-stream-frontend /usr/share/nginx/html
+
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
