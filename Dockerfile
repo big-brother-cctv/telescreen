@@ -1,4 +1,3 @@
-# Etapa 1: Construcción de la app Angular
 FROM node:18 AS build
 
 WORKDIR /app
