@@ -48,7 +48,7 @@ export class AuthService {
         return throwError(error);
       }),
       tap((response: any) => {
-        console.log('Login response:', response); // Verificar la respuesta del servidor
+        console.log('Login response:', response);
         if (response.token) {
           localStorage.setItem('token', response.token);
           this.isLoggedInSubject.next(true);
