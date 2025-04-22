@@ -14,10 +14,10 @@ export class CameraComponent implements AfterViewInit {
     const video = this.videoRef?.nativeElement;
     if (Hls.isSupported()) {
       const hls = new Hls();
-      hls.loadSource('http://mediamtx:8888/stream/index.m3u8');
+      hls.loadSource('https://mediamtx:8888/stream/index.m3u8');
       hls.attachMedia(video);
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = 'http://mediamtx:8888/stream/index.m3u8';
+      video.src = 'https://mediamtx:8888/stream/index.m3u8';
     }
   }
 }
