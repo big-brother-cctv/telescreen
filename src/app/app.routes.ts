@@ -4,8 +4,8 @@ import { CameraComponent } from './views/camera/camera.component';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'camera', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'camera', component: CameraComponent, canActivate: [AuthGuard] },
-  { path: '', redirectTo: 'camera', pathMatch: 'full' },
-  { path: '**', redirectTo: 'camera' }
+  { path: '**', redirectTo: '' },
 ];

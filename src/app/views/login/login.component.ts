@@ -1,26 +1,33 @@
-// login.component.ts
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
-  standalone: true,
   selector: 'app-login',
   templateUrl: './login.component.html',
-  imports: [FormsModule]
+  styleUrls: ['./login.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
 })
 export class LoginComponent {
   username = '';
   password = '';
+  errorMessage = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  onLogin() {
-    if (this.auth.login(this.username, this.password)) {
-      this.router.navigate(['/video']);
-    } else {
-      alert('Invalid credentials');
-    }
+  login(): void {
+    this.authService.login(this.username, this.password).subscribe({
+      next: (response: any) => {
+        localStorage.setItem('token', response.token);
+        this.router.navigate(['/']);
+      },
+      error: (err: any) => {
+        this.errorMessage = 'Invalid username or password';
+        console.error('Login error:', err);
+      },
+    });
   }
 }
