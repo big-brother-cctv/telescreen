@@ -5,7 +5,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import jwtDecode from 'jwt-decode';
-import { API_URL } from '../app.config';
 
 @Injectable({
   providedIn: 'root',
@@ -15,8 +14,7 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router,
-    @Inject(API_URL) private apiUrl: string // Inyecta la URL de la API
+    private router: Router
   ) {}
 
   private checkTokenValidity(): boolean {
@@ -44,7 +42,7 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/login`, { username, password }).pipe(
+    return this.http.post(`/api/auth/login`, { username, password }).pipe(
       catchError((error) => {
         console.error('Login error:', error);
         return throwError(error);
