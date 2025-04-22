@@ -12,7 +12,7 @@ export class CameraComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     const video = this.videoRef?.nativeElement;
-    const streamUrl = 'http://mediamtx.local/stream/index.m3u8';
+    const streamUrl = '/stream/index.m3u8';
 
     if (Hls.isSupported()) {
       const hls = new Hls();
