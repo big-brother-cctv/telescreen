@@ -1,19 +1,23 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import jwtDecode from 'jwt-decode';
+import { API_URL } from '../app.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
   private isLoggedInSubject = new BehaviorSubject<boolean>(this.checkTokenValidity());
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    @Inject(API_URL) private apiUrl: string // Inyecta la URL de la API
+  ) {}
 
   private checkTokenValidity(): boolean {
     const token = this.getToken();
@@ -40,7 +44,7 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { username, password }).pipe(
+    return this.http.post(`${this.apiUrl}/auth/login`, { username, password }).pipe(
       catchError((error) => {
         console.error('Login error:', error);
         return throwError(error);

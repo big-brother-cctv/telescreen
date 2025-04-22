@@ -1,20 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_URL } from '../app.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private apiUrl = 'http://localhost:8080/api/users';
-
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, @Inject(API_URL) private apiUrl: string) {}
 
   getCurrentUser(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/me`);
+    return this.http.get(`${this.apiUrl}/users/me`);
   }
 
   updateUser(userId: number, user: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${userId}`, user);
+    return this.http.put(`${this.apiUrl}/users/${userId}`, user);
   }
 }
