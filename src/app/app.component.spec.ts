@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'live-stream-viewer' title`, () => {
+  it(`should have the 'telescreen' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('live-stream-viewer');
+    expect(app.title).toEqual('telescreen');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, live-stream-viewer');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, telescreen');
   });
 });

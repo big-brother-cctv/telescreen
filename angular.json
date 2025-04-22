@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "live-stream-viewer": {
+    "telescreen": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/live-stream-viewer",
+            "outputPath": "dist/telescreen",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -64,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "live-stream-viewer:build:production"
+              "buildTarget": "telescreen:build:production"
             },
             "development": {
-              "buildTarget": "live-stream-viewer:build:development"
+              "buildTarget": "telescreen:build:development"
             }
           },
           "defaultConfiguration": "development"

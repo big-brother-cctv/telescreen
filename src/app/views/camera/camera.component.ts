@@ -12,12 +12,14 @@ export class CameraComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     const video = this.videoRef?.nativeElement;
+    const streamUrl = '/stream/index.m3u8';
+
     if (Hls.isSupported()) {
       const hls = new Hls();
-      hls.loadSource('https://mediamtx:8888/stream/index.m3u8');
+      hls.loadSource(streamUrl);
       hls.attachMedia(video);
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = 'https://mediamtx:8888/stream/index.m3u8';
+      video.src = streamUrl;
     }
   }
 }
