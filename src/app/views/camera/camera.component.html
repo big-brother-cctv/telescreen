@@ -1,3 +1,8 @@
-<div class="camera-container d-flex justify-content-center align-items-center vh-100 bg-light">
-  <video #video class="border rounded shadow-lg" controls autoplay muted></video>
+<div class="camera-container d-flex flex-wrap justify-content-center align-items-start vh-100 bg-light">
+  <div *ngFor="let camera of cameras" class="m-3">
+    <div class="text-center mb-2">
+      <strong>{{ camera.name || camera.id }}</strong>
+    </div>
+    <video #video class="border rounded shadow-lg" controls autoplay muted width="400"></video>
+  </div>
 </div>
