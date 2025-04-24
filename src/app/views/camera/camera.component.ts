@@ -34,7 +34,7 @@ export class CameraComponent implements OnInit, AfterViewInit {
       const video = videoRef.nativeElement;
       const camera = this.cameras[idx];
       if (!camera) return;
-      const streamUrl = `/${camera.name}/index.m3u8`;
+      const streamUrl = `/stream/${camera.name}/index.m3u8`;
 
       if (Hls.isSupported()) {
         const hls = new Hls();
