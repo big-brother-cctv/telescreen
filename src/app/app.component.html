@@ -9,9 +9,19 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/camera">Camera</a>
-        </li>
+        <ng-container *ngIf="isLoggedIn; else loginLink">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/camera" routerLinkActive="active">Cameras</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" (click)="logout()" style="cursor:pointer;">Logout</a>
+          </li>
+        </ng-container>
+        <ng-template #loginLink>
+          <li class="nav-item">
+            <a routerLink="/login" routerLinkActive="active" class="nav-link">Login</a>
+          </li>
+        </ng-template>
       </ul>
     </div>
   </div>
