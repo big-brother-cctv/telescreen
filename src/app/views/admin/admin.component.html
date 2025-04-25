@@ -1,8 +1,8 @@
-<div class="container my-4">
+<div class="container my-4 pt-5">
   <div class="admin-tabs mb-3">
     <div class="btn-group" role="group">
-      <button type="button" class="btn" [ngClass]="{'btn-primary': selectedTab === 'cameras', 'btn-outline-primary': selectedTab !== 'cameras'}" (click)="selectedTab = 'cameras'">Cameras</button>
-      <button type="button" class="btn" [ngClass]="{'btn-primary': selectedTab === 'other', 'btn-outline-primary': selectedTab !== 'other'}" (click)="selectedTab = 'other'">Other</button>
+      <button type="button" class="btn" [ngClass]="{'btn-secondary': selectedTab === 'cameras', 'btn-outline-secondary': selectedTab !== 'cameras'}" (click)="selectedTab = 'cameras'">Cameras</button>
+      <button type="button" class="btn" [ngClass]="{'btn-secondary': selectedTab === 'other', 'btn-outline-secondary': selectedTab !== 'other'}" (click)="selectedTab = 'other'">Other</button>
     </div>
   </div>
 

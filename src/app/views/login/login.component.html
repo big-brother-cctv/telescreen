@@ -1,18 +1,18 @@
-<div class="d-flex align-items-center justify-content-center vh-100 bg-light">
+<div class="d-flex justify-content-center align-items-center bg-light pt-5" style="min-height: 100vh;">
   <div class="bg-white p-4 rounded shadow w-100" style="max-width: 400px;">
-    <h2 class="text-center text-dark mb-4">Login</h2>
+    <h2 class="text-center text-secondary mb-4">Login</h2>
     <form (ngSubmit)="login()">
       <div class="mb-3">
-        <label for="username" class="form-label text-dark">Username</label>
+        <label for="username" class="form-label text-secondary">Username</label>
         <input id="username" [(ngModel)]="username" name="username" required autocomplete="username"
-          class="form-control" />
+          class="form-control border-secondary" />
       </div>
       <div class="mb-3">
-        <label for="password" class="form-label text-dark">Password</label>
+        <label for="password" class="form-label text-secondary">Password</label>
         <input id="password" type="password" [(ngModel)]="password" name="password" required autocomplete="current-password"
-          class="form-control" />
+          class="form-control border-secondary" />
       </div>
-      <button type="submit" class="btn btn-primary w-100">Login</button>
+      <button type="submit" class="btn btn-secondary w-100">Login</button>
     </form>
     <p *ngIf="errorMessage" class="text-danger text-center mt-3">{{ errorMessage }}</p>
   </div>
