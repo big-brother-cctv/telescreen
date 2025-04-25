@@ -1,0 +1,80 @@
+<div class="container my-4">
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th>Name</th>
+          <th>Device</th>
+          <th>Resolution</th>
+          <th>FPS</th>
+          <th>Codec</th>
+          <th>Preset</th>
+          <th>Tune</th>
+          <th>Buffer</th>
+          <th>Rotation</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let camera of cameras; let i = index">
+          <ng-container *ngIf="editingIndex === i; else viewRow">
+            <td>
+              <input class="form-control" [(ngModel)]="editedCamera.name" />
+            </td>
+            <td>
+                <input class="form-control" [(ngModel)]="editedCamera.device" />
+            </td>
+            <td>
+                <input class="form-control" [(ngModel)]="editedCamera.resolution" />
+            </td>
+            <td>
+                <input class="form-control" [(ngModel)]="editedCamera.fps" />
+            </td>
+            <td>
+                <input class="form-control" [(ngModel)]="editedCamera.codec" />
+            </td>
+            <td>
+                <input class="form-control" [(ngModel)]="editedCamera.preset" />
+            </td>
+            <td>
+                <input class="form-control" [(ngModel)]="editedCamera.tune" />
+            </td>
+            <td>
+                <input class="form-control" [(ngModel)]="editedCamera.buffer" />
+            </td>
+            <td>
+                <input class="form-control" [(ngModel)]="editedCamera.rotation" />
+            </td>
+            <td>
+              <button class="btn btn-success btn-xs p-0 mx-1" (click)="saveCamera(i)" title="Save">
+                <i class="bi bi-check" style="font-size: 1rem;"></i>
+              </button>
+              <button class="btn btn-secondary btn-xs p-0 mx-1" (click)="cancelEdit()" title="Cancel">
+                <i class="bi bi-x" style="font-size: 1rem;"></i>
+              </button>
+            </td>
+          </ng-container>
+          <ng-template #viewRow>
+            <td>{{ camera.name }}</td>
+            <td>{{ camera.device }}</td>
+            <td>{{ camera.resolution }}</td>
+            <td>{{ camera.fps }}</td>
+            <td>{{ camera.codec }}</td>
+            <td>{{ camera.preset }}</td>
+            <td>{{ camera.tune }}</td>
+            <td>{{ camera.buffer }}</td>
+            <td>{{ camera.rotation }}</td>
+            <td>
+              <button class="btn btn-primary btn-xs p-0 mx-1" (click)="editCamera(i)" title="Edit">
+                <i class="bi bi-pencil" style="font-size: 1rem;"></i>
+              </button>
+              <button class="btn btn-danger btn-xs p-0 mx-1" (click)="deleteCamera(i)" title="Delete">
+                <i class="bi bi-trash" style="font-size: 1rem;"></i>
+              </button>
+            </td>
+          </ng-template>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

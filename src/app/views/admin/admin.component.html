@@ -1,0 +1,15 @@
+<div class="container my-4">
+  <div class="admin-tabs mb-3">
+    <div class="btn-group" role="group">
+      <button type="button" class="btn" [ngClass]="{'btn-primary': selectedTab === 'cameras', 'btn-outline-primary': selectedTab !== 'cameras'}" (click)="selectedTab = 'cameras'">Cameras</button>
+      <button type="button" class="btn" [ngClass]="{'btn-primary': selectedTab === 'other', 'btn-outline-primary': selectedTab !== 'other'}" (click)="selectedTab = 'other'">Other</button>
+    </div>
+  </div>
+
+  <div class="admin-tab-content card card-body">
+    <app-admin-cameras *ngIf="selectedTab === 'cameras'"></app-admin-cameras>
+    <div *ngIf="selectedTab === 'other'">
+      <p>Other admin content here.</p>
+    </div>
+  </div>
+</div>
