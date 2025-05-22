@@ -6,14 +6,15 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.getToken();
 
-  if (token) {
+  if (token && authService['checkTokenValidity'] && authService['checkTokenValidity']()) {
     req = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
       },
     });
-  } else {
-    console.log('No token found');
+  } else if (token) {
+    authService.logout();
+    console.log('Token expirado, haciendo logout');
   }
 
   return next(req);
