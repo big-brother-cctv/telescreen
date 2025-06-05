@@ -1,59 +1,80 @@
 # Telescreen
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.5.
+Telescreen is the web frontend for the Big Brother project. Built with Angular, it provides a modern interface for monitoring and managing cameras in real time.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- Real-time camera monitoring with video streaming
+- Camera management (view, edit, delete, configure)
+- User authentication (login with JWT)
+- Responsive UI with Bootstrap
+- Integration with the Big Brother API
 
-```bash
+## Requirements
+
+- Node.js 18+
+- npm 9+
+- Angular CLI 19.2+
+- (Optional) Docker
+
+## Getting Started
+
+Clone the repository and navigate to the `telescreen` directory:
+
+```sh
+git clone https://github.com/big-brother-cctv/telescreen.git
+cd telescreen
+```
+
+Install dependencies:
+
+```sh
+npm install
+```
+
+## Development Server
+
+Start the local development server:
+
+```sh
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
+Open your browser at [http://localhost:4200](http://localhost:4200). The app will reload automatically on code changes.
 
 ## Building
 
-To build the project run:
+To build the project for production:
 
-```bash
+```sh
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The build artifacts will be stored in the `dist/` directory.
 
-## Running unit tests
+## Running Tests
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+To run unit tests:
 
-```bash
+```sh
 ng test
 ```
 
-## Running end-to-end tests
+## Docker
 
-For end-to-end (e2e) testing, run:
+To build and run the frontend with Docker:
 
-```bash
-ng e2e
+```sh
+docker build -t telescreen .
+docker run -p 4200:80 telescreen
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Project Structure
 
-## Additional Resources
+- `src/app/`: Main application code (components, views, services)
+- `src/assets/`: Static assets
+- `src/index.html`: Main HTML entry point
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## License
+
+This project is licensed under the [GNU GPL v3](https://github.com/big-brother-cctv/telescreen/blob/main/LICENSE).
