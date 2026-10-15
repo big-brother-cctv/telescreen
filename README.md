@@ -1,80 +1,22 @@
-# Telescreen
+# Big Brother CCTV — Telescreen (Frontend)
 
-Telescreen is the web frontend for the Big Brother project. Built with Angular, it provides a modern interface for monitoring and managing cameras in real time.
+Panel web de control y videovigilancia táctica en tiempo real, desarrollado con **React**, **Vite**, **TypeScript**, **HLS.js** y **Lucide Icons**.
 
-## Features
+## Características
+- **Live Matrix**: Cuadrícula reactiva con layouts (Auto, 2x2, 1x1 Foco), buscador en tiempo real y captura instantánea de snapshots desde el stream de vídeo.
+- **Reproductor HLS Integrado**: Streaming con latencia ultra-baja directo desde MediaMTX (`/stream/<nombre>/index.m3u8`), reintento automático y telemetría de codec/fps/buffer.
+- **Gestor de Cámaras**: Edición en vivo de parámetros de codificación de hardware (resolución, FPS, códec, device `/dev/videoX`, presets FFmpeg).
+- **Control de Operadores**: Gestión de usuarios, perfiles y estados de autorización.
+- **Diseño Táctico Premium**: Dark mode estilo centro de mando militar/seguridad, tipografía moderna (`Plus Jakarta Sans` + `JetBrains Mono`), glassmorphism y estado de latencia/conectividad de la API en vivo.
 
-- Real-time camera monitoring with video streaming
-- Camera management (view, edit, delete, configure)
-- User authentication (login with JWT)
-- Responsive UI with Bootstrap
-- Integration with the Big Brother API
-
-## Requirements
-
-- Node.js 18+
-- npm 9+
-- Angular CLI 19.2+
-- (Optional) Docker
-
-## Getting Started
-
-Clone the repository and navigate to the `telescreen` directory:
-
-```sh
-git clone https://github.com/big-brother-cctv/telescreen.git
-cd telescreen
-```
-
-Install dependencies:
-
-```sh
+## Comandos Rápidos
+```bash
+# Instalar dependencias
 npm install
+
+# Servidor de desarrollo con proxy a Go (puerto 4200)
+npm run dev
+
+# Compilar para producción
+npm run build
 ```
-
-## Development Server
-
-Start the local development server:
-
-```sh
-ng serve
-```
-
-Open your browser at [http://localhost:4200](http://localhost:4200). The app will reload automatically on code changes.
-
-## Building
-
-To build the project for production:
-
-```sh
-ng build
-```
-
-The build artifacts will be stored in the `dist/` directory.
-
-## Running Tests
-
-To run unit tests:
-
-```sh
-ng test
-```
-
-## Docker
-
-To build and run the frontend with Docker:
-
-```sh
-docker build -t telescreen .
-docker run -p 4200:80 telescreen
-```
-
-## Project Structure
-
-- `src/app/`: Main application code (components, views, services)
-- `src/assets/`: Static assets
-- `src/index.html`: Main HTML entry point
-
-## License
-
-This project is licensed under the [GNU GPL v3](https://github.com/big-brother-cctv/telescreen/blob/main/LICENSE).
