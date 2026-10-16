@@ -6,6 +6,7 @@
 ### Features
 
 * add internationalization support with English and Spanish translations ([8520892](https://github.com/big-brother-cctv/telescreen/commit/8520892d2fa6960cc2e44afc98a95349b40a681b))
+* add mobile card views for users admin and auto-hide controls in video player fullscreen mode ([5b8784a](https://github.com/big-brother-cctv/telescreen/commit/5b8784a8f004e0a7b405020d5cc1345c33c5b41f))
 
 ## [0.9.0](https://github.com/big-brother-cctv/telescreen/compare/v0.8.0...v0.9.0) (2026-10-16)
 
