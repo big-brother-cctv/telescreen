@@ -80,8 +80,8 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
         </div>
       </div>
 
-      {/* Cameras Table Card */}
-      <div className="glass-panel brutalist-border" style={{ overflow: 'hidden' }}>
+      {/* Desktop Table View */}
+      <div className="table-desktop-view glass-panel brutalist-border" style={{ overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
             <thead>
@@ -269,6 +269,132 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Card View (< 868px) */}
+      <div className="cards-mobile-view">
+        {filtered.length > 0 ? (
+          filtered.map((cam) => {
+            const isOnline = cam.status === 'online';
+            const isStandby = cam.status === 'standby';
+            return (
+              <div key={cam.id} className="mobile-entity-card">
+                {/* Header: Icon + Name + Badges */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                    <div style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '6px',
+                      background: isOnline ? 'rgba(16, 185, 129, 0.15)' : 'rgba(225, 29, 72, 0.15)',
+                      border: `1px solid ${isOnline ? 'rgba(16, 185, 129, 0.4)' : 'rgba(225, 29, 72, 0.4)'}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      <Radio size={16} color={isOnline ? '#34d399' : 'var(--accent-red)'} />
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#fff', fontFamily: 'var(--font-display)', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {cam.name}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', color: 'var(--text-party)', fontFamily: 'var(--font-mono)' }}>
+                        ID: #{cam.id}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Status & Mode badges */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                    <span style={{
+                      fontSize: '0.62rem',
+                      fontWeight: 800,
+                      fontFamily: 'var(--font-mono)',
+                      padding: '2px 8px',
+                      borderRadius: '3px',
+                      background: isOnline ? 'rgba(16, 185, 129, 0.2)' : isStandby ? 'rgba(245, 158, 11, 0.2)' : 'rgba(225, 29, 72, 0.2)',
+                      color: isOnline ? '#34d399' : isStandby ? '#fbbf24' : '#f87171',
+                      border: `1px solid ${isOnline ? 'rgba(16, 185, 129, 0.4)' : isStandby ? 'rgba(245, 158, 11, 0.4)' : 'rgba(225, 29, 72, 0.4)'}`
+                    }}>
+                      {isOnline ? t.common.online : isStandby ? t.common.standby : t.common.offline}
+                    </span>
+                    <span style={{
+                      fontSize: '0.62rem',
+                      fontWeight: 700,
+                      fontFamily: 'var(--font-mono)',
+                      padding: '1px 6px',
+                      borderRadius: '3px',
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      color: 'var(--text-secondary)',
+                      border: '1px solid var(--border-subtle)'
+                    }}>
+                      {getModeLabel(cam.connectionMode)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Source URL / Device */}
+                <div style={{
+                  background: '#07090e',
+                  padding: '8px 10px',
+                  borderRadius: '4px',
+                  border: '1px solid var(--border-subtle)',
+                  fontSize: '0.72rem',
+                  fontFamily: 'var(--font-mono)',
+                  wordBreak: 'break-all',
+                  color: cam.sourceUrl ? 'var(--accent-cyan)' : 'var(--text-secondary)'
+                }}>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.62rem', display: 'block', marginBottom: '2px', textTransform: 'uppercase' }}>
+                    {cam.sourceUrl ? 'URL RTSP / STREAM' : 'DISPOSITIVO'}
+                  </span>
+                  {cam.sourceUrl || cam.device || '/dev/video0'}
+                </div>
+
+                {/* Parameters row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', padding: '2px 6px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-subtle)', borderRadius: '3px', color: '#fff' }}>
+                    {cam.resolution || '1280x720'}
+                  </span>
+                  <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', padding: '2px 6px', background: 'rgba(225,29,72,0.12)', border: '1px solid rgba(225,29,72,0.3)', borderRadius: '3px', color: '#fda4af' }}>
+                    {cam.fps || 25} FPS
+                  </span>
+                  <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', padding: '2px 6px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '3px', color: 'var(--accent-amber)' }}>
+                    {cam.codec || 'libx264'}
+                  </span>
+                  <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                    {cam.preset || 'ultrafast'} • {cam.tune || 'zerolatency'}
+                  </span>
+                </div>
+
+                {/* Actions row: Touch friendly */}
+                <div style={{ display: 'flex', gap: '8px', paddingTop: '6px', borderTop: '1px solid var(--border-subtle)' }}>
+                  <button
+                    onClick={() => onEdit(cam)}
+                    className="btn-ghost"
+                    style={{ flex: 1, padding: '9px 12px', fontSize: '0.78rem', justifyContent: 'center', minHeight: '40px' }}
+                  >
+                    <Edit2 size={14} color="var(--accent-amber)" />
+                    <span>{t.common.edit}</span>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(cam.id, cam.name)}
+                    disabled={deletingId === cam.id}
+                    className="btn-danger"
+                    style={{ padding: '9px 16px', fontSize: '0.78rem', minHeight: '40px' }}
+                  >
+                    <Trash2 size={14} />
+                    <span>{t.common.delete}</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className="glass-panel" style={{ padding: '30px 16px', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            {t.camerasAdmin.noCameras}
+          </div>
+        )}
       </div>
     </div>
   );

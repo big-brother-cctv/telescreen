@@ -18,6 +18,29 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
   const [isRetrying, setIsRetrying] = useState<boolean>(false);
   const [showStats, setShowStats] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [controlsVisible, setControlsVisible] = useState<boolean>(true);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const resetControlsTimer = () => {
+    setControlsVisible(true);
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    if (isFullscreen) {
+      hideTimerRef.current = setTimeout(() => {
+        setControlsVisible(false);
+      }, 3500);
+    }
+  };
+
+  const handleFullscreenTap = () => {
+    if (isFullscreen) {
+      if (controlsVisible) {
+        setControlsVisible(false);
+        if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      } else {
+        resetControlsTimer();
+      }
+    }
+  };
 
   const streamUrl = `/stream/${camera.name}/index.m3u8`;
 
@@ -182,6 +205,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
     <div
       ref={containerRef}
       className={`glass-panel ${isFullscreen ? 'player-fullscreen' : ''}`}
+      onClick={handleFullscreenTap}
+      onMouseMove={resetControlsTimer}
       style={{
         overflow: 'hidden',
         position: 'relative',
@@ -189,7 +214,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
         flexDirection: 'column',
         borderRadius: isFullscreen ? '0' : '8px',
         border: isFullscreen ? 'none' : '1px solid var(--border-party)',
-        background: '#090b10',
+        background: '#000',
         boxShadow: isFullscreen ? 'none' : '0 8px 30px rgba(0, 0, 0, 0.65)',
         transition: 'all 0.2s ease',
       }}
@@ -206,34 +231,103 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
         }
       }}
     >
-      {/* Botón flotante para salir de pantalla completa */}
+      {/* ================= FULLSCREEN TOP BAR ================= */}
       {isFullscreen && (
-        <button
-          onClick={exitFullscreenMode}
-          title={t.videoPlayer.exitFullscreen}
-          style={{
-            position: 'absolute',
-            top: '14px',
-            right: '14px',
-            zIndex: 9999,
-            background: 'rgba(225, 29, 72, 0.9)',
-            color: '#fff',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            borderRadius: '6px',
-            padding: '8px 12px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontSize: '0.75rem',
-            fontWeight: 800,
-            fontFamily: 'var(--font-display)',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.8)',
-            cursor: 'pointer',
-          }}
-        >
-          <X size={16} />
-          <span>{t.videoPlayer.exit}</span>
-        </button>
+        <div className={`fullscreen-top-bar ${!controlsVisible ? 'fullscreen-controls-hidden' : ''}`} onClick={(e) => e.stopPropagation()}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            {/* Live indicator */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px 10px',
+              borderRadius: '4px',
+              background: isPlaying ? 'rgba(16, 185, 129, 0.25)' : 'rgba(245, 158, 11, 0.25)',
+              border: `1px solid ${isPlaying ? 'rgba(16, 185, 129, 0.6)' : 'rgba(245, 158, 11, 0.6)'}`,
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              fontFamily: 'var(--font-mono)',
+              color: isPlaying ? '#34d399' : 'var(--accent-amber)',
+              whiteSpace: 'nowrap',
+            }}>
+              <span className={isPlaying ? 'pulse-red' : ''} style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                backgroundColor: isPlaying ? '#10b981' : '#f59e0b',
+                flexShrink: 0
+              }} />
+              <span>{isPlaying ? t.videoPlayer.liveFull : t.videoPlayer.standby}</span>
+            </div>
+
+            {/* Camera Name */}
+            <div style={{
+              fontWeight: 900,
+              fontSize: '1rem',
+              color: '#fff',
+              fontFamily: 'var(--font-display)',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}>
+              {camera.name}
+            </div>
+
+            {/* Mode & Quality Badges */}
+            <span style={{
+              fontSize: '0.65rem',
+              fontWeight: 800,
+              padding: '3px 8px',
+              borderRadius: '4px',
+              background: 'rgba(56, 189, 248, 0.2)',
+              color: 'var(--accent-cyan)',
+              fontFamily: 'var(--font-mono)',
+              border: '1px solid rgba(56, 189, 248, 0.4)',
+              whiteSpace: 'nowrap'
+            }}>
+              {camera.connectionMode === 'pull' ? 'IP PULL' : camera.connectionMode === 'push' ? 'PUSH' : camera.sourceType?.toUpperCase() || 'LOCAL'}
+            </span>
+
+            <span className="cam-info-extended" style={{
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              padding: '3px 8px',
+              background: 'rgba(0, 0, 0, 0.6)',
+              borderRadius: '4px',
+              color: 'var(--text-secondary)',
+              fontFamily: 'var(--font-mono)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              whiteSpace: 'nowrap'
+            }}>
+              {camera.resolution || '1280x720'} • {camera.fps ? `${camera.fps} FPS` : '25 FPS'}
+            </span>
+          </div>
+
+          {/* Exit Fullscreen button */}
+          <button
+            onClick={exitFullscreenMode}
+            title={t.videoPlayer.exitFullscreen}
+            className="btn-danger"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              borderRadius: '6px',
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              fontFamily: 'var(--font-display)',
+              minHeight: '40px',
+              flexShrink: 0,
+            }}
+          >
+            <X size={16} />
+            <span>{t.videoPlayer.exit}</span>
+          </button>
+        </div>
       )}
 
       {/* Video Stream Area con efecto Scanlines */}
@@ -245,7 +339,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           height: isFullscreen ? '100%' : 'auto',
           display: 'flex', 
           alignItems: 'center', 
-          justifyContent: 'center' 
+          justifyContent: 'center',
+          position: 'relative',
         }}
       >
         <video
@@ -258,108 +353,112 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           style={{ width: '100%', height: '100%', objectFit: 'contain' }}
         />
 
-        {/* HUD Overlay - Top Bar */}
-        <div style={{
-          position: 'absolute',
-          top: '8px',
-          left: '10px',
-          right: '10px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          pointerEvents: 'none',
-          zIndex: 20,
-          gap: '8px',
-        }}>
-          {/* Live indicator */}
+        {/* HUD Overlay - Top Bar (SOLO EN MODO NORMAL, NO FULLSCREEN) */}
+        {!isFullscreen && (
           <div style={{
+            position: 'absolute',
+            top: '8px',
+            left: '10px',
+            right: '10px',
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '6px',
-            padding: '3px 8px',
-            borderRadius: '4px',
-            background: isPlaying ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-            backdropFilter: 'blur(8px)',
-            border: `1px solid ${isPlaying ? 'rgba(16, 185, 129, 0.5)' : 'rgba(245, 158, 11, 0.5)'}`,
-            fontSize: '0.68rem',
-            fontWeight: 800,
-            fontFamily: 'var(--font-mono)',
-            color: isPlaying ? '#34d399' : 'var(--accent-amber)',
-            letterSpacing: '0.06em',
-            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            zIndex: 20,
+            gap: '8px',
           }}>
-            <span className={isPlaying ? 'pulse-red' : ''} style={{
-              width: '6px',
-              height: '6px',
-              borderRadius: '50%',
-              backgroundColor: isPlaying ? '#10b981' : '#f59e0b',
-              flexShrink: 0
-            }} />
-            <span className="desktop-only">
-              {isPlaying ? t.videoPlayer.liveFull : (camera.status === 'online' ? t.videoPlayer.tuningFull : t.videoPlayer.standby)}
-            </span>
-            <span className="mobile-only">
-              {isPlaying ? t.videoPlayer.liveShort : t.videoPlayer.tuningShort}
-            </span>
-          </div>
-
-          {/* Badges de señal */}
-          <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-            <span style={{
-              fontSize: '0.62rem',
+            {/* Live indicator */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '3px 8px',
+              borderRadius: '4px',
+              background: isPlaying ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+              backdropFilter: 'blur(8px)',
+              border: `1px solid ${isPlaying ? 'rgba(16, 185, 129, 0.5)' : 'rgba(245, 158, 11, 0.5)'}`,
+              fontSize: '0.68rem',
               fontWeight: 800,
-              padding: '2px 6px',
-              borderRadius: '3px',
-              background: camera.connectionMode === 'pull' ? 'rgba(56, 189, 248, 0.2)' : camera.connectionMode === 'push' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255, 255, 255, 0.1)',
-              color: camera.connectionMode === 'pull' ? 'var(--accent-cyan)' : camera.connectionMode === 'push' ? '#c084fc' : '#fff',
               fontFamily: 'var(--font-mono)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              whiteSpace: 'nowrap'
+              color: isPlaying ? '#34d399' : 'var(--accent-amber)',
+              letterSpacing: '0.06em',
+              whiteSpace: 'nowrap',
             }}>
-              {camera.connectionMode === 'pull' ? 'IP PULL' : camera.connectionMode === 'push' ? 'PUSH' : camera.sourceType?.toUpperCase() || 'LOCAL'}
-            </span>
-            
-            <span className="cam-info-extended" style={{
-              fontSize: '0.62rem',
-              fontWeight: 700,
-              padding: '2px 6px',
-              background: 'rgba(0, 0, 0, 0.8)',
-              borderRadius: '3px',
-              color: 'var(--text-secondary)',
-              fontFamily: 'var(--font-mono)',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-              {camera.resolution || '640x480'}
-            </span>
-            <span className="cam-info-extended" style={{
-              fontSize: '0.62rem',
-              fontWeight: 700,
-              padding: '2px 6px',
-              background: 'rgba(225, 29, 72, 0.2)',
-              borderRadius: '3px',
-              color: '#fda4af',
-              fontFamily: 'var(--font-mono)',
-              border: '1px solid rgba(225, 29, 72, 0.4)'
-            }}>
-              {camera.fps ? `${camera.fps} FPS` : '25 FPS'}
-            </span>
+              <span className={isPlaying ? 'pulse-red' : ''} style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: isPlaying ? '#10b981' : '#f59e0b',
+                flexShrink: 0
+              }} />
+              <span className="desktop-only">
+                {isPlaying ? t.videoPlayer.liveFull : (camera.status === 'online' ? t.videoPlayer.tuningFull : t.videoPlayer.standby)}
+              </span>
+              <span className="mobile-only">
+                {isPlaying ? t.videoPlayer.liveShort : t.videoPlayer.tuningShort}
+              </span>
+            </div>
+
+            {/* Badges de señal */}
+            <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+              <span style={{
+                fontSize: '0.62rem',
+                fontWeight: 800,
+                padding: '2px 6px',
+                borderRadius: '3px',
+                background: camera.connectionMode === 'pull' ? 'rgba(56, 189, 248, 0.2)' : camera.connectionMode === 'push' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                color: camera.connectionMode === 'pull' ? 'var(--accent-cyan)' : camera.connectionMode === 'push' ? '#c084fc' : '#fff',
+                fontFamily: 'var(--font-mono)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                whiteSpace: 'nowrap'
+              }}>
+                {camera.connectionMode === 'pull' ? 'IP PULL' : camera.connectionMode === 'push' ? 'PUSH' : camera.sourceType?.toUpperCase() || 'LOCAL'}
+              </span>
+              
+              <span className="cam-info-extended" style={{
+                fontSize: '0.62rem',
+                fontWeight: 700,
+                padding: '2px 6px',
+                background: 'rgba(0, 0, 0, 0.8)',
+                borderRadius: '3px',
+                color: 'var(--text-secondary)',
+                fontFamily: 'var(--font-mono)',
+                border: '1px solid rgba(255, 255, 255, 0.1)'
+              }}>
+                {camera.resolution || '640x480'}
+              </span>
+              <span className="cam-info-extended" style={{
+                fontSize: '0.62rem',
+                fontWeight: 700,
+                padding: '2px 6px',
+                background: 'rgba(225, 29, 72, 0.2)',
+                borderRadius: '3px',
+                color: '#fda4af',
+                fontFamily: 'var(--font-mono)',
+                border: '1px solid rgba(225, 29, 72, 0.4)'
+              }}>
+                {camera.fps ? `${camera.fps} FPS` : '25 FPS'}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Watermark sutil - Oculto en móvil */}
-        <div className="cam-watermark" style={{
-          position: 'absolute',
-          bottom: '10px',
-          left: '12px',
-          fontSize: '0.62rem',
-          fontFamily: 'var(--font-mono)',
-          color: 'rgba(255, 255, 255, 0.35)',
-          letterSpacing: '0.1em',
-          pointerEvents: 'none',
-          zIndex: 20,
-        }}>
-          {t.videoPlayer.sectorNode.replace('{id}', String(camera.id || 1))}
-        </div>
+        {!isFullscreen && (
+          <div className="cam-watermark" style={{
+            position: 'absolute',
+            bottom: '10px',
+            left: '12px',
+            fontSize: '0.62rem',
+            fontFamily: 'var(--font-mono)',
+            color: 'rgba(255, 255, 255, 0.35)',
+            letterSpacing: '0.1em',
+            pointerEvents: 'none',
+            zIndex: 20,
+          }}>
+            {t.videoPlayer.sectorNode.replace('{id}', String(camera.id || 1))}
+          </div>
+        )}
 
         {/* Fallback / Connecting Screen */}
         {(!isPlaying || hasError) && (
@@ -406,52 +505,116 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           </div>
         )}
 
-        {/* Controls Overlay */}
-        <div style={{
-          position: 'absolute',
-          bottom: '8px',
-          right: '8px',
-          display: 'flex',
-          gap: '4px',
-          background: 'rgba(10, 12, 18, 0.88)',
-          backdropFilter: 'blur(8px)',
-          padding: '4px 6px',
-          borderRadius: '4px',
-          border: '1px solid rgba(225, 29, 72, 0.3)',
-          zIndex: 25,
-        }}>
-          <button
-            onClick={() => setShowStats(!showStats)}
-            title={t.videoPlayer.technicalTelemetry}
-            className="btn-ghost"
-            style={{ padding: '6px', border: 'none', background: 'transparent' }}
+        {/* Controls Overlay (MODO NORMAL - ESQUINA INFERIOR DERECHA) */}
+        {!isFullscreen && (
+          <div style={{
+            position: 'absolute',
+            bottom: '8px',
+            right: '8px',
+            display: 'flex',
+            gap: '4px',
+            background: 'rgba(10, 12, 18, 0.88)',
+            backdropFilter: 'blur(8px)',
+            padding: '4px 6px',
+            borderRadius: '4px',
+            border: '1px solid rgba(225, 29, 72, 0.3)',
+            zIndex: 25,
+          }}>
+            <button
+              onClick={() => setShowStats(!showStats)}
+              title={t.videoPlayer.technicalTelemetry}
+              className="btn-ghost"
+              style={{ padding: '6px', border: 'none', background: 'transparent' }}
+            >
+              <Terminal size={15} color={showStats ? 'var(--accent-red)' : 'var(--text-secondary)'} />
+            </button>
+            <button
+              onClick={captureSnapshot}
+              title={t.videoPlayer.saveSnapshot}
+              className="btn-ghost"
+              style={{ padding: '6px', border: 'none', background: 'transparent' }}
+            >
+              <CameraIcon size={15} color="var(--text-secondary)" />
+            </button>
+            <button
+              onClick={toggleFullscreen}
+              title={isFullscreen ? t.videoPlayer.exitFullscreen : t.videoPlayer.fullscreen}
+              className="btn-ghost"
+              style={{ padding: '6px', border: 'none', background: 'transparent' }}
+            >
+              {isFullscreen ? (
+                <Minimize2 size={15} color="var(--accent-red)" />
+              ) : (
+                <Maximize2 size={15} color="var(--text-secondary)" />
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Telemetry Modal / HUD Overlay (CUANDO SE ABRE EN FULLSCREEN) */}
+        {showStats && isFullscreen && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 70,
+              background: 'rgba(8, 10, 16, 0.94)',
+              border: '1px solid var(--border-party)',
+              borderRadius: '8px',
+              padding: '18px 20px',
+              maxWidth: '380px',
+              width: '90%',
+              backdropFilter: 'blur(12px)',
+              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.85)',
+            }}
           >
-            <Terminal size={15} color={showStats ? 'var(--accent-red)' : 'var(--text-secondary)'} />
-          </button>
-          <button
-            onClick={captureSnapshot}
-            title={t.videoPlayer.saveSnapshot}
-            className="btn-ghost"
-            style={{ padding: '6px', border: 'none', background: 'transparent' }}
-          >
-            <CameraIcon size={15} color="var(--text-secondary)" />
-          </button>
-          <button
-            onClick={toggleFullscreen}
-            title={isFullscreen ? t.videoPlayer.exitFullscreen : t.videoPlayer.fullscreen}
-            className="btn-ghost"
-            style={{ padding: '6px', border: 'none', background: 'transparent' }}
-          >
-            {isFullscreen ? (
-              <Minimize2 size={15} color="var(--accent-red)" />
-            ) : (
-              <Maximize2 size={15} color="var(--text-secondary)" />
-            )}
-          </button>
-        </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-red)', fontWeight: 800, fontSize: '0.8rem', fontFamily: 'var(--font-display)' }}>
+                <Terminal size={16} />
+                <span>{t.videoPlayer.technicalTelemetry}</span>
+              </div>
+              <button onClick={() => setShowStats(false)} className="btn-ghost" style={{ padding: '4px' }}>
+                <X size={16} />
+              </button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', fontSize: '0.72rem', fontFamily: 'var(--font-mono)' }}>
+              <div>{t.videoPlayer.buffer}: <span style={{ color: 'var(--accent-red)' }}>{camera.buffer || '1000000'} B</span></div>
+              <div>{t.videoPlayer.rotation}: <span style={{ color: 'var(--accent-amber)' }}>{camera.rotation || 0}°</span></div>
+              <div>{t.videoPlayer.tune}: <span style={{ color: '#fff' }}>{camera.tune || 'zerolatency'}</span></div>
+              <div>{t.videoPlayer.nodeId}: <span style={{ color: 'var(--text-party)' }}>#{camera.id}</span></div>
+              <div>CODEC: <span style={{ color: 'var(--accent-cyan)' }}>{camera.codec || 'libx264'}</span></div>
+              <div>PRESET: <span style={{ color: 'var(--text-secondary)' }}>{camera.preset || 'ultrafast'}</span></div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Camera Info Footer */}
+      {/* ================= FULLSCREEN BOTTOM BAR DOCK ================= */}
+      {isFullscreen && (
+        <div className={`fullscreen-bottom-bar ${!controlsVisible ? 'fullscreen-bottom-hidden' : ''}`} onClick={(e) => e.stopPropagation()}>
+          <button onClick={captureSnapshot} className="fullscreen-btn" title={t.videoPlayer.saveSnapshot}>
+            <CameraIcon size={16} color="var(--accent-red)" />
+            <span>{t.videoPlayer.saveSnapshot}</span>
+          </button>
+          <button onClick={setupPlayer} className="fullscreen-btn" title={t.videoPlayer.restartStream}>
+            <RefreshCw size={16} color="var(--accent-cyan)" className={isRetrying ? 'animate-spin' : ''} />
+            <span>{t.videoPlayer.reconnect}</span>
+          </button>
+          <button onClick={() => setShowStats(!showStats)} className="fullscreen-btn" title={t.videoPlayer.technicalTelemetry}>
+            <Terminal size={16} color={showStats ? 'var(--accent-red)' : 'var(--accent-amber)'} />
+            <span>{t.videoPlayer.technicalTelemetry}</span>
+          </button>
+          <button onClick={exitFullscreenMode} className="fullscreen-btn" style={{ background: 'rgba(225, 29, 72, 0.2)', borderColor: 'var(--accent-red)' }} title={t.videoPlayer.exitFullscreen}>
+            <Minimize2 size={16} color="#fff" />
+            <span>{t.videoPlayer.exitFullscreen}</span>
+          </button>
+        </div>
+      )}
+
+      {/* Camera Info Footer (NORMAL MODE) */}
       {!isFullscreen && (
         <div style={{
           padding: '10px 14px',
@@ -500,7 +663,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
         </div>
       )}
 
-      {/* Telemetry drawer */}
+      {/* Telemetry drawer (NORMAL MODE) */}
       {showStats && !isFullscreen && (
         <div style={{
           padding: '10px 14px',

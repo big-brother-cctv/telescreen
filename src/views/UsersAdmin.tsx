@@ -358,8 +358,8 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
         </div>
       </div>
 
-      {/* Table */}
-      <div className="glass-panel brutalist-border" style={{ overflow: 'hidden', boxShadow: '0 12px 36px rgba(0,0,0,0.5)' }}>
+      {/* Desktop Table View */}
+      <div className="table-desktop-view glass-panel brutalist-border" style={{ overflow: 'hidden', boxShadow: '0 12px 36px rgba(0,0,0,0.5)' }}>
         <div className="table-responsive-wrapper">
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
           <thead>
@@ -529,6 +529,164 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
           </tbody>
         </table>
         </div>
+      </div>
+
+      {/* Mobile Cards View */}
+      <div className="cards-mobile-view">
+        {filteredUsers.length === 0 ? (
+          <div className="glass-panel" style={{ padding: '30px 16px', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            {t.usersAdmin.noUsers}
+          </div>
+        ) : (
+          filteredUsers.map((u) => {
+            const isSelf = u.id === currentUserId;
+            const isAdmin = u.role === 'admin' || u.username === 'admin';
+            const adminCount = users.filter((x) => x.role === 'admin' || x.username === 'admin').length;
+            const isLastAdmin = isAdmin && adminCount <= 1;
+
+            return (
+              <div
+                key={u.id}
+                className="mobile-entity-card glass-panel brutalist-border"
+                style={{
+                  padding: '14px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  background: isSelf ? 'rgba(225, 29, 72, 0.06)' : 'rgba(12, 14, 20, 0.85)',
+                  borderLeft: isSelf ? '3px solid var(--accent-red)' : undefined,
+                }}
+              >
+                {/* Header row: Avatar, Username, ID, Badge */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '6px',
+                      background: isAdmin ? 'linear-gradient(135deg, #be123c, #e11d48)' : 'linear-gradient(135deg, #1e293b, #334155)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.9rem',
+                      color: '#fff',
+                      boxShadow: isAdmin ? '0 0 12px rgba(225, 29, 72, 0.4)' : 'none',
+                      border: `1px solid ${isAdmin ? 'var(--accent-red)' : 'var(--border-subtle)'}`,
+                      flexShrink: 0
+                    }}>
+                      {u.username.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <span style={{ fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)', letterSpacing: '0.02em', fontSize: '0.95rem' }}>
+                          {u.username.toUpperCase()}
+                        </span>
+                        {isSelf && (
+                          <span style={{
+                            fontSize: '0.62rem',
+                            padding: '1px 6px',
+                            background: 'rgba(225, 29, 72, 0.2)',
+                            color: 'var(--accent-red)',
+                            borderRadius: '3px',
+                            fontWeight: 700,
+                            fontFamily: 'var(--font-mono)'
+                          }}>
+                            {t.usersAdmin.youBadge}
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px' }}>
+                        ID: #{u.id} {u.name ? `• ${u.name}` : ''}
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    {getRoleBadge(u.role, u.username)}
+                  </div>
+                </div>
+
+                {/* Email row */}
+                <div style={{
+                  background: '#07090e',
+                  padding: '8px 10px',
+                  borderRadius: '4px',
+                  border: '1px solid var(--border-subtle)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: '0.78rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: 'var(--text-secondary)'
+                }}>
+                  <Mail size={13} color="var(--accent-cyan)" style={{ flexShrink: 0 }} />
+                  <a href={`mailto:${u.email}`} style={{ color: 'var(--text-secondary)', textDecoration: 'none', wordBreak: 'break-all' }}>
+                    {u.email}
+                  </a>
+                </div>
+
+                {/* Permissions row */}
+                <div>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+                    {t.usersAdmin.colPermissions}
+                  </span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                    {u.permissions ? (
+                      u.permissions.split(',').map((p) => p.trim()).filter(Boolean).map((p) => (
+                        <span
+                          key={p}
+                          style={{
+                            fontSize: '0.65rem',
+                            padding: '2px 6px',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: '1px solid var(--border-subtle)',
+                            borderRadius: '3px',
+                            color: 'var(--text-secondary)',
+                            fontFamily: 'var(--font-mono)'
+                          }}
+                        >
+                          {p}
+                        </span>
+                      ))
+                    ) : (
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                        {t.usersAdmin.inheritedPermissions}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions row: Touch friendly */}
+                <div style={{ display: 'flex', gap: '8px', paddingTop: '6px', borderTop: '1px solid var(--border-subtle)' }}>
+                  <button
+                    onClick={() => openEditModal(u)}
+                    className="btn-ghost"
+                    style={{ flex: 1, padding: '9px 12px', fontSize: '0.78rem', justifyContent: 'center', minHeight: '40px' }}
+                  >
+                    <Edit3 size={14} color="var(--accent-amber)" />
+                    <span>{t.common.edit}</span>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(u)}
+                    disabled={isSelf || isLastAdmin}
+                    className="btn-danger"
+                    style={{
+                      padding: '9px 16px',
+                      fontSize: '0.78rem',
+                      minHeight: '40px',
+                      opacity: (isSelf || isLastAdmin) ? 0.35 : 1,
+                      cursor: (isSelf || isLastAdmin) ? 'not-allowed' : 'pointer'
+                    }}
+                  >
+                    <Trash2 size={14} />
+                    <span>{t.common.delete}</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
       {/* Modal Unificado (Creación / Edición) */}
