@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/big-brother-cctv/telescreen/compare/v0.10.0...v0.11.0) (2026-10-16)
+
+
+### Features
+
+* add view mode switcher for table and cards in cameras and users administration views ([f265f03](https://github.com/big-brother-cctv/telescreen/commit/f265f035a36f313f3011867fde5e9b5eabcb194b))
+
 ## [0.10.0](https://github.com/big-brother-cctv/telescreen/compare/v0.9.0...v0.10.0) (2026-10-16)
 
 
