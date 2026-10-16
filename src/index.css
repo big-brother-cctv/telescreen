@@ -420,10 +420,17 @@ input:focus, select:focus, textarea:focus {
   display: block;
 }
 
-.cards-mobile-view {
-  display: none;
+.cards-grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 14px;
 }
 
+.cards-mobile-view {
+  display: contents;
+}
+
+.entity-card,
 .mobile-entity-card {
   background: rgba(13, 16, 24, 0.88);
   border: 1px solid var(--border-subtle);
@@ -434,9 +441,16 @@ input:focus, select:focus, textarea:focus {
   gap: 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 
+.entity-card:hover,
+.mobile-entity-card:hover {
+  border-color: rgba(225, 29, 72, 0.5);
+  box-shadow: 0 6px 24px rgba(225, 29, 72, 0.18);
+}
+
+.entity-card:active,
 .mobile-entity-card:active {
   border-color: var(--accent-red);
   box-shadow: 0 4px 20px rgba(225, 29, 72, 0.2);
@@ -564,7 +578,8 @@ input:focus, select:focus, textarea:focus {
     display: none !important;
   }
 
-  .cards-mobile-view {
+  .cards-mobile-view,
+  .cards-grid-view {
     display: flex !important;
     flex-direction: column !important;
     gap: 12px !important;

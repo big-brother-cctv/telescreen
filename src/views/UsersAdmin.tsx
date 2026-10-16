@@ -10,7 +10,9 @@ import {
   Edit3, 
   Search, 
   Lock, 
-  ShieldAlert
+  ShieldAlert,
+  LayoutGrid,
+  List
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -38,10 +40,11 @@ const DEFAULT_ROLE_PERMS: Record<UserRole, string[]> = {
 };
 
 export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, onRefresh }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [modalMode, setModalMode] = useState<'create' | 'edit' | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   
   const allPermissions = [
     { id: 'cameras:read', label: t.usersAdmin.permCamerasRead, desc: t.usersAdmin.permCamerasReadDesc },
@@ -281,9 +284,9 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: '20px',
+        marginBottom: '18px',
         flexWrap: 'wrap',
-        gap: '14px'
+        gap: '12px'
       }}>
         <div>
           <div style={{
@@ -300,66 +303,126 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
           <h1 style={{ fontSize: '1.6rem', fontWeight: 900, textTransform: 'uppercase', color: '#fff', letterSpacing: '0.02em', margin: 0 }}>
             {t.usersAdmin.title}
           </h1>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px', marginBottom: 0 }}>
             {t.usersAdmin.subtitle}
           </p>
         </div>
 
-        <button onClick={openCreateModal} className="btn-primary" style={{ padding: '9px 16px' }}>
-          <UserPlus size={16} />
-          <span>{t.usersAdmin.newUser}</span>
-        </button>
-      </div>
-
-      {/* Filter and Search Bar */}
-      <div className="glass-panel brutalist-border" style={{
-        padding: '14px 16px',
-        marginBottom: '16px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '12px',
-        background: 'rgba(12, 14, 20, 0.75)'
-      }}>
-        <div style={{ position: 'relative', flex: '1', minWidth: '180px', maxWidth: '380px' }}>
-          <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t.usersAdmin.searchPlaceholder}
-            style={{ width: '100%', paddingLeft: '36px', height: '38px', fontSize: '0.85rem' }}
-          />
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-            {t.usersAdmin.filterLabel}
-          </span>
-          {(['all', 'admin', 'operator', 'viewer'] as const).map((r) => (
-            <button
-              key={r}
-              onClick={() => setRoleFilter(r)}
-              className="btn-ghost"
+        {/* Compact Integrated Toolbar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          {/* Compact Tactical Search */}
+          <div style={{ position: 'relative', width: '150px' }}>
+            <Search size={13} color="var(--text-muted)" style={{ position: 'absolute', left: '9px', top: '50%', transform: 'translateY(-50%)' }} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t.usersAdmin.searchPlaceholder}
               style={{
-                fontSize: '0.7rem',
-                padding: '5px 10px',
-                textTransform: 'uppercase',
-                fontFamily: 'var(--font-mono)',
-                background: roleFilter === r ? 'rgba(225, 29, 72, 0.18)' : 'transparent',
-                borderColor: roleFilter === r ? 'var(--accent-red)' : 'var(--border-subtle)',
-                color: roleFilter === r ? '#fff' : 'var(--text-secondary)',
+                width: '100%',
+                paddingLeft: '28px',
+                paddingRight: '8px',
+                height: '34px',
+                fontSize: '0.78rem',
+                borderRadius: '6px',
+                background: 'rgba(10, 13, 19, 0.75)',
+                border: '1px solid var(--border-subtle)'
+              }}
+            />
+          </div>
+
+          {/* Role Filter: Mini segmented pills */}
+          <div style={{
+            display: 'inline-flex',
+            background: 'rgba(10, 13, 19, 0.8)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '6px',
+            padding: '2px',
+            gap: '2px'
+          }}>
+            {(['all', 'admin', 'operator', 'viewer'] as const).map((r) => (
+              <button
+                key={r}
+                onClick={() => setRoleFilter(r)}
+                style={{
+                  padding: '4px 7px',
+                  borderRadius: '4px',
+                  border: 'none',
+                  background: roleFilter === r ? 'rgba(225, 29, 72, 0.25)' : 'transparent',
+                  color: roleFilter === r ? '#fff' : 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  fontSize: '0.68rem',
+                  fontWeight: roleFilter === r ? 800 : 500,
+                  fontFamily: 'var(--font-mono)',
+                  textTransform: 'uppercase',
+                  borderBottom: roleFilter === r ? '1px solid var(--accent-red)' : 'none'
+                }}
+              >
+                {r === 'all' ? t.usersAdmin.filterAll : r === 'admin' ? 'Admin' : r === 'operator' ? 'Op' : 'Obs'}
+              </button>
+            ))}
+          </div>
+
+          {/* Desktop View Switcher */}
+          <div className="desktop-only" style={{
+            background: 'rgba(12, 15, 22, 0.85)',
+            border: '1px solid var(--border-party)',
+            borderRadius: '6px',
+            padding: '2px',
+            gap: '2px'
+          }}>
+            <button
+              onClick={() => setViewMode('cards')}
+              title={language === 'es' ? 'Vista Tarjetas' : 'Cards View'}
+              style={{
+                padding: '4px 8px',
+                borderRadius: '4px',
+                border: 'none',
+                background: viewMode === 'cards' ? 'var(--accent-red)' : 'transparent',
+                color: viewMode === 'cards' ? '#fff' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.72rem',
+                fontFamily: 'var(--font-mono)'
               }}
             >
-              {r === 'all' ? t.usersAdmin.filterAll : r === 'admin' ? t.usersAdmin.filterAdmin : r === 'operator' ? t.usersAdmin.filterOperator : t.usersAdmin.filterViewer}
+              <LayoutGrid size={13} />
+              <span>{language === 'es' ? 'Tarjetas' : 'Cards'}</span>
             </button>
-          ))}
+            <button
+              onClick={() => setViewMode('table')}
+              title={language === 'es' ? 'Vista Tabla' : 'Table View'}
+              style={{
+                padding: '4px 8px',
+                borderRadius: '4px',
+                border: 'none',
+                background: viewMode === 'table' ? 'var(--accent-red)' : 'transparent',
+                color: viewMode === 'table' ? '#fff' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.72rem',
+                fontFamily: 'var(--font-mono)'
+              }}
+            >
+              <List size={13} />
+              <span>{language === 'es' ? 'Tabla' : 'Table'}</span>
+            </button>
+          </div>
+
+          <button onClick={openCreateModal} className="btn-primary" style={{ height: '34px', padding: '0 14px', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+            <UserPlus size={15} />
+            <span>{t.usersAdmin.newUser}</span>
+          </button>
         </div>
       </div>
 
       {/* Desktop Table View */}
-      <div className="table-desktop-view glass-panel brutalist-border" style={{ overflow: 'hidden', boxShadow: '0 12px 36px rgba(0,0,0,0.5)' }}>
+      {viewMode === 'table' && (
+      <div className="table-desktop-view glass-panel brutalist-border" style={{ overflow: 'hidden', boxShadow: '0 12px 36px rgba(0,0,0,0.5)', marginBottom: '16px' }}>
         <div className="table-responsive-wrapper">
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
           <thead>
@@ -530,9 +593,10 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
         </table>
         </div>
       </div>
+      )}
 
-      {/* Mobile Cards View */}
-      <div className="cards-mobile-view">
+      {/* Cards View (Cards on PC when selected, and always on Mobile) */}
+      <div className={viewMode === 'table' ? 'mobile-only cards-grid-view' : 'cards-grid-view'}>
         {filteredUsers.length === 0 ? (
           <div className="glass-panel" style={{ padding: '30px 16px', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
             {t.usersAdmin.noUsers}

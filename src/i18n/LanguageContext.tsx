@@ -59,61 +59,95 @@ export const useLanguage = (): LanguageContextType => {
 export const LanguageSelector: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => {
   const { language, setLanguage } = useLanguage();
 
+  const toggleLanguage = () => {
+    setLanguage(language === 'es' ? 'en' : 'es');
+  };
+
   return (
-    <div
-      className={className}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        background: 'rgba(15, 18, 26, 0.85)',
-        border: '1px solid var(--border-party)',
-        borderRadius: '6px',
-        padding: '2px',
-        gap: '2px',
-        backdropFilter: 'blur(8px)',
-        userSelect: 'none',
-        ...style,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', padding: '0 4px', color: 'var(--text-muted)' }}>
-        <Globe size={13} color="var(--accent-red)" />
+    <>
+      {/* Mobile Compact Single Button (Click toggles ES ⇄ EN) */}
+      <button
+        type="button"
+        onClick={toggleLanguage}
+        className={`mobile-only ${className || ''}`}
+        style={{
+          alignItems: 'center',
+          gap: '4px',
+          background: 'rgba(15, 18, 26, 0.85)',
+          border: '1px solid var(--border-party)',
+          borderRadius: '5px',
+          padding: '4px 7px',
+          fontSize: '0.72rem',
+          fontWeight: 800,
+          fontFamily: 'var(--font-mono)',
+          color: '#fff',
+          cursor: 'pointer',
+          flexShrink: 0,
+          ...style,
+        }}
+        title={language === 'es' ? 'Cambiar a English' : 'Cambiar a Español'}
+      >
+        <Globe size={12} color="var(--accent-red)" />
+        <span>{language.toUpperCase()}</span>
+      </button>
+
+      {/* Desktop Segmented Toggle */}
+      <div
+        className={`desktop-only ${className || ''}`}
+        style={{
+          alignItems: 'center',
+          background: 'rgba(15, 18, 26, 0.85)',
+          border: '1px solid var(--border-party)',
+          borderRadius: '6px',
+          padding: '2px',
+          gap: '2px',
+          backdropFilter: 'blur(8px)',
+          userSelect: 'none',
+          ...style,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', padding: '0 4px', color: 'var(--text-muted)' }}>
+          <Globe size={13} color="var(--accent-red)" />
+        </div>
+        <button
+          type="button"
+          onClick={() => setLanguage('es')}
+          style={{
+            padding: '3px 7px',
+            fontSize: '0.7rem',
+            fontWeight: 800,
+            fontFamily: 'var(--font-mono)',
+            borderRadius: '4px',
+            border: 'none',
+            background: language === 'es' ? 'var(--accent-red)' : 'transparent',
+            color: language === 'es' ? '#fff' : 'var(--text-secondary)',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
+          title="Español"
+        >
+          ES
+        </button>
+        <button
+          type="button"
+          onClick={() => setLanguage('en')}
+          style={{
+            padding: '3px 7px',
+            fontSize: '0.7rem',
+            fontWeight: 800,
+            fontFamily: 'var(--font-mono)',
+            borderRadius: '4px',
+            border: 'none',
+            background: language === 'en' ? 'var(--accent-red)' : 'transparent',
+            color: language === 'en' ? '#fff' : 'var(--text-secondary)',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
+          title="English"
+        >
+          EN
+        </button>
       </div>
-      <button
-        onClick={() => setLanguage('es')}
-        style={{
-          padding: '3px 7px',
-          fontSize: '0.7rem',
-          fontWeight: 800,
-          fontFamily: 'var(--font-mono)',
-          borderRadius: '4px',
-          border: 'none',
-          background: language === 'es' ? 'var(--accent-red)' : 'transparent',
-          color: language === 'es' ? '#fff' : 'var(--text-secondary)',
-          cursor: 'pointer',
-          transition: 'all 0.15s ease',
-        }}
-        title="Español"
-      >
-        ES
-      </button>
-      <button
-        onClick={() => setLanguage('en')}
-        style={{
-          padding: '3px 7px',
-          fontSize: '0.7rem',
-          fontWeight: 800,
-          fontFamily: 'var(--font-mono)',
-          borderRadius: '4px',
-          border: 'none',
-          background: language === 'en' ? 'var(--accent-red)' : 'transparent',
-          color: language === 'en' ? '#fff' : 'var(--text-secondary)',
-          cursor: 'pointer',
-          transition: 'all 0.15s ease',
-        }}
-        title="English"
-      >
-        EN
-      </button>
-    </div>
+    </>
   );
 };

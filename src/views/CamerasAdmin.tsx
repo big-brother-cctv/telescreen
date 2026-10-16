@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Camera } from '../types';
-import { Plus, Edit2, Trash2, Search, Radio } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Radio, LayoutGrid, List } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 
 interface CamerasAdminProps {
@@ -11,8 +11,9 @@ interface CamerasAdminProps {
 }
 
 export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEdit, onDelete }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [search, setSearch] = useState<string>('');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const filtered = cameras.filter(c =>
@@ -49,39 +50,100 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: '14px',
-        marginBottom: '20px',
+        gap: '12px',
+        marginBottom: '18px',
       }}>
         <div>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, textTransform: 'uppercase', color: '#fff', letterSpacing: '0.02em' }}>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, textTransform: 'uppercase', color: '#fff', letterSpacing: '0.02em', margin: 0 }}>
             {t.camerasAdmin.title}
           </h1>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px' }}>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px', marginBottom: 0 }}>
             {t.camerasAdmin.subtitle}
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end', minWidth: '260px' }}>
-          <div style={{ position: 'relative', flex: 1, minWidth: '180px', maxWidth: '340px' }}>
-            <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          {/* Compact Tactical Search */}
+          <div style={{ position: 'relative', width: '160px' }}>
+            <Search size={13} color="var(--text-muted)" style={{ position: 'absolute', left: '9px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t.camerasAdmin.searchPlaceholder}
-              style={{ width: '100%', paddingLeft: '32px' }}
+              style={{
+                width: '100%',
+                paddingLeft: '28px',
+                paddingRight: '8px',
+                height: '34px',
+                fontSize: '0.78rem',
+                borderRadius: '6px',
+                background: 'rgba(10, 13, 19, 0.75)',
+                border: '1px solid var(--border-subtle)'
+              }}
             />
           </div>
 
-          <button onClick={onAdd} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>
-            <Plus size={16} />
+          {/* Desktop View Switcher */}
+          <div className="desktop-only" style={{
+            background: 'rgba(12, 15, 22, 0.85)',
+            border: '1px solid var(--border-party)',
+            borderRadius: '6px',
+            padding: '2px',
+            gap: '2px'
+          }}>
+            <button
+              onClick={() => setViewMode('cards')}
+              title={language === 'es' ? 'Vista Tarjetas' : 'Cards View'}
+              style={{
+                padding: '4px 8px',
+                borderRadius: '4px',
+                border: 'none',
+                background: viewMode === 'cards' ? 'var(--accent-red)' : 'transparent',
+                color: viewMode === 'cards' ? '#fff' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.72rem',
+                fontFamily: 'var(--font-mono)'
+              }}
+            >
+              <LayoutGrid size={13} />
+              <span>{language === 'es' ? 'Tarjetas' : 'Cards'}</span>
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              title={language === 'es' ? 'Vista Tabla' : 'Table View'}
+              style={{
+                padding: '4px 8px',
+                borderRadius: '4px',
+                border: 'none',
+                background: viewMode === 'table' ? 'var(--accent-red)' : 'transparent',
+                color: viewMode === 'table' ? '#fff' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.72rem',
+                fontFamily: 'var(--font-mono)'
+              }}
+            >
+              <List size={13} />
+              <span>{language === 'es' ? 'Tabla' : 'Table'}</span>
+            </button>
+          </div>
+
+          <button onClick={onAdd} className="btn-primary" style={{ height: '34px', padding: '0 14px', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+            <Plus size={15} />
             <span>{t.camerasAdmin.newCamera}</span>
           </button>
         </div>
       </div>
 
-      {/* Desktop Table View */}
-      <div className="table-desktop-view glass-panel brutalist-border" style={{ overflow: 'hidden' }}>
+      {/* Desktop Table View (Only if viewMode is table) */}
+      {viewMode === 'table' && (
+        <div className="table-desktop-view glass-panel brutalist-border" style={{ overflow: 'hidden', marginBottom: '16px' }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
             <thead>
@@ -270,9 +332,10 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
           </table>
         </div>
       </div>
+      )}
 
-      {/* Mobile Card View (< 868px) */}
-      <div className="cards-mobile-view">
+      {/* Cards View (Cards on PC when selected, and always on Mobile) */}
+      <div className={viewMode === 'table' ? 'mobile-only cards-grid-view' : 'cards-grid-view'}>
         {filtered.length > 0 ? (
           filtered.map((cam) => {
             const isOnline = cam.status === 'online';

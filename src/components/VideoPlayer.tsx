@@ -108,6 +108,21 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
     };
   }, [camera.name]);
 
+  // Lock body scroll when fullscreen is active
+  useEffect(() => {
+    if (isFullscreen) {
+      document.body.style.overflow = 'hidden';
+      document.body.classList.add('fullscreen-active');
+    } else {
+      document.body.style.overflow = '';
+      document.body.classList.remove('fullscreen-active');
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.classList.remove('fullscreen-active');
+    };
+  }, [isFullscreen]);
+
   // Escuchar cambios de fullscreen nativo
   useEffect(() => {
     const onFullscreenChange = () => {
@@ -116,7 +131,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
         (document as any).webkitFullscreenElement === containerRef.current ||
         (document as any).webkitCurrentFullScreenElement === containerRef.current
       );
-      setIsFullscreen(isCurrent);
+      if (!isCurrent && document.fullscreenElement === null) {
+        setIsFullscreen(false);
+      }
     };
 
     document.addEventListener('fullscreenchange', onFullscreenChange);
@@ -140,14 +157,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
     if (document.fullscreenElement && document.exitFullscreen) {
       document.exitFullscreen().catch(() => {});
     } else if ((document as any).webkitFullscreenElement && (document as any).webkitExitFullscreen) {
-      (document as any).webkitExitFullscreen();
+      try {
+        (document as any).webkitExitFullscreen();
+      } catch {}
     }
     setIsFullscreen(false);
   };
 
   const toggleFullscreen = () => {
     const container = containerRef.current;
-    const video = videoRef.current;
     if (!container) return;
 
     if (isFullscreen || document.fullscreenElement || (document as any).webkitFullscreenElement) {
@@ -155,33 +173,32 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
       return;
     }
 
+    // En móviles o pantallas táctiles, usar exclusivamente el fullscreen de la webapp (CSS en capa fija con safe-area)
+    // para evitar que el reproductor nativo del sistema operativo (QuickTime/Android) salte y choque con los controles.
+    const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 868;
+
+    if (isMobileDevice) {
+      setIsFullscreen(true);
+      return;
+    }
+
+    // En escritorio, intentar fullscreen nativo de contenedor para ocultar barras del navegador
     if (container.requestFullscreen) {
       container.requestFullscreen().then(() => {
         setIsFullscreen(true);
       }).catch(() => {
-        fallbackFullscreen(video);
+        setIsFullscreen(true);
       });
     } else if ((container as any).webkitRequestFullscreen) {
       try {
         (container as any).webkitRequestFullscreen();
         setIsFullscreen(true);
       } catch {
-        fallbackFullscreen(video);
+        setIsFullscreen(true);
       }
     } else {
-      fallbackFullscreen(video);
+      setIsFullscreen(true);
     }
-  };
-
-  const fallbackFullscreen = (video: HTMLVideoElement | null) => {
-    if (video && (video as any).webkitEnterFullscreen) {
-      try {
-        (video as any).webkitEnterFullscreen();
-        setIsFullscreen(true);
-        return;
-      } catch {}
-    }
-    setIsFullscreen(true);
   };
 
   const captureSnapshot = () => {
@@ -348,6 +365,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           muted
           autoPlay
           playsInline
+          {...({ 'webkit-playsinline': 'true' } as any)}
+          controls={false}
           onPlaying={() => { setIsPlaying(true); setHasError(false); }}
           onWaiting={() => setIsPlaying(false)}
           style={{ width: '100%', height: '100%', objectFit: 'contain' }}

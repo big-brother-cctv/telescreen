@@ -235,13 +235,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ textAlign: 'right' }}>
+            {/* Desktop user text info */}
+            <div className="desktop-only" style={{ textAlign: 'right' }}>
               <div style={{
                 fontSize: '0.78rem',
                 fontWeight: 700,
                 color: '#fff',
                 textTransform: 'uppercase',
-                maxWidth: '110px',
+                maxWidth: '120px',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap'
@@ -259,11 +260,33 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
               </div>
             </div>
 
+            {/* Mobile user badge: compact initials with clearance indicator */}
+            <div
+              className="mobile-only"
+              title={`${user?.name || user?.username || ''} (${clearanceLabel})`}
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '6px',
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: `1px solid ${clearanceColor}`,
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.7rem',
+                fontWeight: 800,
+                fontFamily: 'var(--font-mono)',
+                color: '#fff',
+                flexShrink: 0
+              }}
+            >
+              {(user?.username || 'U').substring(0, 2).toUpperCase()}
+            </div>
+
             <button
               onClick={onLogout}
               title={t.navbar.logout}
               className="btn-ghost"
-              style={{ padding: '7px', borderRadius: '6px' }}
+              style={{ padding: '6px', borderRadius: '6px', flexShrink: 0 }}
             >
               <LogOut size={16} color="var(--accent-red)" />
             </button>
