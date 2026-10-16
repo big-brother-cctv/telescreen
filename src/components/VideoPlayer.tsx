@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Hls from 'hls.js';
 import { Maximize2, Minimize2, Camera as CameraIcon, RefreshCw, AlertCircle, Radio, Terminal, X } from 'lucide-react';
 import type { Camera } from '../types';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface VideoPlayerProps {
   camera: Camera;
@@ -9,6 +10,7 @@ interface VideoPlayerProps {
 }
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
+  const { t } = useLanguage();
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -83,7 +85,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
     };
   }, [camera.name]);
 
-  // Escuchar cambios de fullscreen nativo (navegadores de escritorio y Android)
+  // Escuchar cambios de fullscreen nativo
   useEffect(() => {
     const onFullscreenChange = () => {
       const isCurrent = Boolean(
@@ -130,12 +132,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
       return;
     }
 
-    // 1. Intentar API estándar de pantalla completa
     if (container.requestFullscreen) {
       container.requestFullscreen().then(() => {
         setIsFullscreen(true);
       }).catch(() => {
-        // En móviles donde requestFullscreen en div es rechazado (ej. iOS Safari), usar fallback
         fallbackFullscreen(video);
       });
     } else if ((container as any).webkitRequestFullscreen) {
@@ -151,7 +151,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
   };
 
   const fallbackFullscreen = (video: HTMLVideoElement | null) => {
-    // Si es iOS Safari con soporte nativo de webkitEnterFullscreen en <video>
     if (video && (video as any).webkitEnterFullscreen) {
       try {
         (video as any).webkitEnterFullscreen();
@@ -159,7 +158,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
         return;
       } catch {}
     }
-    // Si no, aplicar modo pseudo-fullscreen táctico garantizado para cualquier móvil
     setIsFullscreen(true);
   };
 
@@ -208,11 +206,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
         }
       }}
     >
-      {/* Botón flotante para salir de pantalla completa (especialmente útil en móviles) */}
+      {/* Botón flotante para salir de pantalla completa */}
       {isFullscreen && (
         <button
           onClick={exitFullscreenMode}
-          title="Salir de pantalla completa"
+          title={t.videoPlayer.exitFullscreen}
           style={{
             position: 'absolute',
             top: '14px',
@@ -234,7 +232,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           }}
         >
           <X size={16} />
-          <span>SALIR</span>
+          <span>{t.videoPlayer.exit}</span>
         </button>
       )}
 
@@ -273,7 +271,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           zIndex: 20,
           gap: '8px',
         }}>
-          {/* Live indicator con texto adaptado para móvil */}
+          {/* Live indicator */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -298,14 +296,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
               flexShrink: 0
             }} />
             <span className="desktop-only">
-              {isPlaying ? 'TELESCREEN EN DIRECTO' : (camera.status === 'online' ? 'SINTONIZANDO SEÑAL' : 'EN ESPERA')}
+              {isPlaying ? t.videoPlayer.liveFull : (camera.status === 'online' ? t.videoPlayer.tuningFull : t.videoPlayer.standby)}
             </span>
             <span className="mobile-only">
-              {isPlaying ? 'EN DIRECTO' : 'ESPERA'}
+              {isPlaying ? t.videoPlayer.liveShort : t.videoPlayer.tuningShort}
             </span>
           </div>
 
-          {/* Badges de señal - Solo modo en móvil, resolución/fps en escritorio */}
+          {/* Badges de señal */}
           <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
             <span style={{
               fontSize: '0.62rem',
@@ -321,7 +319,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
               {camera.connectionMode === 'pull' ? 'IP PULL' : camera.connectionMode === 'push' ? 'PUSH' : camera.sourceType?.toUpperCase() || 'LOCAL'}
             </span>
             
-            {/* Ocultar en móvil para evitar apelotonamiento */}
             <span className="cam-info-extended" style={{
               fontSize: '0.62rem',
               fontWeight: 700,
@@ -361,7 +358,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           pointerEvents: 'none',
           zIndex: 20,
         }}>
-          BIG BROTHER CCTV // NODE #{camera.id || 1}
+          {t.videoPlayer.sectorNode.replace('{id}', String(camera.id || 1))}
         </div>
 
         {/* Fallback / Connecting Screen */}
@@ -384,10 +381,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
               <>
                 <AlertCircle size={28} color="var(--accent-red)" />
                 <div style={{ fontSize: '0.825rem', color: '#fff', fontWeight: 800, fontFamily: 'var(--font-display)' }}>
-                  SIN EMISIÓN ACTIVA
+                  {t.videoPlayer.noStream}
                 </div>
                 <div className="desktop-only" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', maxWidth: '280px' }}>
-                  Esperando flujo de vídeo en <code className="mono">{streamUrl}</code>
+                  {t.videoPlayer.waitingStream} <code className="mono">{streamUrl}</code>
                 </div>
                 <button
                   onClick={setupPlayer}
@@ -395,14 +392,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
                   style={{ fontSize: '0.72rem', padding: '5px 10px', marginTop: '4px' }}
                 >
                   <RefreshCw size={12} />
-                  Reconectar Señal
+                  {t.videoPlayer.reconnect}
                 </button>
               </>
             ) : (
               <>
                 <Radio size={26} color="var(--accent-red)" className="animate-spin" />
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-party)', fontFamily: 'var(--font-mono)' }}>
-                  SINTONIZANDO TRANSMISIÓN...
+                  {t.videoPlayer.connecting}
                 </div>
               </>
             )}
@@ -425,7 +422,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
         }}>
           <button
             onClick={() => setShowStats(!showStats)}
-            title="Telemetría técnica"
+            title={t.videoPlayer.technicalTelemetry}
             className="btn-ghost"
             style={{ padding: '6px', border: 'none', background: 'transparent' }}
           >
@@ -433,7 +430,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           </button>
           <button
             onClick={captureSnapshot}
-            title="Guardar Snapshot"
+            title={t.videoPlayer.saveSnapshot}
             className="btn-ghost"
             style={{ padding: '6px', border: 'none', background: 'transparent' }}
           >
@@ -441,7 +438,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           </button>
           <button
             onClick={toggleFullscreen}
-            title={isFullscreen ? "Salir de pantalla completa" : "Pantalla completa"}
+            title={isFullscreen ? t.videoPlayer.exitFullscreen : t.videoPlayer.fullscreen}
             className="btn-ghost"
             style={{ padding: '6px', border: 'none', background: 'transparent' }}
           >
@@ -454,7 +451,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
         </div>
       </div>
 
-      {/* Camera Info Footer - Limpio y despejado en móvil */}
+      {/* Camera Info Footer */}
       {!isFullscreen && (
         <div style={{
           padding: '10px 14px',
@@ -484,7 +481,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
               </span>
             </div>
             
-            {/* Ocultar en móvil para que la tarjeta sea minimalista y compacta */}
             <div className="cam-info-extended" style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px', gap: '8px' }}>
               <span>CODEC: <b style={{ color: 'var(--text-secondary)' }}>{camera.codec || 'libx264'}</b></span>
               <span>•</span>
@@ -497,7 +493,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
             disabled={isRetrying}
             className="btn-ghost"
             style={{ padding: '6px 9px', fontSize: '0.72rem', flexShrink: 0 }}
-            title="Reiniciar Transmisión"
+            title={t.videoPlayer.restartStream}
           >
             <RefreshCw size={13} className={isRetrying ? 'animate-spin' : ''} />
           </button>
@@ -517,10 +513,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '6px'
         }}>
-          <div>BUFFER: <span style={{ color: 'var(--accent-red)' }}>{camera.buffer || '1000000'} BYTES</span></div>
-          <div>ROTATION: <span style={{ color: 'var(--accent-amber)' }}>{camera.rotation || 0}°</span></div>
-          <div>TUNE: <span style={{ color: 'var(--text-primary)' }}>{camera.tune || 'zerolatency'}</span></div>
-          <div>NODE ID: <span style={{ color: 'var(--text-party)' }}>#CCTV-{camera.id}</span></div>
+          <div>{t.videoPlayer.buffer}: <span style={{ color: 'var(--accent-red)' }}>{camera.buffer || '1000000'} BYTES</span></div>
+          <div>{t.videoPlayer.rotation}: <span style={{ color: 'var(--accent-amber)' }}>{camera.rotation || 0}°</span></div>
+          <div>{t.videoPlayer.tune}: <span style={{ color: 'var(--text-primary)' }}>{camera.tune || 'zerolatency'}</span></div>
+          <div>{t.videoPlayer.nodeId}: <span style={{ color: 'var(--text-party)' }}>#CCTV-{camera.id}</span></div>
         </div>
       )}
     </div>

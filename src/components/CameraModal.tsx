@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Radio, Globe, Tv, HardDrive, Share2, Terminal, Copy, Check, Info } from 'lucide-react';
 import type { Camera } from '../types';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface CameraModalProps {
   camera: Partial<Camera> | null;
@@ -10,6 +11,7 @@ interface CameraModalProps {
 }
 
 export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClose, onSave }) => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'ip' | 'push' | 'edge' | 'usb' | 'test'>('ip');
   const [formData, setFormData] = useState<Partial<Camera>>({
     name: '',
@@ -98,11 +100,11 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name?.trim()) {
-      setError('El nombre de la cámara es obligatorio');
+      setError(t.cameraModal.nameRequiredError);
       return;
     }
     if (activeTab === 'ip' && !formData.sourceUrl?.trim()) {
-      setError('Debes indicar la URL RTSP o HTTP de la cámara IP');
+      setError(t.cameraModal.urlRequiredError);
       return;
     }
 
@@ -112,7 +114,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
       await onSave(formData);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Error al guardar la configuración de la cámara');
+      setError(err.message || t.cameraModal.defaultSaveError);
     } finally {
       setLoading(false);
     }
@@ -188,10 +190,10 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             </div>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#fff', textTransform: 'uppercase', fontFamily: 'var(--font-display)', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {camera?.id ? `Editar Cámara: ${camera.name}` : 'Añadir Nueva Cámara'}
+                {camera?.id ? t.cameraModal.editTitle.replace('{name}', camera.name || '') : t.cameraModal.addTitle}
               </div>
               <div style={{ fontSize: '0.65rem', color: 'var(--text-party)', fontFamily: 'var(--font-mono)' }}>
-                MODOS: CÁMARA IP • PUSH (MÓVIL/OBS) • DOCKER EDGE • WEBCAM USB • TEST
+                {t.cameraModal.modesHelp}
               </div>
             </div>
           </div>
@@ -230,7 +232,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             }}
           >
             <Globe size={16} color={activeTab === 'ip' ? 'var(--accent-red)' : 'var(--text-muted)'} />
-            <span>CÁMARA IP (PULL)</span>
+            <span>{t.cameraModal.tabIp.toUpperCase()}</span>
           </button>
 
           <button
@@ -256,7 +258,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             }}
           >
             <Share2 size={16} color={activeTab === 'push' ? 'var(--accent-red)' : 'var(--text-muted)'} />
-            <span>AUTOCONEXIÓN (PUSH)</span>
+            <span>{t.cameraModal.tabPush.toUpperCase()}</span>
           </button>
 
           <button
@@ -282,7 +284,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             }}
           >
             <Terminal size={16} color={activeTab === 'edge' ? 'var(--accent-red)' : 'var(--text-muted)'} />
-            <span>AGENTE EDGE (PI)</span>
+            <span>{t.cameraModal.tabEdge.toUpperCase()}</span>
           </button>
 
           <button
@@ -308,7 +310,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             }}
           >
             <HardDrive size={16} color={activeTab === 'usb' ? 'var(--accent-red)' : 'var(--text-muted)'} />
-            <span>USB LOCAL</span>
+            <span>{t.cameraModal.tabUsb.toUpperCase()}</span>
           </button>
 
           <button
@@ -334,7 +336,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             }}
           >
             <Tv size={16} color={activeTab === 'test' ? 'var(--accent-amber)' : 'var(--text-muted)'} />
-            <span>TEST SINTÉTICO</span>
+            <span>{t.cameraModal.tabTest.toUpperCase()}</span>
           </button>
         </div>
 
@@ -358,19 +360,19 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
           {/* Nombre identificador */}
           <div style={{ marginBottom: '16px' }}>
             <label style={{ display: 'block', fontSize: '0.72rem', color: '#fda4af', marginBottom: '6px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Identificador del Stream / Canal *
+              {t.cameraModal.nameLabel}
             </label>
             <input
               type="text"
               value={formData.name || ''}
               onChange={(e) => setFormData({ ...formData, name: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '-') })}
-              placeholder="ej: pasillo-norte, cam-dahua, entrada-garaje"
+              placeholder={t.cameraModal.namePlaceholder}
               disabled={Boolean(camera?.id)}
               style={{ width: '100%', fontFamily: 'var(--font-mono)' }}
               required
             />
             <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
-              Este nombre definirá la ruta de streaming en Oceanía: <code className="mono">/stream/{formData.name || '{nombre}'}/index.m3u8</code>
+              {t.cameraModal.namePathNote} <code className="mono">/stream/{formData.name || '{stream}'}/index.m3u8</code>
             </div>
           </div>
 
@@ -379,30 +381,30 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             <div style={{ background: 'rgba(225, 29, 72, 0.05)', padding: '14px', borderRadius: '6px', border: '1px solid var(--border-party)', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <Info size={16} color="var(--accent-red)" />
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>Sintonización Automática por Servidor (PULL)</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>{t.cameraModal.ipHelpTitle}</span>
               </div>
               <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '10px', lineHeight: 1.5 }}>
-                El servidor Big Brother se conecta directamente a la cámara IP en tu red local o internet. No necesitas ejecutar ningún script ni ffmpeg en tu ordenador.
+                {t.cameraModal.ipHelpDesc}
               </p>
 
               <label style={{ display: 'block', fontSize: '0.72rem', color: '#fda4af', marginBottom: '6px', fontWeight: 700, textTransform: 'uppercase' }}>
-                URL del Flujo RTSP / RTMP / HTTP *
+                {t.cameraModal.sourceUrlLabel}
               </label>
               <input
                 type="text"
                 value={formData.sourceUrl || ''}
                 onChange={(e) => setFormData({ ...formData, sourceUrl: e.target.value })}
-                placeholder="rtsp://usuario:password@192.168.1.100:554/stream1"
+                placeholder={t.cameraModal.sourceUrlPlaceholder}
                 style={{ width: '100%', marginBottom: '8px' }}
                 required
               />
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Cargar formato típico:</span>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{t.cameraModal.rtspPresetsTitle}</span>
                 <button type="button" onClick={() => setRtsPreset('hikvision')} className="btn-ghost" style={{ padding: '2px 8px', fontSize: '0.65rem' }}>Hikvision</button>
                 <button type="button" onClick={() => setRtsPreset('dahua')} className="btn-ghost" style={{ padding: '2px 8px', fontSize: '0.65rem' }}>Dahua</button>
                 <button type="button" onClick={() => setRtsPreset('tapo')} className="btn-ghost" style={{ padding: '2px 8px', fontSize: '0.65rem' }}>TP-Link Tapo</button>
-                <button type="button" onClick={() => setRtsPreset('demo')} className="btn-ghost" style={{ padding: '2px 8px', fontSize: '0.65rem', color: 'var(--accent-amber)' }}>RTSP Demo Público</button>
+                <button type="button" onClick={() => setRtsPreset('demo')} className="btn-ghost" style={{ padding: '2px 8px', fontSize: '0.65rem', color: 'var(--accent-amber)' }}>RTSP Demo</button>
               </div>
             </div>
           )}
@@ -412,16 +414,16 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             <div style={{ background: 'rgba(56, 189, 248, 0.05)', padding: '14px', borderRadius: '6px', border: '1px solid rgba(56, 189, 248, 0.3)', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <Share2 size={16} color="var(--accent-cyan)" />
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>Ingesta Directa (Broadcast / Push)</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>{t.cameraModal.pushHelpTitle}</span>
               </div>
               <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: 1.5 }}>
-                Cualquier dispositivo (teléfono móvil con app <i>Larix Broadcaster</i>, OBS Studio, cámara Wi-Fi autónoma o dron) puede emitir directamente hacia Big Brother. ¡Al enviar señal, el stream se sintoniza al instante!
+                {t.cameraModal.pushHelpDesc}
               </p>
 
               {/* RTSP Push URL */}
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--accent-cyan)', fontWeight: 700 }}>URL de Ingesta RTSP:</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--accent-cyan)', fontWeight: 700 }}>{t.cameraModal.pushRtspHelp}</span>
                   <button
                     type="button"
                     onClick={() => copyToClipboard(rtspPushUrl, 'rtsp')}
@@ -429,7 +431,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
                     style={{ padding: '2px 6px', fontSize: '0.65rem', display: 'flex', alignItems: 'center', gap: '4px' }}
                   >
                     {copiedKey === 'rtsp' ? <Check size={12} color="#10b981" /> : <Copy size={12} />}
-                    {copiedKey === 'rtsp' ? 'Copiado' : 'Copiar'}
+                    {copiedKey === 'rtsp' ? t.common.copied : t.common.copy}
                   </button>
                 </div>
                 <code style={{ display: 'block', padding: '8px 10px', background: '#05070a', borderRadius: '4px', border: '1px solid var(--border-subtle)', color: '#fff', fontSize: '0.75rem', wordBreak: 'break-all' }}>
@@ -440,7 +442,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
               {/* RTMP Push URL */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--accent-amber)', fontWeight: 700 }}>URL de Ingesta RTMP (OBS Studio / Twitch format):</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--accent-amber)', fontWeight: 700 }}>{t.cameraModal.pushRtmpHelp}</span>
                   <button
                     type="button"
                     onClick={() => copyToClipboard(rtmpPushUrl, 'rtmp')}
@@ -448,7 +450,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
                     style={{ padding: '2px 6px', fontSize: '0.65rem', display: 'flex', alignItems: 'center', gap: '4px' }}
                   >
                     {copiedKey === 'rtmp' ? <Check size={12} color="#10b981" /> : <Copy size={12} />}
-                    {copiedKey === 'rtmp' ? 'Copiado' : 'Copiar'}
+                    {copiedKey === 'rtmp' ? t.common.copied : t.common.copy}
                   </button>
                 </div>
                 <code style={{ display: 'block', padding: '8px 10px', background: '#05070a', borderRadius: '4px', border: '1px solid var(--border-subtle)', color: '#fff', fontSize: '0.75rem', wordBreak: 'break-all' }}>
@@ -463,10 +465,10 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             <div style={{ background: 'rgba(168, 85, 247, 0.05)', padding: '14px', borderRadius: '6px', border: '1px solid rgba(168, 85, 247, 0.3)', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <Terminal size={16} color="#c084fc" />
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>Despliegue de Agente Autónomo (Raspberry Pi / Linux Edge)</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>{t.cameraModal.edgeHelpTitle}</span>
               </div>
               <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '10px', lineHeight: 1.5 }}>
-                Copia este comando y ejecútalo en cualquier Raspberry Pi u ordenador remoto con cámara. El agente se conectará solo a Big Brother, enviará heartbeats y sincronizará parámetros:
+                {t.cameraModal.edgeHelpDesc}
               </p>
 
               <div style={{ position: 'relative' }}>
@@ -490,7 +492,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
                   style={{ position: 'absolute', top: '8px', right: '8px', padding: '3px 8px', fontSize: '0.65rem' }}
                 >
                   {copiedKey === 'docker' ? <Check size={12} color="#10b981" /> : <Copy size={12} />}
-                  {copiedKey === 'docker' ? 'Copiado' : 'Copiar Comando'}
+                  {copiedKey === 'docker' ? t.common.copied : t.cameraModal.copyCommand}
                 </button>
               </div>
             </div>
@@ -500,7 +502,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
           {activeTab === 'usb' && (
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 700, textTransform: 'uppercase' }}>
-                Dispositivo Hardware Local (/dev/video*)
+                {t.cameraModal.deviceLabel}
               </label>
               <input
                 type="text"
@@ -515,7 +517,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
           {/* TAB 5: TEST SINTÉTICO */}
           {activeTab === 'test' && (
             <div style={{ padding: '12px 14px', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '6px', fontSize: '0.75rem', color: 'var(--accent-amber)', fontFamily: 'var(--font-mono)', marginBottom: '16px' }}>
-              📡 Generador sintético de pruebas de Oceanía: Barras SMPTE militares y reloj de tiempo real. Ideal para validar la transmisión sin necesidad de hardware.
+              {t.cameraModal.testHelpDesc}
             </div>
           )}
 
@@ -527,14 +529,14 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             {/* Resolución */}
             <div>
               <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 700, textTransform: 'uppercase' }}>
-                Resolución
+                {t.cameraModal.resolutionLabel}
               </label>
               <select
                 value={formData.resolution || '1280x720'}
                 onChange={(e) => setFormData({ ...formData, resolution: e.target.value })}
                 style={{ width: '100%' }}
               >
-                <option value="640x480">640x480 (SD Estándar de Oceanía)</option>
+                <option value="640x480">640x480 (SD)</option>
                 <option value="1280x720">1280x720 (720p HD)</option>
                 <option value="1920x1080">1920x1080 (1080p Full HD)</option>
               </select>
@@ -543,25 +545,25 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             {/* FPS */}
             <div>
               <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 700, textTransform: 'uppercase' }}>
-                Cuadros por segundo (FPS)
+                {t.cameraModal.fpsLabel}
               </label>
               <select
                 value={formData.fps || '25'}
                 onChange={(e) => setFormData({ ...formData, fps: e.target.value })}
                 style={{ width: '100%' }}
               >
-                <option value="15">15 FPS (Bajo consumo)</option>
+                <option value="15">15 FPS</option>
                 <option value="20">20 FPS</option>
-                <option value="25">25 FPS (Estándar)</option>
+                <option value="25">25 FPS</option>
                 <option value="30">30 FPS</option>
-                <option value="60">60 FPS (Alta Fluidez)</option>
+                <option value="60">60 FPS</option>
               </select>
             </div>
 
             {/* Códec */}
             <div>
               <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 700, textTransform: 'uppercase' }}>
-                Códec de Vídeo
+                {t.cameraModal.codecLabel}
               </label>
               <input
                 type="text"
@@ -575,16 +577,16 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             {/* Rotación */}
             <div>
               <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 700, textTransform: 'uppercase' }}>
-                Rotación de Imagen
+                {t.cameraModal.rotationLabel}
               </label>
               <select
                 value={formData.rotation || '0'}
                 onChange={(e) => setFormData({ ...formData, rotation: e.target.value })}
                 style={{ width: '100%' }}
               >
-                <option value="0">0° (Normal)</option>
+                <option value="0">0°</option>
                 <option value="90">90°</option>
-                <option value="180">180° (Invertida)</option>
+                <option value="180">180°</option>
                 <option value="270">270°</option>
               </select>
             </div>
@@ -600,11 +602,11 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             borderTop: '1px solid var(--border-subtle)',
           }}>
             <button type="button" onClick={onClose} className="btn-ghost">
-              Cancelar
+              {t.cameraModal.cancelBtn}
             </button>
             <button type="submit" disabled={loading} className="btn-primary">
               <Save size={16} />
-              {loading ? 'GUARDANDO...' : (camera?.id ? 'GUARDAR CAMBIOS' : 'AÑADIR CÁMARA')}
+              {loading ? t.cameraModal.savingBtn : (camera?.id ? t.cameraModal.saveChangesBtn : t.cameraModal.addCameraBtn)}
             </button>
           </div>
         </form>

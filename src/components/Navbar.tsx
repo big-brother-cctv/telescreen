@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Users, LogOut, Radio, Terminal } from 'lucide-react';
 import { api } from '../services/api';
 import type { User } from '../types';
+import { useLanguage, LanguageSelector } from '../i18n/LanguageContext';
 
 interface NavbarProps {
   currentView: 'grid' | 'admin' | 'users';
@@ -11,13 +12,14 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, onLogout }) => {
+  const { t, language } = useLanguage();
   const [apiOnline, setApiOnline] = useState<boolean>(true);
   const [time, setTime] = useState<string>('');
 
   useEffect(() => {
     const updateClock = () => {
       const now = new Date();
-      setTime(now.toLocaleTimeString('es-ES', { hour12: false }));
+      setTime(now.toLocaleTimeString(language === 'es' ? 'es-ES' : 'en-US', { hour12: false }));
     };
     updateClock();
     const clockInterval = setInterval(updateClock, 1000);
@@ -33,13 +35,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
       clearInterval(clockInterval);
       clearInterval(healthInterval);
     };
-  }, []);
+  }, [language]);
 
   const clearanceLabel = user?.role === 'admin' || user?.username === 'admin'
-    ? 'ADMINISTRADOR'
+    ? t.common.administrator
     : user?.role === 'viewer'
-    ? 'SOLO LECTURA'
-    : 'OPERADOR';
+    ? t.common.viewer
+    : t.common.operator;
 
   const clearanceColor = user?.role === 'admin' || user?.username === 'admin'
     ? 'var(--accent-red)'
@@ -50,29 +52,29 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
   return (
     <>
       {/* CCTV Dynamic Ticker Banner */}
-      <div className="ticker-wrapper" aria-label="Estado del sistema CCTV">
+      <div className="ticker-wrapper" aria-label="CCTV Status Banner">
         <div className="ticker-track">
           <div className="ticker-item">
-            <span>BIG BROTHER CCTV</span>
+            <span>{t.navbar.ticker1}</span>
             <span>•</span>
-            <span>SISTEMA DE TELEVIGILANCIA EN TIEMPO REAL</span>
+            <span>{t.navbar.ticker2}</span>
             <span>•</span>
-            <span>CONEXIÓN SEGURA MTX</span>
+            <span>{t.navbar.ticker3}</span>
             <span>•</span>
-            <span>TRANSMISIÓN HLS BAJA LATENCIA</span>
+            <span>{t.navbar.ticker4}</span>
             <span>•</span>
-            <span>SECTOR OPERATIVO 4</span>
+            <span>{t.navbar.ticker5}</span>
           </div>
           <div className="ticker-item">
-            <span>BIG BROTHER CCTV</span>
+            <span>{t.navbar.ticker1}</span>
             <span>•</span>
-            <span>SISTEMA DE TELEVIGILANCIA EN TIEMPO REAL</span>
+            <span>{t.navbar.ticker2}</span>
             <span>•</span>
-            <span>CONEXIÓN SEGURA MTX</span>
+            <span>{t.navbar.ticker3}</span>
             <span>•</span>
-            <span>TRANSMISIÓN HLS BAJA LATENCIA</span>
+            <span>{t.navbar.ticker4}</span>
             <span>•</span>
-            <span>SECTOR OPERATIVO 4</span>
+            <span>{t.navbar.ticker5}</span>
           </div>
         </div>
       </div>
@@ -93,7 +95,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.7)',
         gap: '12px'
       }}>
-        {/* Brand & All-Seeing Eye */}
+        {/* Brand & CCTV Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
           <div 
             onClick={() => onNavigate('grid')}
@@ -142,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
                 }}>CCTV</span>
               </div>
               <div className="desktop-only" style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                PANEL DE CONTROL
+                {t.navbar.controlPanel}
               </div>
             </div>
           </div>
@@ -166,7 +168,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
               borderRadius: '50%',
               backgroundColor: apiOnline ? 'var(--accent-red)' : 'var(--accent-amber)',
             }} />
-            <span>{apiOnline ? 'ONLINE' : 'OFFLINE'}</span>
+            <span>{apiOnline ? t.common.online : t.common.offline}</span>
           </div>
         </div>
 
@@ -183,7 +185,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             }}
           >
             <Radio size={15} color={currentView === 'grid' ? 'var(--accent-red)' : 'var(--text-secondary)'} />
-            Cámaras en Vivo
+            {t.navbar.liveCameras}
           </button>
 
           <button
@@ -197,7 +199,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             }}
           >
             <Terminal size={15} color={currentView === 'admin' ? 'var(--accent-red)' : 'var(--text-secondary)'} />
-            Gestión de Cámaras
+            {t.navbar.cameraManagement}
           </button>
 
           {user?.role !== 'viewer' && (
@@ -212,13 +214,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
               }}
             >
               <Users size={15} color={currentView === 'users' ? 'var(--accent-red)' : 'var(--text-secondary)'} />
-              Usuarios
+              {t.navbar.users}
             </button>
           )}
         </nav>
 
-        {/* Right Info: Clock, User Clearance & Logout */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+        {/* Right Info: Language Selector, Clock, User Clearance & Logout */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+          {/* Selector de idioma */}
+          <LanguageSelector />
+
           <div className="desktop-only" style={{
             fontSize: '0.7rem',
             fontFamily: 'var(--font-mono)',
@@ -229,19 +234,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             <div>{time}</div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ textAlign: 'right' }}>
               <div style={{
                 fontSize: '0.78rem',
                 fontWeight: 700,
                 color: '#fff',
                 textTransform: 'uppercase',
-                maxWidth: '120px',
+                maxWidth: '110px',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap'
               }}>
-                {user?.name || user?.username || 'Usuario'}
+                {user?.name || user?.username || t.common.user}
               </div>
               <div style={{
                 fontSize: '0.62rem',
@@ -256,7 +261,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
 
             <button
               onClick={onLogout}
-              title="Cerrar sesión"
+              title={t.navbar.logout}
               className="btn-ghost"
               style={{ padding: '7px', borderRadius: '6px' }}
             >
@@ -312,7 +317,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           )}
           <Radio size={18} color={currentView === 'grid' ? 'var(--accent-red)' : 'var(--text-muted)'} />
           <span style={{ fontSize: '0.68rem', fontWeight: currentView === 'grid' ? 800 : 500, fontFamily: 'var(--font-display)' }}>
-            En Vivo
+            {t.navbar.live}
           </span>
         </button>
 
@@ -345,7 +350,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           )}
           <Terminal size={18} color={currentView === 'admin' ? 'var(--accent-red)' : 'var(--text-muted)'} />
           <span style={{ fontSize: '0.68rem', fontWeight: currentView === 'admin' ? 800 : 500, fontFamily: 'var(--font-display)' }}>
-            Cámaras
+            {t.navbar.cameras}
           </span>
         </button>
 
@@ -379,7 +384,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             )}
             <Users size={18} color={currentView === 'users' ? 'var(--accent-red)' : 'var(--text-muted)'} />
             <span style={{ fontSize: '0.68rem', fontWeight: currentView === 'users' ? 800 : 500, fontFamily: 'var(--font-display)' }}>
-              Usuarios
+              {t.navbar.users}
             </span>
           </button>
         )}

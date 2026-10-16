@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Camera } from '../types';
 import { VideoPlayer } from '../components/VideoPlayer';
 import { LayoutGrid, Grid2X2, Grid3X3, Square, Plus, Search, RefreshCw, EyeOff } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface LiveGridProps {
   cameras: Camera[];
@@ -11,6 +12,7 @@ interface LiveGridProps {
 }
 
 export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefresh, onAddCamera }) => {
+  const { t } = useLanguage();
   const [layout, setLayout] = useState<'auto' | '1x1' | '2x2' | '3x3'>('auto');
   const [search, setSearch] = useState<string>('');
 
@@ -38,7 +40,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em', color: '#fff' }}>
-              Cámaras en Directo
+              {t.liveGrid.title}
             </h1>
             <span style={{
               fontSize: '0.7rem',
@@ -50,11 +52,11 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               border: '1px solid rgba(225, 29, 72, 0.4)',
               fontFamily: 'var(--font-mono)'
             }}>
-              {filteredCameras.length} {filteredCameras.length === 1 ? 'ACTIVA' : 'ACTIVAS'}
+              {filteredCameras.length} {filteredCameras.length === 1 ? t.liveGrid.activeSingle : t.liveGrid.activePlural}
             </span>
           </div>
           <p className="desktop-only" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            TRANSMISIÓN CONTINUA • CCTV EN VIVO
+            {t.liveGrid.subtitle}
           </p>
         </div>
 
@@ -74,7 +76,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar cámara o ubicación..."
+              placeholder={t.liveGrid.searchPlaceholder}
               style={{ width: '100%', paddingLeft: '32px' }}
             />
           </div>
@@ -92,7 +94,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
             }}>
               <button
                 onClick={() => setLayout('auto')}
-                title="Mosaico Automático Fluido"
+                title={t.liveGrid.layoutAuto}
                 className="btn-ghost"
                 style={{
                   padding: '6px',
@@ -106,7 +108,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               </button>
               <button
                 onClick={() => setLayout('1x1')}
-                title="Vista 1x1 (1 Columna Grande)"
+                title={t.liveGrid.layout1x1}
                 className="btn-ghost"
                 style={{
                   padding: '6px',
@@ -120,7 +122,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               </button>
               <button
                 onClick={() => setLayout('2x2')}
-                title="Cuadrícula 2x2 (2 Columnas fijas)"
+                title={t.liveGrid.layout2x2}
                 className="btn-ghost"
                 style={{
                   padding: '6px',
@@ -134,7 +136,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               </button>
               <button
                 onClick={() => setLayout('3x3')}
-                title="Cuadrícula 3x3 (3 Columnas)"
+                title={t.liveGrid.layout3x3}
                 className="btn-ghost"
                 style={{
                   padding: '6px',
@@ -153,7 +155,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               onClick={onRefresh}
               disabled={isLoading}
               className="btn-ghost"
-              title="Actualizar estado de transmisiones"
+              title={t.liveGrid.refreshTooltip}
               style={{ padding: '8px' }}
             >
               <RefreshCw size={15} className={isLoading ? 'animate-spin' : ''} />
@@ -166,7 +168,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               style={{ whiteSpace: 'nowrap' }}
             >
               <Plus size={16} />
-              <span>Añadir Cámara</span>
+              <span>{t.liveGrid.addCamera}</span>
             </button>
           </div>
         </div>
@@ -200,21 +202,21 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
             <EyeOff size={28} color="var(--accent-red)" />
           </div>
           <h2 style={{ fontSize: '1.2rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', color: '#fff' }}>
-            NO HAY CÁMARAS CONECTADAS
+            {t.liveGrid.noCamerasTitle}
           </h2>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '20px', lineHeight: 1.6 }}>
             {search
-              ? `No se encontraron cámaras que coincidan con "${search}".`
-              : 'Conecta cámaras IP (RTSP), emite en directo desde tu smartphone u OBS (Push), vincula una webcam local o inicia una señal de prueba.'}
+              ? t.liveGrid.noCamerasSearch.replace('{query}', search)
+              : t.liveGrid.noCamerasDesc}
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <button onClick={onAddCamera} className="btn-primary">
               <Plus size={16} />
-              Añadir Nueva Cámara
+              {t.liveGrid.addCamera}
             </button>
             <button onClick={onRefresh} className="btn-ghost">
               <RefreshCw size={14} />
-              Comprobar Señales
+              {t.liveGrid.checkFeeds}
             </button>
           </div>
         </div>

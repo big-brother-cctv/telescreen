@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Lock, User as UserIcon, ShieldAlert, ArrowRight } from 'lucide-react';
 import { api, authStorage } from '../services/api';
+import { useLanguage, LanguageSelector } from '../i18n/LanguageContext';
 
 interface LoginViewProps {
   onSuccess: () => void;
 }
 
 export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
+  const { t } = useLanguage();
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -15,7 +17,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !password) {
-      setError('Por favor, introduce tu usuario y contraseña');
+      setError(t.login.validationError);
       return;
     }
     try {
@@ -26,10 +28,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
         authStorage.setToken(res.token);
         onSuccess();
       } else {
-        setError('Respuesta no válida del servidor');
+        setError(t.login.invalidResponse);
       }
     } catch (err: any) {
-      setError(err.message || 'Usuario o contraseña incorrectos');
+      setError(err.message || t.login.defaultError);
     } finally {
       setLoading(false);
     }
@@ -44,7 +46,12 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
       justifyContent: 'center',
       padding: 'calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px))',
       background: 'radial-gradient(ellipse at 50% 15%, rgba(225, 29, 72, 0.12) 0%, #07080b 70%)',
+      position: 'relative'
     }}>
+      {/* Selector de idioma flotante en login */}
+      <div style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 10 }}>
+        <LanguageSelector />
+      </div>
 
       <div className="glass-panel brutalist-border" style={{
         width: '100%',
@@ -55,7 +62,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
         boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8), 0 0 30px rgba(225, 29, 72, 0.2)',
       }}>
         {/* Brand Header */}
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '26px' }}>
           <div style={{
             width: '64px',
             height: '64px',
@@ -89,7 +96,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
             marginTop: '6px',
             letterSpacing: '0.05em'
           }}>
-            SISTEMA DE CONTROL Y TELEVIGILANCIA
+            {t.login.subtitle}
           </div>
         </div>
 
@@ -117,7 +124,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Usuario
+              {t.login.usernameLabel}
             </label>
             <div style={{ position: 'relative' }}>
               <UserIcon size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -125,7 +132,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Nombre de usuario"
+                placeholder={t.login.usernamePlaceholder}
                 autoComplete="username"
                 style={{ width: '100%', paddingLeft: '36px' }}
                 required
@@ -135,7 +142,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
 
           <div>
             <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Contraseña
+              {t.login.passwordLabel}
             </label>
             <div style={{ position: 'relative' }}>
               <Lock size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -143,7 +150,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder={t.login.passwordPlaceholder}
                 autoComplete="current-password"
                 style={{ width: '100%', paddingLeft: '36px' }}
                 required
@@ -157,7 +164,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
             className="btn-primary"
             style={{ width: '100%', justifyContent: 'center', padding: '12px', marginTop: '6px', fontSize: '0.85rem' }}
           >
-            <span>{loading ? 'INICIANDO SESIÓN...' : 'INICIAR SESIÓN'}</span>
+            <span>{loading ? t.login.submitting : t.login.submit}</span>
             <ArrowRight size={16} />
           </button>
         </form>
@@ -172,7 +179,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
         fontFamily: 'var(--font-mono)',
         maxWidth: '440px',
       }}>
-        Big Brother CCTV • Sistema de Videovigilancia Centralizada
+        {t.login.footerNote}
       </div>
     </div>
   );

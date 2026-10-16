@@ -13,6 +13,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { api } from '../services/api';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface UsersAdminProps {
   users: User[];
@@ -30,14 +31,6 @@ interface FormState {
   password: string;
 }
 
-const ALL_AVAILABLE_PERMISSIONS = [
-  { id: 'cameras:read', label: 'Ver Cámaras', desc: 'Acceso a streams en directo' },
-  { id: 'cameras:write', label: 'Gestionar Cámaras', desc: 'Añadir y configurar fuentes de vídeo' },
-  { id: 'cameras:delete', label: 'Eliminar Cámaras', desc: 'Borrar cámaras del sistema' },
-  { id: 'users:read', label: 'Ver Usuarios', desc: 'Consultar lista de usuarios' },
-  { id: 'users:manage', label: 'Administrar Usuarios', desc: 'Crear, editar y eliminar usuarios' },
-];
-
 const DEFAULT_ROLE_PERMS: Record<UserRole, string[]> = {
   admin: ['cameras:read', 'cameras:write', 'cameras:delete', 'users:read', 'users:manage'],
   operator: ['cameras:read', 'cameras:write', 'cameras:delete', 'users:read'],
@@ -45,10 +38,19 @@ const DEFAULT_ROLE_PERMS: Record<UserRole, string[]> = {
 };
 
 export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, onRefresh }) => {
+  const { t } = useLanguage();
   const [modalMode, setModalMode] = useState<'create' | 'edit' | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
   
+  const allPermissions = [
+    { id: 'cameras:read', label: t.usersAdmin.permCamerasRead, desc: t.usersAdmin.permCamerasReadDesc },
+    { id: 'cameras:write', label: t.usersAdmin.permCamerasWrite, desc: t.usersAdmin.permCamerasWriteDesc },
+    { id: 'cameras:delete', label: t.usersAdmin.permCamerasDelete, desc: t.usersAdmin.permCamerasDeleteDesc },
+    { id: 'users:read', label: t.usersAdmin.permUsersRead, desc: t.usersAdmin.permUsersReadDesc },
+    { id: 'users:manage', label: t.usersAdmin.permUsersManage, desc: t.usersAdmin.permUsersManageDesc },
+  ];
+
   const [formData, setFormData] = useState<FormState>({
     username: '',
     email: '',
@@ -135,12 +137,12 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.username.trim() || !formData.email.trim()) {
-      setError('El nombre de usuario y el correo electrónico son obligatorios');
+      setError(t.usersAdmin.requiredError);
       return;
     }
 
     if (modalMode === 'create' && !formData.password) {
-      setError('Introduce una contraseña para el nuevo usuario');
+      setError(t.usersAdmin.passwordRequiredError);
       return;
     }
 
@@ -175,7 +177,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
       closeModal();
       onRefresh();
     } catch (err: any) {
-      setError(err.message || 'Error al guardar usuario');
+      setError(err.message || t.common.save);
     } finally {
       setLoading(false);
     }
@@ -183,22 +185,22 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
 
   const handleDelete = async (user: User) => {
     if (user.id === currentUserId) {
-      alert('No puedes eliminar tu propia cuenta.');
+      alert(t.usersAdmin.selfDeleteError);
       return;
     }
 
     const adminUsers = users.filter((u) => (u.role === 'admin' || u.username === 'admin'));
     if ((user.role === 'admin' || user.username === 'admin') && adminUsers.length <= 1) {
-      alert('No es posible eliminar al único Administrador del sistema.');
+      alert(t.usersAdmin.lastAdminError);
       return;
     }
 
-    if (window.confirm(`¿Confirmas la eliminación del usuario "${user.username}"?`)) {
+    if (window.confirm(t.usersAdmin.deleteConfirm.replace('{username}', user.username))) {
       try {
         await api.deleteUser(user.id);
         onRefresh();
       } catch (err: any) {
-        alert(err.message || 'Error al eliminar usuario');
+        alert(err.message || 'Error');
       }
     }
   };
@@ -224,7 +226,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
           letterSpacing: '0.04em'
         }}>
           <Award size={13} color="var(--accent-red)" />
-          ADMINISTRADOR
+          {t.usersAdmin.roleAdmin}
         </span>
       );
     }
@@ -246,7 +248,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
           letterSpacing: '0.04em'
         }}>
           <Eye size={13} />
-          OBSERVADOR
+          {t.usersAdmin.roleViewer}
         </span>
       );
     }
@@ -267,7 +269,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
         letterSpacing: '0.04em'
       }}>
         <ShieldCheck size={13} />
-        OPERADOR
+        {t.usersAdmin.roleOperator}
       </span>
     );
   };
@@ -293,19 +295,19 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
             textTransform: 'uppercase',
             marginBottom: '4px',
           }}>
-            BIG BROTHER CCTV // CONTROL DE ACCESO
+            {t.usersAdmin.headerTag}
           </div>
           <h1 style={{ fontSize: '1.6rem', fontWeight: 900, textTransform: 'uppercase', color: '#fff', letterSpacing: '0.02em', margin: 0 }}>
-            Gestión de Usuarios
+            {t.usersAdmin.title}
           </h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
-            ADMINISTRACIÓN DE CUENTAS, ROLES DE ACCESO Y PERMISOS DEL SISTEMA
+            {t.usersAdmin.subtitle}
           </p>
         </div>
 
         <button onClick={openCreateModal} className="btn-primary" style={{ padding: '9px 16px' }}>
           <UserPlus size={16} />
-          <span>Añadir Usuario</span>
+          <span>{t.usersAdmin.newUser}</span>
         </button>
       </div>
 
@@ -326,14 +328,14 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar por usuario, nombre o email..."
+            placeholder={t.usersAdmin.searchPlaceholder}
             style={{ width: '100%', paddingLeft: '36px', height: '38px', fontSize: '0.85rem' }}
           />
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-            Filtrar:
+            {t.usersAdmin.filterLabel}
           </span>
           {(['all', 'admin', 'operator', 'viewer'] as const).map((r) => (
             <button
@@ -350,7 +352,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                 color: roleFilter === r ? '#fff' : 'var(--text-secondary)',
               }}
             >
-              {r === 'all' ? 'Todos' : r === 'admin' ? 'Admin' : r === 'operator' ? 'Operador' : 'Observador'}
+              {r === 'all' ? t.usersAdmin.filterAll : r === 'admin' ? t.usersAdmin.filterAdmin : r === 'operator' ? t.usersAdmin.filterOperator : t.usersAdmin.filterViewer}
             </button>
           ))}
         </div>
@@ -370,19 +372,19 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
             }}>
-              <th style={{ padding: '14px 18px' }}>Usuario</th>
-              <th style={{ padding: '14px 18px' }}>Nombre</th>
-              <th style={{ padding: '14px 18px' }}>Correo Electrónico</th>
-              <th style={{ padding: '14px 18px' }}>Rol</th>
-              <th style={{ padding: '14px 18px' }}>Permisos</th>
-              <th style={{ padding: '14px 18px', textAlign: 'right' }}>Acciones</th>
+              <th style={{ padding: '14px 18px' }}>{t.usersAdmin.colUser}</th>
+              <th style={{ padding: '14px 18px' }}>{t.usersAdmin.colName}</th>
+              <th style={{ padding: '14px 18px' }}>{t.usersAdmin.colEmail}</th>
+              <th style={{ padding: '14px 18px' }}>{t.usersAdmin.colRole}</th>
+              <th style={{ padding: '14px 18px' }}>{t.usersAdmin.colPermissions}</th>
+              <th style={{ padding: '14px 18px', textAlign: 'right' }}>{t.usersAdmin.colActions}</th>
             </tr>
           </thead>
           <tbody>
             {filteredUsers.length === 0 ? (
               <tr>
                 <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                  NO SE ENCONTRARON USUARIOS
+                  {t.usersAdmin.noUsers}
                 </td>
               </tr>
             ) : (
@@ -435,7 +437,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                                 fontWeight: 700,
                                 fontFamily: 'var(--font-mono)'
                               }}>
-                                TÚ
+                                {t.usersAdmin.youBadge}
                               </span>
                             )}
                           </div>
@@ -482,7 +484,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                           ))
                         ) : (
                           <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                            Heredados por rol
+                            {t.usersAdmin.inheritedPermissions}
                           </span>
                         )}
                       </div>
@@ -494,7 +496,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                           onClick={() => openEditModal(u)}
                           className="btn-ghost"
                           style={{ padding: '7px', borderRadius: '4px' }}
-                          title="Editar usuario"
+                          title={t.usersAdmin.editUserTitle}
                         >
                           <Edit3 size={15} color="var(--text-secondary)" />
                         </button>
@@ -510,10 +512,10 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                           }}
                           title={
                             isSelf
-                              ? 'No puedes eliminar tu propia cuenta'
+                              ? t.usersAdmin.selfDeleteError
                               : isLastAdmin
-                              ? 'No se puede eliminar al único administrador del sistema'
-                              : 'Eliminar usuario'
+                              ? t.usersAdmin.lastAdminError
+                              : t.usersAdmin.deleteUserTitle
                           }
                         >
                           <Trash2 size={15} />
@@ -554,7 +556,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 900, textTransform: 'uppercase', color: '#fff', margin: 0 }}>
-                {modalMode === 'create' ? 'Nuevo Usuario' : 'Editar Usuario'}
+                {modalMode === 'create' ? t.usersAdmin.modalAddTitle : t.usersAdmin.modalEditTitle}
               </h2>
               <span style={{
                 fontSize: '0.68rem',
@@ -565,14 +567,14 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                 borderRadius: '3px',
                 border: '1px solid rgba(245, 158, 11, 0.3)'
               }}>
-                CONTROL DE ACCESO
+                {t.usersAdmin.accessControlBadge}
               </span>
             </div>
 
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '18px' }}>
               {modalMode === 'create'
-                ? 'Introduce los datos de la cuenta y asigna su rol y permisos en el sistema.'
-                : `Actualización de rol y permisos para @${formData.username}.`}
+                ? t.usersAdmin.modalAddSubtitle
+                : t.usersAdmin.modalEditSubtitle.replace('{username}', formData.username)}
             </p>
 
             {error && (
@@ -599,13 +601,13 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               <div className="responsive-grid-2">
                 <div>
                   <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
-                    Usuario *
+                    {t.usersAdmin.usernameLabel}
                   </label>
                   <input
                     type="text"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    placeholder="ej: operador1"
+                    placeholder={t.usersAdmin.usernamePlaceholder}
                     disabled={modalMode === 'edit'}
                     style={{ width: '100%', opacity: modalMode === 'edit' ? 0.7 : 1 }}
                     required
@@ -614,13 +616,13 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
-                    Nombre Completo
+                    {t.usersAdmin.nameLabel}
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="ej: Juan Pérez"
+                    placeholder={t.usersAdmin.namePlaceholder}
                     style={{ width: '100%' }}
                   />
                 </div>
@@ -629,13 +631,13 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               {/* Email */}
               <div>
                 <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
-                  Correo Electrónico *
+                  {t.usersAdmin.emailLabel}
                 </label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="usuario@bigbrother.local"
+                  placeholder={t.usersAdmin.emailPlaceholder}
                   style={{ width: '100%' }}
                   required
                 />
@@ -644,13 +646,13 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               {/* Hierarchy / Role Selector */}
               <div>
                 <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>
-                  Rol de Acceso
+                  {t.usersAdmin.roleLabel}
                 </label>
                 <div className="responsive-grid-3">
                   {([
-                    { id: 'admin', label: 'Administrador', desc: 'Control Total', color: 'var(--accent-red)', icon: Award },
-                    { id: 'operator', label: 'Operador', desc: 'Gestión de Cámaras', color: 'var(--accent-amber)', icon: ShieldCheck },
-                    { id: 'viewer', label: 'Observador', desc: 'Solo Visualización', color: '#38bdf8', icon: Eye },
+                    { id: 'admin', label: t.usersAdmin.roleAdmin, desc: t.usersAdmin.roleAdminDesc, color: 'var(--accent-red)', icon: Award },
+                    { id: 'operator', label: t.usersAdmin.roleOperator, desc: t.usersAdmin.roleOperatorDesc, color: 'var(--accent-amber)', icon: ShieldCheck },
+                    { id: 'viewer', label: t.usersAdmin.roleViewer, desc: t.usersAdmin.roleViewerDesc, color: '#38bdf8', icon: Eye },
                   ] as const).map((r) => {
                     const isSelected = formData.role === r.id;
                     const IconComp = r.icon;
@@ -692,10 +694,10 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                 border: '1px solid var(--border-subtle)',
               }}>
                 <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '10px' }}>
-                  Permisos Granulares
+                  {t.usersAdmin.permissionsLabel}
                 </div>
                 <div className="responsive-grid-2">
-                  {ALL_AVAILABLE_PERMISSIONS.map((perm) => {
+                  {allPermissions.map((perm) => {
                     const isChecked = formData.permissions.includes(perm.id);
                     return (
                       <label
@@ -730,7 +732,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               {/* Password */}
               <div>
                 <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
-                  {modalMode === 'create' ? 'Contraseña Inicial *' : 'Restablecer Contraseña (Opcional)'}
+                  {modalMode === 'create' ? t.usersAdmin.passwordLabel : t.usersAdmin.passwordPlaceholderEdit}
                 </label>
                 <div style={{ position: 'relative' }}>
                   <Lock size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -738,7 +740,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                     type="password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    placeholder={modalMode === 'create' ? '••••••••' : 'Dejar en blanco para conservar contraseña actual'}
+                    placeholder={modalMode === 'create' ? t.usersAdmin.passwordPlaceholderNew : t.usersAdmin.passwordPlaceholderEdit}
                     style={{ width: '100%', paddingLeft: '36px' }}
                     required={modalMode === 'create'}
                   />
@@ -748,14 +750,14 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               {/* Buttons */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '14px' }}>
                 <button type="button" onClick={closeModal} className="btn-ghost">
-                  Cancelar
+                  {t.common.cancel}
                 </button>
                 <button type="submit" disabled={loading} className="btn-primary" style={{ padding: '10px 20px' }}>
                   {loading
-                    ? 'PROCESANDO...'
+                    ? t.usersAdmin.processingBtn
                     : modalMode === 'create'
-                    ? 'CREAR USUARIO'
-                    : 'GUARDAR CAMBIOS'}
+                    ? t.usersAdmin.createUserBtn
+                    : t.usersAdmin.saveChangesBtn}
                 </button>
               </div>
             </form>

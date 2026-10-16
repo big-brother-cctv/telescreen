@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Camera } from '../types';
 import { Plus, Edit2, Trash2, Search, Radio } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface CamerasAdminProps {
   cameras: Camera[];
@@ -10,6 +11,7 @@ interface CamerasAdminProps {
 }
 
 export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEdit, onDelete }) => {
+  const { t } = useLanguage();
   const [search, setSearch] = useState<string>('');
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
@@ -20,13 +22,22 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
   );
 
   const handleDelete = async (id: number, name: string) => {
-    if (window.confirm(`¿Estás seguro de eliminar la cámara "${name}"?`)) {
+    if (window.confirm(t.camerasAdmin.deleteConfirm.replace('{name}', name))) {
       try {
         setDeletingId(id);
         await onDelete(id);
       } finally {
         setDeletingId(null);
       }
+    }
+  };
+
+  const getModeLabel = (mode?: string) => {
+    switch (mode) {
+      case 'pull': return t.camerasAdmin.modeIpPull;
+      case 'push': return t.camerasAdmin.modePush;
+      case 'test': return t.camerasAdmin.modeTest;
+      default: return t.camerasAdmin.modeUsb;
     }
   };
 
@@ -43,10 +54,10 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
       }}>
         <div>
           <h1 style={{ fontSize: '1.6rem', fontWeight: 800, textTransform: 'uppercase', color: '#fff', letterSpacing: '0.02em' }}>
-            Gestión de Cámaras
+            {t.camerasAdmin.title}
           </h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px' }}>
-            CONFIGURACIÓN DE FUENTES DE VÍDEO, DISPOSITIVOS Y PARÁMETROS DE EMISIÓN
+            {t.camerasAdmin.subtitle}
           </p>
         </div>
 
@@ -57,14 +68,14 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Filtrar por cámara o dispositivo..."
+              placeholder={t.camerasAdmin.searchPlaceholder}
               style={{ width: '100%', paddingLeft: '32px' }}
             />
           </div>
 
           <button onClick={onAdd} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>
             <Plus size={16} />
-            <span>Nueva Cámara</span>
+            <span>{t.camerasAdmin.newCamera}</span>
           </button>
         </div>
       </div>
@@ -83,14 +94,14 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                 textTransform: 'uppercase',
                 letterSpacing: '0.08em',
               }}>
-                <th style={{ padding: '14px 18px' }}>Estado</th>
-                <th style={{ padding: '14px 18px' }}>Cámara</th>
-                <th style={{ padding: '14px 18px' }}>Tipo de Conexión</th>
-                <th style={{ padding: '14px 18px' }}>Fuente / Dispositivo</th>
-                <th style={{ padding: '14px 18px' }}>Resolución & FPS</th>
-                <th style={{ padding: '14px 18px' }}>Códec</th>
-                <th style={{ padding: '14px 18px' }}>Perfil</th>
-                <th style={{ padding: '14px 18px', textAlign: 'right' }}>Acciones</th>
+                <th style={{ padding: '14px 18px' }}>{t.camerasAdmin.colStatus}</th>
+                <th style={{ padding: '14px 18px' }}>{t.camerasAdmin.colCamera}</th>
+                <th style={{ padding: '14px 18px' }}>{t.camerasAdmin.colTypeMode}</th>
+                <th style={{ padding: '14px 18px' }}>{t.camerasAdmin.colSource}</th>
+                <th style={{ padding: '14px 18px' }}>{t.camerasAdmin.colQuality}</th>
+                <th style={{ padding: '14px 18px' }}>CÓDEC</th>
+                <th style={{ padding: '14px 18px' }}>PRESET / TUNE</th>
+                <th style={{ padding: '14px 18px', textAlign: 'right' }}>{t.camerasAdmin.colActions}</th>
               </tr>
             </thead>
             <tbody>
@@ -129,7 +140,7 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                             borderRadius: '50%',
                             backgroundColor: isOnline ? '#10b981' : isStandby ? '#f59e0b' : '#ef4444'
                           }} />
-                          {isOnline ? 'ONLINE' : isStandby ? 'STANDBY' : 'OFFLINE'}
+                          {isOnline ? t.common.online : isStandby ? t.common.standby : t.common.offline}
                         </div>
                       </td>
 
@@ -171,107 +182,87 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                           color: cam.connectionMode === 'pull' ? 'var(--accent-cyan)' : cam.connectionMode === 'push' ? '#c084fc' : cam.connectionMode === 'test' ? 'var(--accent-amber)' : 'var(--text-secondary)',
                           border: `1px solid ${cam.connectionMode === 'pull' ? 'rgba(56, 189, 248, 0.3)' : cam.connectionMode === 'push' ? 'rgba(168, 85, 247, 0.3)' : cam.connectionMode === 'test' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(255, 255, 255, 0.15)'}`
                         }}>
-                          {cam.connectionMode === 'pull' ? 'IP PULL' : cam.connectionMode === 'push' ? 'PUSH (MÓVIL/OBS)' : cam.connectionMode === 'test' ? 'TEST SINTÉTICO' : 'USB LOCAL'}
+                          {getModeLabel(cam.connectionMode)}
                         </span>
                       </td>
 
-                    {/* Source / Device */}
-                    <td style={{ padding: '16px 18px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', maxWidth: '240px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={cam.sourceUrl || cam.device || '/dev/video0'}>
-                      {cam.sourceUrl ? (
-                        <span style={{ color: 'var(--accent-cyan)' }}>{cam.sourceUrl}</span>
-                      ) : (
-                        cam.device || '/dev/video0'
-                      )}
-                    </td>
+                      {/* Source / Device */}
+                      <td style={{ padding: '16px 18px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', maxWidth: '240px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={cam.sourceUrl || cam.device || '/dev/video0'}>
+                        {cam.sourceUrl ? (
+                          <span style={{ color: 'var(--accent-cyan)' }}>{cam.sourceUrl}</span>
+                        ) : (
+                          cam.device || '/dev/video0'
+                        )}
+                      </td>
 
-                    {/* Resolution & FPS */}
-                    <td style={{ padding: '16px 18px' }}>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <span style={{
-                          padding: '2px 6px',
-                          borderRadius: '3px',
-                          background: '#090d15',
-                          border: '1px solid var(--border-subtle)',
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: '0.72rem',
-                          color: '#fff'
-                        }}>
-                          {cam.resolution || '640x480'}
-                        </span>
-                        <span style={{
-                          padding: '2px 6px',
-                          borderRadius: '3px',
-                          background: 'rgba(225, 29, 72, 0.15)',
-                          border: '1px solid rgba(225, 29, 72, 0.3)',
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: '0.72rem',
-                          color: '#fda4af'
-                        }}>
-                          {cam.fps || 25} FPS
-                        </span>
-                      </div>
-                    </td>
+                      {/* Resolution & FPS */}
+                      <td style={{ padding: '16px 18px' }}>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <span style={{
+                            padding: '2px 6px',
+                            borderRadius: '3px',
+                            background: '#090d15',
+                            border: '1px solid var(--border-subtle)',
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '0.72rem',
+                            color: '#fff'
+                          }}>
+                            {cam.resolution || '640x480'}
+                          </span>
+                          <span style={{
+                            padding: '2px 6px',
+                            borderRadius: '3px',
+                            background: 'rgba(225, 29, 72, 0.15)',
+                            border: '1px solid rgba(225, 29, 72, 0.3)',
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '0.72rem',
+                            color: '#fda4af'
+                          }}>
+                            {cam.fps || 25} FPS
+                          </span>
+                        </div>
+                      </td>
 
-                    {/* Codec */}
-                    <td style={{ padding: '16px 18px', fontFamily: 'var(--font-mono)', color: 'var(--accent-amber)' }}>
-                      {cam.codec || 'libx264'}
-                    </td>
+                      {/* Codec */}
+                      <td style={{ padding: '16px 18px', fontFamily: 'var(--font-mono)', color: 'var(--accent-amber)' }}>
+                        {cam.codec || 'libx264'}
+                      </td>
 
-                    {/* Preset & Tune */}
-                    <td style={{ padding: '16px 18px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', fontSize: '0.78rem' }}>
-                      <div>PRESET: <span style={{ color: '#fff' }}>{cam.preset || 'ultrafast'}</span></div>
-                      <div>TUNE: <span style={{ color: 'var(--text-party)' }}>{cam.tune || 'zerolatency'}</span></div>
-                    </td>
+                      {/* Preset & Tune */}
+                      <td style={{ padding: '16px 18px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', fontSize: '0.78rem' }}>
+                        <div>PRESET: <span style={{ color: '#fff' }}>{cam.preset || 'ultrafast'}</span></div>
+                        <div>TUNE: <span style={{ color: 'var(--text-party)' }}>{cam.tune || 'zerolatency'}</span></div>
+                      </td>
 
-                    {/* Buffer */}
-                    <td style={{ padding: '16px 18px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                      {cam.buffer || '1000000'}
-                    </td>
-
-                    {/* Rotation */}
-                    <td style={{ padding: '16px 18px' }}>
-                      <span style={{
-                        padding: '2px 8px',
-                        borderRadius: '3px',
-                        fontSize: '0.7rem',
-                        fontWeight: 700,
-                        fontFamily: 'var(--font-mono)',
-                        background: cam.rotation === '0' || !cam.rotation ? 'rgba(255, 255, 255, 0.05)' : 'rgba(245, 158, 11, 0.15)',
-                        color: cam.rotation === '0' || !cam.rotation ? 'var(--text-muted)' : 'var(--accent-amber)',
-                      }}>
-                        {cam.rotation || 0}°
-                      </span>
-                    </td>
-
-                    {/* Actions */}
-                    <td style={{ padding: '16px 18px', textAlign: 'right' }}>
-                      <div style={{ display: 'inline-flex', gap: '6px' }}>
-                        <button
-                          onClick={() => onEdit(cam)}
-                          title="Editar cámara"
-                          className="btn-ghost"
-                          style={{ padding: '6px' }}
-                        >
-                          <Edit2 size={14} color="var(--accent-amber)" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(cam.id, cam.name)}
-                          disabled={deletingId === cam.id}
-                          title="Eliminar cámara"
-                          className="btn-danger"
-                          style={{ padding: '6px' }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                      {/* Actions */}
+                      <td style={{ padding: '16px 18px', textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '6px' }}>
+                          <button
+                            onClick={() => onEdit(cam)}
+                            title={t.common.edit}
+                            className="btn-ghost"
+                            style={{ padding: '6px' }}
+                          >
+                            <Edit2 size={14} color="var(--accent-amber)" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(cam.id, cam.name)}
+                            disabled={deletingId === cam.id}
+                            title={t.common.delete}
+                            className="btn-danger"
+                            style={{ padding: '6px' }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
                   );
                 })
               ) : (
                 <tr>
                   <td colSpan={8} style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                    NO HAY CÁMARAS REGISTRADAS EN EL SISTEMA.
+                    {t.camerasAdmin.noCameras}
                   </td>
                 </tr>
               )}
