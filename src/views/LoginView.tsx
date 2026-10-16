@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, Lock, User as UserIcon, ShieldAlert, ArrowRight } from 'lucide-react';
+import { Lock, User as UserIcon, ShieldAlert, ArrowRight } from 'lucide-react';
 import { api, authStorage } from '../services/api';
 
 interface LoginViewProps {
@@ -37,12 +37,12 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      minHeight: '100dvh',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '16px',
+      padding: 'calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px))',
       background: 'radial-gradient(ellipse at 50% 15%, rgba(225, 29, 72, 0.12) 0%, #07080b 70%)',
     }}>
 
@@ -54,21 +54,22 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
         borderRadius: '12px',
         boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8), 0 0 30px rgba(225, 29, 72, 0.2)',
       }}>
-        {/* Orwell Brand Header */}
+        {/* Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div style={{
             width: '64px',
             height: '64px',
             borderRadius: '12px',
-            background: 'linear-gradient(135deg, #9f1239, #e11d48)',
+            background: 'linear-gradient(135deg, rgba(159, 18, 57, 0.3), rgba(225, 29, 72, 0.2))',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 0 28px rgba(225, 29, 72, 0.6)',
-            border: '2px solid rgba(255, 255, 255, 0.2)',
-            marginBottom: '16px'
+            boxShadow: '0 0 28px rgba(225, 29, 72, 0.4)',
+            border: '2px solid rgba(225, 29, 72, 0.5)',
+            marginBottom: '16px',
+            padding: '8px'
           }}>
-            <Eye size={36} color="#fff" />
+            <img src="/favicon.svg" alt="Big Brother CCTV Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
 
           <h1 style={{
