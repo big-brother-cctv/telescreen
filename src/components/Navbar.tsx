@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, Users, LogOut, Radio, Terminal } from 'lucide-react';
+import { Users, LogOut, Radio, Terminal } from 'lucide-react';
 import { api } from '../services/api';
 import type { User } from '../types';
 
@@ -81,18 +81,24 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', minWidth: 0 }}
           >
             <div style={{
-              width: '36px',
-              height: '36px',
+              width: '38px',
+              height: '38px',
               borderRadius: '8px',
-              background: 'linear-gradient(135deg, #be123c, #e11d48)',
+              background: 'linear-gradient(135deg, rgba(190, 18, 60, 0.25), rgba(225, 29, 72, 0.15))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 16px rgba(225, 29, 72, 0.5)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              flexShrink: 0
+              boxShadow: '0 0 16px rgba(225, 29, 72, 0.35)',
+              border: '1px solid rgba(225, 29, 72, 0.4)',
+              flexShrink: 0,
+              padding: '4px',
+              overflow: 'hidden'
             }}>
-              <Eye size={20} color="#fff" />
+              <img 
+                src="/favicon.svg" 
+                alt="Big Brother CCTV Logo" 
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
             </div>
             <div style={{ minWidth: 0 }}>
               <div style={{
