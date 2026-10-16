@@ -49,13 +49,32 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
 
   return (
     <>
-      {/* CCTV Status Banner */}
-      <div className="slogan-banner">
-        <span>BIG BROTHER CCTV</span>
-        <span>•</span>
-        <span>SISTEMA DE VIGILANCIA EN TIEMPO REAL</span>
-        <span>•</span>
-        <span>CONEXIÓN SEGURA</span>
+      {/* CCTV Dynamic Ticker Banner */}
+      <div className="ticker-wrapper" aria-label="Estado del sistema CCTV">
+        <div className="ticker-track">
+          <div className="ticker-item">
+            <span>BIG BROTHER CCTV</span>
+            <span>•</span>
+            <span>SISTEMA DE TELEVIGILANCIA EN TIEMPO REAL</span>
+            <span>•</span>
+            <span>CONEXIÓN SEGURA MTX</span>
+            <span>•</span>
+            <span>TRANSMISIÓN HLS BAJA LATENCIA</span>
+            <span>•</span>
+            <span>SECTOR OPERATIVO 4</span>
+          </div>
+          <div className="ticker-item">
+            <span>BIG BROTHER CCTV</span>
+            <span>•</span>
+            <span>SISTEMA DE TELEVIGILANCIA EN TIEMPO REAL</span>
+            <span>•</span>
+            <span>CONEXIÓN SEGURA MTX</span>
+            <span>•</span>
+            <span>TRANSMISIÓN HLS BAJA LATENCIA</span>
+            <span>•</span>
+            <span>SECTOR OPERATIVO 4</span>
+          </div>
+        </div>
       </div>
 
       {/* Main Top Header */}

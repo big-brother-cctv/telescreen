@@ -248,24 +248,89 @@ input:focus, select:focus {
   box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.2);
 }
 
-/* Oceania Slogan Ticker */
-.slogan-banner {
-  background: linear-gradient(90deg, #18090f 0%, #1e1115 50%, #18090f 100%);
-  border-bottom: 1px solid rgba(225, 29, 72, 0.25);
-  padding: 4px 16px;
+/* =========================================================================
+   DYNAMIC MARQUEE TICKER (HORIZONTAL ANIMATED BANNER)
+   ========================================================================= */
+.ticker-wrapper {
+  background: linear-gradient(90deg, #18090f 0%, #201017 50%, #18090f 100%);
+  border-bottom: 1px solid rgba(225, 29, 72, 0.3);
+  overflow: hidden;
+  white-space: nowrap;
   display: flex;
-  justify-content: center;
+  user-select: none;
+  cursor: default;
+  position: relative;
+  z-index: 40;
+}
+
+.ticker-track {
+  display: inline-flex;
+  gap: 40px;
+  animation: tickerScroll 26s linear infinite;
+  padding: 5px 0;
+  will-change: transform;
+}
+
+.ticker-wrapper:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+.ticker-item {
+  display: inline-flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
   font-family: var(--font-display);
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #fda4af;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+@keyframes tickerScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* =========================================================================
+   UNIVERSAL FULLSCREEN SYSTEM (IOS SAFARI + ANDROID + DESKTOP FALLBACK)
+   ========================================================================= */
+.player-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  z-index: 999999 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background: #000 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+}
+
+.player-fullscreen .telescreen-frame {
+  height: 100% !important;
+  width: 100% !important;
+  aspect-ratio: auto !important;
+  border-radius: 0 !important;
+  border: none !important;
+}
+
+.player-fullscreen video {
+  object-fit: contain !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 /* =========================================================================
@@ -315,16 +380,19 @@ input:focus, select:focus {
   display: flex;
 }
 
+/* Reglas de visibilidad en cámaras para evitar sobrecarga visual en móvil */
+.cam-info-extended {
+  display: flex;
+}
+
+.cam-watermark {
+  display: block;
+}
+
 /* Mobile & Tablet Media Queries */
 @media (max-width: 868px) {
   .responsive-container {
-    padding: 12px;
-  }
-
-  .slogan-banner {
-    font-size: 0.62rem;
-    gap: 12px;
-    padding: 4px 8px;
+    padding: 10px;
   }
 
   .desktop-only {
@@ -340,6 +408,15 @@ input:focus, select:focus {
     grid-template-columns: 1fr;
   }
 
+  /* Ocultar telemetría secundaria y watermarks que apelotonan el stream en móvil */
+  .cam-info-extended {
+    display: none !important;
+  }
+
+  .cam-watermark {
+    display: none !important;
+  }
+
   /* Padding inferior para la barra móvil de navegación */
   body {
     padding-bottom: 64px;
@@ -348,11 +425,15 @@ input:focus, select:focus {
 
 @media (max-width: 480px) {
   h1 {
-    font-size: 1.3rem !important;
+    font-size: 1.2rem !important;
   }
   
   .btn-primary, .btn-amber, .btn-ghost, .btn-danger {
     padding: 7px 12px;
     font-size: 0.75rem;
+  }
+
+  .ticker-track {
+    animation-duration: 20s;
   }
 }
