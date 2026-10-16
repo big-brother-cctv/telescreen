@@ -26,151 +26,154 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
       {/* Top Bar / Controls */}
       <div style={{
         display: 'flex',
-        flexDirection: 'column',
-        gap: '14px',
-        marginBottom: '20px',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '12px',
+        marginBottom: '18px',
       }}>
         {/* Title & Counter */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '8px'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em', color: '#fff' }}>
-              {t.liveGrid.title}
-            </h1>
-            <span style={{
-              fontSize: '0.7rem',
-              fontWeight: 800,
-              padding: '2px 8px',
-              borderRadius: '4px',
-              background: 'rgba(225, 29, 72, 0.2)',
-              color: 'var(--text-party)',
-              border: '1px solid rgba(225, 29, 72, 0.4)',
-              fontFamily: 'var(--font-mono)'
-            }}>
-              {filteredCameras.length} {filteredCameras.length === 1 ? t.liveGrid.activeSingle : t.liveGrid.activePlural}
-            </span>
-          </div>
-          <p className="desktop-only" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            {t.liveGrid.subtitle}
-          </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em', color: '#fff', margin: 0 }}>
+            {t.liveGrid.title}
+          </h1>
+          <span style={{
+            fontSize: '0.7rem',
+            fontWeight: 800,
+            padding: '2px 8px',
+            borderRadius: '4px',
+            background: 'rgba(225, 29, 72, 0.2)',
+            color: 'var(--text-party)',
+            border: '1px solid rgba(225, 29, 72, 0.4)',
+            fontFamily: 'var(--font-mono)'
+          }}>
+            {filteredCameras.length} {filteredCameras.length === 1 ? t.liveGrid.activeSingle : t.liveGrid.activePlural}
+          </span>
         </div>
 
-        {/* Actions & Filters: Responsive Bar */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '10px',
-          flexWrap: 'wrap',
-          width: '100%'
-        }}>
-          {/* Search bar */}
-          <div style={{ position: 'relative', flex: '1 1 200px', minWidth: '180px', maxWidth: '420px' }}>
-            <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+        {/* Toolbar: Compact Tactical Search, Grid switcher, Refresh, Add */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          {/* Compact Tactical Search */}
+          <div style={{ position: 'relative', width: '160px' }}>
+            <Search size={13} color="var(--text-muted)" style={{ position: 'absolute', left: '9px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t.liveGrid.searchPlaceholder}
-              style={{ width: '100%', paddingLeft: '32px' }}
+              style={{
+                width: '100%',
+                paddingLeft: '28px',
+                paddingRight: '8px',
+                height: '34px',
+                fontSize: '0.78rem',
+                borderRadius: '6px',
+                background: 'rgba(10, 13, 19, 0.75)',
+                border: '1px solid var(--border-subtle)'
+              }}
             />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end', flex: '1 0 auto' }}>
-            {/* CCTV Grid Layout Switcher */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: 'var(--radius-md)',
-              padding: '2px',
-              gap: '2px'
-            }}>
-              <button
-                onClick={() => setLayout('auto')}
-                title={t.liveGrid.layoutAuto}
-                className="btn-ghost"
-                style={{
-                  padding: '6px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  background: layout === 'auto' ? 'rgba(225, 29, 72, 0.25)' : 'transparent',
-                  color: layout === 'auto' ? '#fff' : 'var(--text-muted)',
-                }}
-              >
-                <LayoutGrid size={16} />
-              </button>
-              <button
-                onClick={() => setLayout('1x1')}
-                title={t.liveGrid.layout1x1}
-                className="btn-ghost"
-                style={{
-                  padding: '6px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  background: layout === '1x1' ? 'rgba(225, 29, 72, 0.25)' : 'transparent',
-                  color: layout === '1x1' ? '#fff' : 'var(--text-muted)',
-                }}
-              >
-                <Square size={16} />
-              </button>
-              <button
-                onClick={() => setLayout('2x2')}
-                title={t.liveGrid.layout2x2}
-                className="btn-ghost"
-                style={{
-                  padding: '6px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  background: layout === '2x2' ? 'rgba(225, 29, 72, 0.25)' : 'transparent',
-                  color: layout === '2x2' ? '#fff' : 'var(--text-muted)',
-                }}
-              >
-                <Grid2X2 size={16} />
-              </button>
-              <button
-                onClick={() => setLayout('3x3')}
-                title={t.liveGrid.layout3x3}
-                className="btn-ghost"
-                style={{
-                  padding: '6px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  background: layout === '3x3' ? 'rgba(225, 29, 72, 0.25)' : 'transparent',
-                  color: layout === '3x3' ? '#fff' : 'var(--text-muted)',
-                }}
-              >
-                <Grid3X3 size={16} />
-              </button>
-            </div>
-
-            {/* Refresh */}
+          {/* CCTV Grid Layout Switcher */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            background: 'rgba(10, 13, 19, 0.8)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '6px',
+            padding: '2px',
+            gap: '2px'
+          }}>
             <button
-              onClick={onRefresh}
-              disabled={isLoading}
-              className="btn-ghost"
-              title={t.liveGrid.refreshTooltip}
-              style={{ padding: '8px' }}
+              onClick={() => setLayout('auto')}
+              title={t.liveGrid.layoutAuto}
+              style={{
+                padding: '4px 6px',
+                border: 'none',
+                borderRadius: '4px',
+                background: layout === 'auto' ? 'var(--accent-red)' : 'transparent',
+                color: layout === 'auto' ? '#fff' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <RefreshCw size={15} className={isLoading ? 'animate-spin' : ''} />
+              <LayoutGrid size={15} />
             </button>
-
-            {/* Add Camera */}
             <button
-              onClick={onAddCamera}
-              className="btn-primary"
-              style={{ whiteSpace: 'nowrap' }}
+              onClick={() => setLayout('1x1')}
+              title={t.liveGrid.layout1x1}
+              style={{
+                padding: '4px 6px',
+                border: 'none',
+                borderRadius: '4px',
+                background: layout === '1x1' ? 'var(--accent-red)' : 'transparent',
+                color: layout === '1x1' ? '#fff' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <Plus size={16} />
-              <span>{t.liveGrid.addCamera}</span>
+              <Square size={15} />
+            </button>
+            <button
+              onClick={() => setLayout('2x2')}
+              title={t.liveGrid.layout2x2}
+              style={{
+                padding: '4px 6px',
+                border: 'none',
+                borderRadius: '4px',
+                background: layout === '2x2' ? 'var(--accent-red)' : 'transparent',
+                color: layout === '2x2' ? '#fff' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Grid2X2 size={15} />
+            </button>
+            <button
+              onClick={() => setLayout('3x3')}
+              title={t.liveGrid.layout3x3}
+              style={{
+                padding: '4px 6px',
+                border: 'none',
+                borderRadius: '4px',
+                background: layout === '3x3' ? 'var(--accent-red)' : 'transparent',
+                color: layout === '3x3' ? '#fff' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Grid3X3 size={15} />
             </button>
           </div>
+
+          {/* Refresh */}
+          <button
+            onClick={onRefresh}
+            disabled={isLoading}
+            className="btn-ghost"
+            title={t.liveGrid.refreshTooltip}
+            style={{ height: '34px', width: '34px', padding: 0, justifyContent: 'center' }}
+          >
+            <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
+          </button>
+
+          {/* Add Camera */}
+          <button
+            onClick={onAddCamera}
+            className="btn-primary"
+            style={{ height: '34px', padding: '0 14px', fontSize: '0.78rem', whiteSpace: 'nowrap' }}
+          >
+            <Plus size={15} />
+            <span>{t.liveGrid.addCamera}</span>
+          </button>
         </div>
       </div>
 

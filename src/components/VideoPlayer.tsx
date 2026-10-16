@@ -19,7 +19,17 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
   const [showStats, setShowStats] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [controlsVisible, setControlsVisible] = useState<boolean>(true);
+  const [isSelected, setIsSelected] = useState<boolean>(false);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Auto-hide preview touch selection after 4s
+  useEffect(() => {
+    if (!isSelected || isFullscreen) return;
+    const timer = setTimeout(() => {
+      setIsSelected(false);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [isSelected, isFullscreen]);
 
   const resetControlsTimer = () => {
     setControlsVisible(true);
@@ -28,6 +38,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
       hideTimerRef.current = setTimeout(() => {
         setControlsVisible(false);
       }, 3500);
+    }
+  };
+
+  const handleContainerClick = () => {
+    if (isFullscreen) {
+      handleFullscreenTap();
+    } else {
+      setIsSelected((prev) => !prev);
     }
   };
 
@@ -221,8 +239,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
   return (
     <div
       ref={containerRef}
-      className={`glass-panel ${isFullscreen ? 'player-fullscreen' : ''}`}
-      onClick={handleFullscreenTap}
+      className={`glass-panel telescreen-player-container ${isFullscreen ? 'player-fullscreen' : ''}`}
+      onClick={handleContainerClick}
       onMouseMove={resetControlsTimer}
       style={{
         overflow: 'hidden',
@@ -524,50 +542,31 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           </div>
         )}
 
-        {/* Controls Overlay (MODO NORMAL - ESQUINA INFERIOR DERECHA) */}
+        {/* Preview Controls: Solo botón de Pantalla Completa visible en Hover o Selección */}
         {!isFullscreen && (
-          <div style={{
-            position: 'absolute',
-            bottom: '8px',
-            right: '8px',
-            display: 'flex',
-            gap: '4px',
-            background: 'rgba(10, 12, 18, 0.88)',
-            backdropFilter: 'blur(8px)',
-            padding: '4px 6px',
-            borderRadius: '4px',
-            border: '1px solid rgba(225, 29, 72, 0.3)',
-            zIndex: 25,
-          }}>
-            <button
-              onClick={() => setShowStats(!showStats)}
-              title={t.videoPlayer.technicalTelemetry}
-              className="btn-ghost"
-              style={{ padding: '6px', border: 'none', background: 'transparent' }}
-            >
-              <Terminal size={15} color={showStats ? 'var(--accent-red)' : 'var(--text-secondary)'} />
-            </button>
-            <button
-              onClick={captureSnapshot}
-              title={t.videoPlayer.saveSnapshot}
-              className="btn-ghost"
-              style={{ padding: '6px', border: 'none', background: 'transparent' }}
-            >
-              <CameraIcon size={15} color="var(--text-secondary)" />
-            </button>
-            <button
-              onClick={toggleFullscreen}
-              title={isFullscreen ? t.videoPlayer.exitFullscreen : t.videoPlayer.fullscreen}
-              className="btn-ghost"
-              style={{ padding: '6px', border: 'none', background: 'transparent' }}
-            >
-              {isFullscreen ? (
-                <Minimize2 size={15} color="var(--accent-red)" />
-              ) : (
-                <Maximize2 size={15} color="var(--text-secondary)" />
-              )}
-            </button>
-          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFullscreen();
+            }}
+            title={t.videoPlayer.fullscreen}
+            className={`preview-fullscreen-btn ${isSelected ? 'is-active' : ''}`}
+            style={{
+              background: 'rgba(8, 10, 16, 0.88)',
+              border: '1px solid var(--border-party)',
+              borderRadius: '6px',
+              padding: '7px 9px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#fff',
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.6), 0 0 10px rgba(225, 29, 72, 0.25)',
+              backdropFilter: 'blur(8px)',
+            }}
+          >
+            <Maximize2 size={16} color="var(--accent-red)" />
+          </button>
         )}
 
         {/* Telemetry Modal / HUD Overlay (CUANDO SE ABRE EN FULLSCREEN) */}
