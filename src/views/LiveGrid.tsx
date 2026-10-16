@@ -47,7 +47,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <h1 style={{ fontSize: '1.6rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em', color: '#fff' }}>
-              Matriz de Telepantallas
+              Cámaras en Directo
             </h1>
             <span style={{
               fontSize: '0.72rem',
@@ -59,11 +59,11 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               border: '1px solid rgba(225, 29, 72, 0.4)',
               fontFamily: 'var(--font-mono)'
             }}>
-              {filteredCameras.length} {filteredCameras.length === 1 ? 'CANAL ACTIVO' : 'CANALES ACTIVOS'}
+              {filteredCameras.length} {filteredCameras.length === 1 ? 'CÁMARA ACTIVA' : 'CÁMARAS ACTIVAS'}
             </span>
           </div>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px' }}>
-            TRANSMISIÓN SIMULTÁNEA CONTINUA • PROTOCOLO INGSOC 1984
+            TRANSMISIÓN SIMULTÁNEA CONTINUA • MONITORIZACIÓN EN VIVO
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Localizar sector / cámara..."
+              placeholder="Buscar cámara o ubicación..."
               style={{ width: '100%', paddingLeft: '32px' }}
             />
           </div>
@@ -93,7 +93,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
             }}>
               <button
                 onClick={() => setLayout('auto')}
-                title="Mosaico Dinámico"
+                title="Mosaico Automático"
                 className="btn-ghost"
                 style={{
                   padding: '6px',
@@ -106,7 +106,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               </button>
               <button
                 onClick={() => setLayout('2x2')}
-                title="Cuadrícula Táctica 2x2"
+                title="Cuadrícula 2x2"
                 className="btn-ghost"
                 style={{
                   padding: '6px',
@@ -119,7 +119,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               </button>
               <button
                 onClick={() => setLayout('1x1')}
-                title="Foco en Telepantalla Única"
+                title="Vista Individual"
                 className="btn-ghost"
                 style={{
                   padding: '6px',
@@ -137,7 +137,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               onClick={onRefresh}
               disabled={isLoading}
               className="btn-ghost"
-              title="Refrescar Sintonía"
+              title="Actualizar estado"
               style={{ padding: '8px' }}
             >
               <RefreshCw size={15} className={isLoading ? 'animate-spin' : ''} />
@@ -149,7 +149,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
               className="btn-primary"
             >
               <Plus size={16} />
-              <span>Asignar</span>
+              <span>Añadir Cámara</span>
             </button>
           </div>
         </div>
@@ -187,21 +187,21 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
             <EyeOff size={30} color="var(--accent-red)" />
           </div>
           <h2 style={{ fontSize: '1.3rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', color: '#fff' }}>
-            SECTOR A OSCURAS: NO HAY TELEPANTALLAS ACTIVAS
+            NO HAY CÁMARAS CONECTADAS
           </h2>
           <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '24px', lineHeight: 1.6 }}>
             {search
-              ? `No se detectaron emisiones que coincidan con "${search}".`
-              : 'Big Brother necesita ojos en todos los sectores. Puedes autoconectar cámaras IP remotas (RTSP), emitir desde tu móvil u OBS (Push), desplegar un agente en Raspberry Pi o iniciar una señal de prueba.'}
+              ? `No se encontraron cámaras que coincidan con "${search}".`
+              : 'Conecta cámaras IP (RTSP), emite en directo desde tu smartphone u OBS (Push), vincula una webcam local o inicia una señal de prueba.'}
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <button onClick={onAddCamera} className="btn-primary">
               <Plus size={16} />
-              Enlazar Telepantalla Universal
+              Añadir Nueva Cámara
             </button>
             <button onClick={onRefresh} className="btn-ghost">
               <RefreshCw size={14} />
-              Buscar Señales Entrantes
+              Comprobar Señales
             </button>
           </div>
         </div>

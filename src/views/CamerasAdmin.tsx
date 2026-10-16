@@ -20,7 +20,7 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
   );
 
   const handleDelete = async (id: number, name: string) => {
-    if (window.confirm(`¿Estás seguro de desconectar y purgar el nodo "${name}"? El Partido exige justificación formal.`)) {
+    if (window.confirm(`¿Estás seguro de eliminar la cámara "${name}"?`)) {
       try {
         setDeletingId(id);
         await onDelete(id);
@@ -43,10 +43,10 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
       }}>
         <div>
           <h1 style={{ fontSize: '1.6rem', fontWeight: 800, textTransform: 'uppercase', color: '#fff', letterSpacing: '0.02em' }}>
-            Nodos de Televigilancia
+            Gestión de Cámaras
           </h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px' }}>
-            REGISTRO TÉCNICO DE TELEPANTALLAS, DISPOSITIVOS HARDWARE Y PARÁMETROS FFmpeg
+            CONFIGURACIÓN DE FUENTES DE VÍDEO, DISPOSITIVOS Y PARÁMETROS DE EMISIÓN
           </p>
         </div>
 
@@ -57,14 +57,14 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Filtrar por nodo o device..."
+              placeholder="Filtrar por cámara o dispositivo..."
               style={{ width: '100%', paddingLeft: '32px' }}
             />
           </div>
 
           <button onClick={onAdd} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>
             <Plus size={16} />
-            <span>Desplegar Nodo</span>
+            <span>Nueva Cámara</span>
           </button>
         </div>
       </div>
@@ -84,13 +84,13 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                 letterSpacing: '0.08em',
               }}>
                 <th style={{ padding: '14px 18px' }}>Estado</th>
-                <th style={{ padding: '14px 18px' }}>Identificador del Nodo</th>
-                <th style={{ padding: '14px 18px' }}>Modo & Conexión</th>
+                <th style={{ padding: '14px 18px' }}>Cámara</th>
+                <th style={{ padding: '14px 18px' }}>Tipo de Conexión</th>
                 <th style={{ padding: '14px 18px' }}>Fuente / Dispositivo</th>
                 <th style={{ padding: '14px 18px' }}>Resolución & FPS</th>
                 <th style={{ padding: '14px 18px' }}>Códec</th>
-                <th style={{ padding: '14px 18px' }}>Preset</th>
-                <th style={{ padding: '14px 18px', textAlign: 'right' }}>Directivas</th>
+                <th style={{ padding: '14px 18px' }}>Perfil</th>
+                <th style={{ padding: '14px 18px', textAlign: 'right' }}>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -153,7 +153,7 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                               {cam.name.toUpperCase()}
                             </span>
                             <div style={{ fontSize: '0.68rem', color: 'var(--text-party)', fontFamily: 'var(--font-mono)' }}>
-                              INGSOC-NODE #{cam.id}
+                              ID: #{cam.id}
                             </div>
                           </div>
                         </div>
@@ -171,7 +171,7 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                           color: cam.connectionMode === 'pull' ? 'var(--accent-cyan)' : cam.connectionMode === 'push' ? '#c084fc' : cam.connectionMode === 'test' ? 'var(--accent-amber)' : 'var(--text-secondary)',
                           border: `1px solid ${cam.connectionMode === 'pull' ? 'rgba(56, 189, 248, 0.3)' : cam.connectionMode === 'push' ? 'rgba(168, 85, 247, 0.3)' : cam.connectionMode === 'test' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(255, 255, 255, 0.15)'}`
                         }}>
-                          {cam.connectionMode === 'pull' ? 'IP PULL' : cam.connectionMode === 'push' ? 'AUTOCONEXIÓN PUSH' : cam.connectionMode === 'test' ? 'TEST SINTÉTICO' : 'USB LOCAL'}
+                          {cam.connectionMode === 'pull' ? 'IP PULL' : cam.connectionMode === 'push' ? 'PUSH (MÓVIL/OBS)' : cam.connectionMode === 'test' ? 'TEST SINTÉTICO' : 'USB LOCAL'}
                         </span>
                       </td>
 
@@ -248,7 +248,7 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                       <div style={{ display: 'inline-flex', gap: '6px' }}>
                         <button
                           onClick={() => onEdit(cam)}
-                          title="Reconfigurar Nodo"
+                          title="Editar cámara"
                           className="btn-ghost"
                           style={{ padding: '6px' }}
                         >
@@ -257,7 +257,7 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                         <button
                           onClick={() => handleDelete(cam.id, cam.name)}
                           disabled={deletingId === cam.id}
-                          title="Desmantelar Telepantalla"
+                          title="Eliminar cámara"
                           className="btn-danger"
                           style={{ padding: '6px' }}
                         >
@@ -271,7 +271,7 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
               ) : (
                 <tr>
                   <td colSpan={8} style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                    NO SE ENCONTRARON NODOS REGISTRADOS EN EL MINISTERIO.
+                    NO HAY CÁMARAS REGISTRADAS EN EL SISTEMA.
                   </td>
                 </tr>
               )}

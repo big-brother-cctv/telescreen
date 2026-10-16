@@ -15,7 +15,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !password) {
-      setError('Credenciales incompletas: la falta de identificación constituye deslealtad');
+      setError('Por favor, introduce tu usuario y contraseña');
       return;
     }
     try {
@@ -26,10 +26,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
         authStorage.setToken(res.token);
         onSuccess();
       } else {
-        setError('El Ministerio de la Verdad denegó la transmisión');
+        setError('Respuesta no válida del servidor');
       }
     } catch (err: any) {
-      setError(err.message || 'Credenciales inválidas. Este incidente ha sido registrado por la Policía del Pensamiento.');
+      setError(err.message || 'Usuario o contraseña incorrectos');
     } finally {
       setLoading(false);
     }
@@ -45,21 +45,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
       padding: '16px',
       background: 'radial-gradient(ellipse at 50% 15%, rgba(225, 29, 72, 0.12) 0%, #07080b 70%)',
     }}>
-      {/* 1984 Top Slogan */}
-      <div style={{
-        textAlign: 'center',
-        marginBottom: '16px',
-        color: '#fda4af',
-        fontFamily: 'var(--font-display)',
-        fontSize: '0.68rem',
-        fontWeight: 800,
-        letterSpacing: '0.15em',
-        textTransform: 'uppercase',
-        maxWidth: '100%',
-        padding: '0 8px'
-      }}>
-        WAR IS PEACE • FREEDOM IS SLAVERY • IGNORANCE IS STRENGTH
-      </div>
 
       <div className="glass-panel brutalist-border" style={{
         width: '100%',
@@ -93,7 +78,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
             letterSpacing: '0.04em',
             textTransform: 'uppercase'
           }}>
-            BIG BROTHER <span style={{ color: 'var(--accent-red)' }}>IS WATCHING YOU</span>
+            BIG BROTHER <span style={{ color: 'var(--accent-red)' }}>CCTV</span>
           </h1>
 
           <div style={{
@@ -103,7 +88,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
             marginTop: '6px',
             letterSpacing: '0.05em'
           }}>
-            OCEANIA // TELESCREEN SURVEILLANCE TERMINAL
+            SISTEMA DE CONTROL Y TELEVIGILANCIA
           </div>
         </div>
 
@@ -131,7 +116,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Identificador de Camarada
+              Usuario
             </label>
             <div style={{ position: 'relative' }}>
               <UserIcon size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -149,7 +134,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
 
           <div>
             <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Clave de Acceso
+              Contraseña
             </label>
             <div style={{ position: 'relative' }}>
               <Lock size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -171,7 +156,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
             className="btn-primary"
             style={{ width: '100%', justifyContent: 'center', padding: '12px', marginTop: '6px', fontSize: '0.85rem' }}
           >
-            <span>{loading ? 'AUTENTICANDO CON MINITRUE...' : 'TRANSMITIR ACCESO A TELEPANTALLA'}</span>
+            <span>{loading ? 'INICIANDO SESIÓN...' : 'INICIAR SESIÓN'}</span>
             <ArrowRight size={16} />
           </button>
         </form>
@@ -186,7 +171,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
         fontFamily: 'var(--font-mono)',
         maxWidth: '440px',
       }}>
-        "El Gran Hermano te vigila. La telepantalla recibía y transmitía simultáneamente." — George Orwell, 1984
+        Big Brother CCTV • Sistema de Videovigilancia Centralizada
       </div>
     </div>
   );

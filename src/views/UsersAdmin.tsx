@@ -31,11 +31,11 @@ interface FormState {
 }
 
 const ALL_AVAILABLE_PERMISSIONS = [
-  { id: 'cameras:read', label: 'Ver Telepantallas', desc: 'Acceso a streams en directo' },
-  { id: 'cameras:write', label: 'Gestionar Nodos', desc: 'Añadir y configurar cámaras' },
-  { id: 'cameras:delete', label: 'Vaporizar Nodos', desc: 'Eliminar cámaras del sistema' },
-  { id: 'users:read', label: 'Consultar Censo', desc: 'Ver lista de miembros' },
-  { id: 'users:manage', label: 'Comando Supremo', desc: 'Crear, editar y vaporizar usuarios' },
+  { id: 'cameras:read', label: 'Ver Cámaras', desc: 'Acceso a streams en directo' },
+  { id: 'cameras:write', label: 'Gestionar Cámaras', desc: 'Añadir y configurar fuentes de vídeo' },
+  { id: 'cameras:delete', label: 'Eliminar Cámaras', desc: 'Borrar cámaras del sistema' },
+  { id: 'users:read', label: 'Ver Usuarios', desc: 'Consultar lista de usuarios' },
+  { id: 'users:manage', label: 'Administrar Usuarios', desc: 'Crear, editar y eliminar usuarios' },
 ];
 
 const DEFAULT_ROLE_PERMS: Record<UserRole, string[]> = {
@@ -135,12 +135,12 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.username.trim() || !formData.email.trim()) {
-      setError('El identificador de usuario y el email son obligatorios');
+      setError('El nombre de usuario y el correo electrónico son obligatorios');
       return;
     }
 
     if (modalMode === 'create' && !formData.password) {
-      setError('Es obligatoria una clave de acceso para nuevos camaradas');
+      setError('Introduce una contraseña para el nuevo usuario');
       return;
     }
 
@@ -175,7 +175,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
       closeModal();
       onRefresh();
     } catch (err: any) {
-      setError(err.message || 'Error en el procedimiento ante el Ministerio del Amor');
+      setError(err.message || 'Error al guardar usuario');
     } finally {
       setLoading(false);
     }
@@ -183,22 +183,22 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
 
   const handleDelete = async (user: User) => {
     if (user.id === currentUserId) {
-      alert('Un miembro del Partido no puede vaporizarse a sí mismo.');
+      alert('No puedes eliminar tu propia cuenta.');
       return;
     }
 
     const adminUsers = users.filter((u) => (u.role === 'admin' || u.username === 'admin'));
     if ((user.role === 'admin' || user.username === 'admin') && adminUsers.length <= 1) {
-      alert('Imposible vaporizar: este camarada es el único Administrador Supremo de Oceanía.');
+      alert('No es posible eliminar al único Administrador del sistema.');
       return;
     }
 
-    if (window.confirm(`¿Confirmas la vaporización definitiva del camarada "${user.username.toUpperCase()}"? Todo registro de su existencia será eliminado del censo.`)) {
+    if (window.confirm(`¿Confirmas la eliminación del usuario "${user.username}"?`)) {
       try {
         await api.deleteUser(user.id);
         onRefresh();
       } catch (err: any) {
-        alert(err.message || 'Fallo en la orden de vaporización');
+        alert(err.message || 'Error al eliminar usuario');
       }
     }
   };
@@ -224,7 +224,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
           letterSpacing: '0.04em'
         }}>
           <Award size={13} color="var(--accent-red)" />
-          PARTIDO INTERIOR (SUPREMO)
+          ADMINISTRADOR
         </span>
       );
     }
@@ -246,7 +246,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
           letterSpacing: '0.04em'
         }}>
           <Eye size={13} />
-          PROLE (OBSERVADOR)
+          OBSERVADOR
         </span>
       );
     }
@@ -267,7 +267,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
         letterSpacing: '0.04em'
       }}>
         <ShieldCheck size={13} />
-        PARTIDO EXTERIOR (OPERADOR)
+        OPERADOR
       </span>
     );
   };
@@ -293,19 +293,19 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
             textTransform: 'uppercase',
             marginBottom: '4px',
           }}>
-            MINILUV // MINISTERIO DEL AMOR & SEGURIDAD DEL ESTADO
+            BIG BROTHER CCTV // CONTROL DE ACCESO
           </div>
           <h1 style={{ fontSize: '1.6rem', fontWeight: 900, textTransform: 'uppercase', color: '#fff', letterSpacing: '0.02em', margin: 0 }}>
-            Censo de Miembros del Partido
+            Gestión de Usuarios
           </h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
-            REGISTRO OFICIAL DE OPERADORES, ROLES JERÁRQUICOS Y PERMISOS DE TELEVIGILANCIA
+            ADMINISTRACIÓN DE CUENTAS, ROLES DE ACCESO Y PERMISOS DEL SISTEMA
           </p>
         </div>
 
         <button onClick={openCreateModal} className="btn-primary" style={{ padding: '9px 16px' }}>
           <UserPlus size={16} />
-          <span>Afiliar Camarada</span>
+          <span>Añadir Usuario</span>
         </button>
       </div>
 
@@ -350,7 +350,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                 color: roleFilter === r ? '#fff' : 'var(--text-secondary)',
               }}
             >
-              {r === 'all' ? 'Todos' : r === 'admin' ? 'Interior' : r === 'operator' ? 'Exterior' : 'Prole'}
+              {r === 'all' ? 'Todos' : r === 'admin' ? 'Admin' : r === 'operator' ? 'Operador' : 'Observador'}
             </button>
           ))}
         </div>
@@ -370,19 +370,19 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
             }}>
-              <th style={{ padding: '14px 18px' }}>Camarada</th>
-              <th style={{ padding: '14px 18px' }}>Nombre Completo</th>
-              <th style={{ padding: '14px 18px' }}>Dirección de Red</th>
-              <th style={{ padding: '14px 18px' }}>Rango Jerárquico</th>
-              <th style={{ padding: '14px 18px' }}>Directivas & Permisos</th>
-              <th style={{ padding: '14px 18px', textAlign: 'right' }}>Operaciones</th>
+              <th style={{ padding: '14px 18px' }}>Usuario</th>
+              <th style={{ padding: '14px 18px' }}>Nombre</th>
+              <th style={{ padding: '14px 18px' }}>Correo Electrónico</th>
+              <th style={{ padding: '14px 18px' }}>Rol</th>
+              <th style={{ padding: '14px 18px' }}>Permisos</th>
+              <th style={{ padding: '14px 18px', textAlign: 'right' }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {filteredUsers.length === 0 ? (
               <tr>
                 <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                  NO SE ENCONTRARON REGISTROS QUE COINCIDAN CON LOS CRITERIOS
+                  NO SE ENCONTRARON USUARIOS
                 </td>
               </tr>
             ) : (
@@ -440,7 +440,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                             )}
                           </div>
                           <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                            CITIZEN #{u.id}
+                            ID: #{u.id}
                           </div>
                         </div>
                       </div>
@@ -482,7 +482,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                           ))
                         ) : (
                           <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                            Heredados por rango
+                            Heredados por rol
                           </span>
                         )}
                       </div>
@@ -494,7 +494,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                           onClick={() => openEditModal(u)}
                           className="btn-ghost"
                           style={{ padding: '7px', borderRadius: '4px' }}
-                          title="Modificar directivas y credenciales de este camarada"
+                          title="Editar usuario"
                         >
                           <Edit3 size={15} color="var(--text-secondary)" />
                         </button>
@@ -510,10 +510,10 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                           }}
                           title={
                             isSelf
-                              ? 'No puedes vaporizar tu propio usuario'
+                              ? 'No puedes eliminar tu propia cuenta'
                               : isLastAdmin
-                              ? 'No se puede vaporizar al único administrador del sistema'
-                              : 'Vaporizar Camarada'
+                              ? 'No se puede eliminar al único administrador del sistema'
+                              : 'Eliminar usuario'
                           }
                         >
                           <Trash2 size={15} />
@@ -554,7 +554,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 900, textTransform: 'uppercase', color: '#fff', margin: 0 }}>
-                {modalMode === 'create' ? 'Afiliar Nuevo Miembro' : 'Expediente del Camarada'}
+                {modalMode === 'create' ? 'Nuevo Usuario' : 'Editar Usuario'}
               </h2>
               <span style={{
                 fontSize: '0.68rem',
@@ -565,14 +565,14 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                 borderRadius: '3px',
                 border: '1px solid rgba(245, 158, 11, 0.3)'
               }}>
-                CLASIFICADO
+                CONTROL DE ACCESO
               </span>
             </div>
 
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '18px' }}>
               {modalMode === 'create'
-                ? 'El ingreso en el censo oficial concede credenciales de televigilancia bajo juramento a INGSOC.'
-                : `Actualización de rango, directivas y permisos para @${formData.username}.`}
+                ? 'Introduce los datos de la cuenta y asigna su rol y permisos en el sistema.'
+                : `Actualización de rol y permisos para @${formData.username}.`}
             </p>
 
             {error && (
@@ -605,7 +605,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                     type="text"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    placeholder="ej: winston"
+                    placeholder="ej: operador1"
                     disabled={modalMode === 'edit'}
                     style={{ width: '100%', opacity: modalMode === 'edit' ? 0.7 : 1 }}
                     required
@@ -620,7 +620,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="ej: Winston Smith"
+                    placeholder="ej: Juan Pérez"
                     style={{ width: '100%' }}
                   />
                 </div>
@@ -629,13 +629,13 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               {/* Email */}
               <div>
                 <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
-                  Dirección Postal / Red *
+                  Correo Electrónico *
                 </label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="winston@minitrue.oceania"
+                  placeholder="usuario@bigbrother.local"
                   style={{ width: '100%' }}
                   required
                 />
@@ -644,13 +644,13 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               {/* Hierarchy / Role Selector */}
               <div>
                 <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>
-                  Rango en Oceanía (Rol de Acceso)
+                  Rol de Acceso
                 </label>
                 <div className="responsive-grid-3">
                   {([
-                    { id: 'admin', label: 'Partido Interior', desc: 'Supremo / Total', color: 'var(--accent-red)', icon: Award },
-                    { id: 'operator', label: 'Partido Exterior', desc: 'Operador Nodos', color: 'var(--accent-amber)', icon: ShieldCheck },
-                    { id: 'viewer', label: 'Proles', desc: 'Solo Observador', color: '#38bdf8', icon: Eye },
+                    { id: 'admin', label: 'Administrador', desc: 'Control Total', color: 'var(--accent-red)', icon: Award },
+                    { id: 'operator', label: 'Operador', desc: 'Gestión de Cámaras', color: 'var(--accent-amber)', icon: ShieldCheck },
+                    { id: 'viewer', label: 'Observador', desc: 'Solo Visualización', color: '#38bdf8', icon: Eye },
                   ] as const).map((r) => {
                     const isSelected = formData.role === r.id;
                     const IconComp = r.icon;
@@ -692,7 +692,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                 border: '1px solid var(--border-subtle)',
               }}>
                 <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '10px' }}>
-                  Directivas y Permisos Granulares
+                  Permisos Granulares
                 </div>
                 <div className="responsive-grid-2">
                   {ALL_AVAILABLE_PERMISSIONS.map((perm) => {
@@ -730,7 +730,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               {/* Password */}
               <div>
                 <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
-                  {modalMode === 'create' ? 'Clave de Acceso Inicial *' : 'Restablecer Clave de Acceso (Opcional)'}
+                  {modalMode === 'create' ? 'Contraseña Inicial *' : 'Restablecer Contraseña (Opcional)'}
                 </label>
                 <div style={{ position: 'relative' }}>
                   <Lock size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -738,7 +738,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                     type="password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    placeholder={modalMode === 'create' ? '••••••••' : 'Dejar en blanco para conservar clave actual'}
+                    placeholder={modalMode === 'create' ? '••••••••' : 'Dejar en blanco para conservar contraseña actual'}
                     style={{ width: '100%', paddingLeft: '36px' }}
                     required={modalMode === 'create'}
                   />
@@ -754,8 +754,8 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                   {loading
                     ? 'PROCESANDO...'
                     : modalMode === 'create'
-                    ? 'INCORPORAR AL CENSO'
-                    : 'GUARDAR EXPEDIENTE'}
+                    ? 'CREAR USUARIO'
+                    : 'GUARDAR CAMBIOS'}
                 </button>
               </div>
             </form>

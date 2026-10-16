@@ -98,11 +98,11 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name?.trim()) {
-      setError('El identificador del nodo de vigilancia es obligatorio');
+      setError('El nombre de la cámara es obligatorio');
       return;
     }
     if (activeTab === 'ip' && !formData.sourceUrl?.trim()) {
-      setError('Debes indicar la URL RTSP o HTTP de la cámara IP para sintonización PULL');
+      setError('Debes indicar la URL RTSP o HTTP de la cámara IP');
       return;
     }
 
@@ -112,7 +112,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
       await onSave(formData);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Fallo al transmitir parámetros al nodo');
+      setError(err.message || 'Error al guardar la configuración de la cámara');
     } finally {
       setLoading(false);
     }
@@ -188,10 +188,10 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             </div>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#fff', textTransform: 'uppercase', fontFamily: 'var(--font-display)', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {camera?.id ? `Reconfigurar: ${camera.name}` : 'Enlazar Nueva Telepantalla'}
+                {camera?.id ? `Editar Cámara: ${camera.name}` : 'Añadir Nueva Cámara'}
               </div>
               <div style={{ fontSize: '0.65rem', color: 'var(--text-party)', fontFamily: 'var(--font-mono)' }}>
-                PROTOCOLOS: IP PULL • PUSH • EDGE • USB • TEST
+                MODOS: CÁMARA IP • PUSH (MÓVIL/OBS) • DOCKER EDGE • WEBCAM USB • TEST
               </div>
             </div>
           </div>
@@ -604,7 +604,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             </button>
             <button type="submit" disabled={loading} className="btn-primary">
               <Save size={16} />
-              {loading ? 'TRANSMITIENDO...' : (camera?.id ? 'ACTUALIZAR DIRECTIVA' : 'DESPLEGAR NODO')}
+              {loading ? 'GUARDANDO...' : (camera?.id ? 'GUARDAR CAMBIOS' : 'AÑADIR CÁMARA')}
             </button>
           </div>
         </form>

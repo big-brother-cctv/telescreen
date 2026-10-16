@@ -17,7 +17,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
   useEffect(() => {
     const updateClock = () => {
       const now = new Date();
-      setTime(now.toLocaleTimeString('es-ES', { hour12: false }) + ' // AIRSTOCK-1');
+      setTime(now.toLocaleTimeString('es-ES', { hour12: false }));
     };
     updateClock();
     const clockInterval = setInterval(updateClock, 1000);
@@ -36,10 +36,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
   }, []);
 
   const clearanceLabel = user?.role === 'admin' || user?.username === 'admin'
-    ? 'INNER PARTY'
+    ? 'ADMINISTRADOR'
     : user?.role === 'viewer'
-    ? 'PROLE'
-    : 'OUTER PARTY';
+    ? 'SOLO LECTURA'
+    : 'OPERADOR';
 
   const clearanceColor = user?.role === 'admin' || user?.username === 'admin'
     ? 'var(--accent-red)'
@@ -49,13 +49,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
 
   return (
     <>
-      {/* Orwell Party Slogan Ticker */}
+      {/* CCTV Status Banner */}
       <div className="slogan-banner">
-        <span>WAR IS PEACE</span>
+        <span>BIG BROTHER CCTV</span>
         <span>•</span>
-        <span>FREEDOM IS SLAVERY</span>
+        <span>SISTEMA DE VIGILANCIA EN TIEMPO REAL</span>
         <span>•</span>
-        <span>IGNORANCE IS STRENGTH</span>
+        <span>CONEXIÓN SEGURA</span>
       </div>
 
       {/* Main Top Header */}
@@ -114,15 +114,15 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
                   background: 'var(--accent-red)',
                   borderRadius: '3px',
                   letterSpacing: '0.06em'
-                }}>1984</span>
+                }}>CCTV</span>
               </div>
               <div className="desktop-only" style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                SURVEILLANCE TERMINAL
+                PANEL DE CONTROL
               </div>
             </div>
           </div>
 
-          {/* Thought Police Status Pill */}
+          {/* Status Pill */}
           <div className="desktop-only" style={{
             alignItems: 'center',
             gap: '6px',
@@ -141,7 +141,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
               borderRadius: '50%',
               backgroundColor: apiOnline ? 'var(--accent-red)' : 'var(--accent-amber)',
             }} />
-            <span>{apiOnline ? 'WATCHING' : 'OFFLINE'}</span>
+            <span>{apiOnline ? 'ONLINE' : 'OFFLINE'}</span>
           </div>
         </div>
 
@@ -158,7 +158,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             }}
           >
             <Radio size={15} color={currentView === 'grid' ? 'var(--accent-red)' : 'var(--text-secondary)'} />
-            Matriz de Telepantallas
+            Cámaras en Vivo
           </button>
 
           <button
@@ -172,7 +172,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             }}
           >
             <Terminal size={15} color={currentView === 'admin' ? 'var(--accent-red)' : 'var(--text-secondary)'} />
-            Nodos de Vigilancia
+            Gestión de Cámaras
           </button>
 
           {user?.role !== 'viewer' && (
@@ -187,7 +187,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
               }}
             >
               <Users size={15} color={currentView === 'users' ? 'var(--accent-red)' : 'var(--text-secondary)'} />
-              Miembros del Partido
+              Usuarios
             </button>
           )}
         </nav>
@@ -200,7 +200,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             color: 'var(--text-muted)',
             textAlign: 'right'
           }}>
-            <div style={{ color: 'var(--accent-amber)', fontWeight: 600 }}>YEAR 1984</div>
+            <div style={{ color: 'var(--accent-amber)', fontWeight: 600 }}>BIG BROTHER</div>
             <div>{time}</div>
           </div>
 
@@ -216,7 +216,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap'
               }}>
-                {user?.name || user?.username || 'Camarada'}
+                {user?.name || user?.username || 'Usuario'}
               </div>
               <div style={{
                 fontSize: '0.62rem',
@@ -231,7 +231,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
 
             <button
               onClick={onLogout}
-              title="Desconectar Telepantalla"
+              title="Cerrar sesión"
               className="btn-ghost"
               style={{ padding: '7px', borderRadius: '6px' }}
             >
@@ -286,7 +286,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           )}
           <Radio size={18} color={currentView === 'grid' ? 'var(--accent-red)' : 'var(--text-muted)'} />
           <span style={{ fontSize: '0.68rem', fontWeight: currentView === 'grid' ? 800 : 500, fontFamily: 'var(--font-display)' }}>
-            Matriz
+            En Vivo
           </span>
         </button>
 
@@ -319,7 +319,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           )}
           <Terminal size={18} color={currentView === 'admin' ? 'var(--accent-red)' : 'var(--text-muted)'} />
           <span style={{ fontSize: '0.68rem', fontWeight: currentView === 'admin' ? 800 : 500, fontFamily: 'var(--font-display)' }}>
-            Nodos
+            Cámaras
           </span>
         </button>
 
@@ -353,7 +353,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             )}
             <Users size={18} color={currentView === 'users' ? 'var(--accent-red)' : 'var(--text-muted)'} />
             <span style={{ fontSize: '0.68rem', fontWeight: currentView === 'users' ? 800 : 500, fontFamily: 'var(--font-display)' }}>
-              Censo
+              Usuarios
             </span>
           </button>
         )}
