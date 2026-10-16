@@ -292,7 +292,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
                 backgroundColor: isPlaying ? '#10b981' : '#f59e0b',
                 flexShrink: 0
               }} />
-              <span>{isPlaying ? t.videoPlayer.liveFull : t.videoPlayer.standby}</span>
+              <span>{isPlaying ? t.videoPlayer.liveShort : t.videoPlayer.standby}</span>
             </div>
 
             {/* Camera Name */}
@@ -545,6 +545,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
         {/* Preview Controls: Solo botón de Pantalla Completa visible en Hover o Selección */}
         {!isFullscreen && (
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               toggleFullscreen();
@@ -552,17 +553,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
             title={t.videoPlayer.fullscreen}
             className={`preview-fullscreen-btn ${isSelected ? 'is-active' : ''}`}
             style={{
-              background: 'rgba(8, 10, 16, 0.88)',
-              border: '1px solid var(--border-party)',
-              borderRadius: '6px',
-              padding: '7px 9px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              color: '#fff',
-              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.6), 0 0 10px rgba(225, 29, 72, 0.25)',
-              backdropFilter: 'blur(8px)',
+              position: 'absolute',
+              bottom: '10px',
+              right: '10px',
+              zIndex: 30,
             }}
           >
             <Maximize2 size={16} color="var(--accent-red)" />
