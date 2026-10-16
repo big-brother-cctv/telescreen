@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/big-brother-cctv/telescreen/compare/v0.8.0...v0.9.0) (2026-10-16)
+
+
+### Features
+
+* optimize mobile PWA experience with safe-area support and flexible CCTV grid layouts ([8cd8316](https://github.com/big-brother-cctv/telescreen/commit/8cd83160f67a7728b41a9ce84831b9a64789e73a))
+
 ## [0.8.0](https://github.com/big-brother-cctv/telescreen/compare/v0.7.0...v0.8.0) (2026-10-16)
 
 
