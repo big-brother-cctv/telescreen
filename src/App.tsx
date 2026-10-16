@@ -7,6 +7,7 @@ import { CamerasAdmin } from './views/CamerasAdmin';
 import { UsersAdmin } from './views/UsersAdmin';
 import { LoginView } from './views/LoginView';
 import { CameraModal } from './components/CameraModal';
+import { AlertsProvider } from './context/AlertsContext';
 
 export const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(Boolean(authStorage.getToken()));
@@ -82,58 +83,60 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Navbar
-        currentView={currentView}
-        onNavigate={setCurrentView}
-        user={currentUser}
-        onLogout={handleLogout}
-      />
+    <AlertsProvider>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Navbar
+          currentView={currentView}
+          onNavigate={setCurrentView}
+          user={currentUser}
+          onLogout={handleLogout}
+        />
 
-      <main style={{ flex: 1 }}>
-        {currentView === 'grid' && (
-          <LiveGrid
-            cameras={cameras}
-            isLoading={loading}
-            onRefresh={loadData}
-            onAddCamera={() => {
-              setEditingCamera(null);
-              setModalOpen(true);
-            }}
-          />
-        )}
+        <main style={{ flex: 1 }}>
+          {currentView === 'grid' && (
+            <LiveGrid
+              cameras={cameras}
+              isLoading={loading}
+              onRefresh={loadData}
+              onAddCamera={() => {
+                setEditingCamera(null);
+                setModalOpen(true);
+              }}
+            />
+          )}
 
-        {currentView === 'admin' && (
-          <CamerasAdmin
-            cameras={cameras}
-            onAdd={() => {
-              setEditingCamera(null);
-              setModalOpen(true);
-            }}
-            onEdit={(cam) => {
-              setEditingCamera(cam);
-              setModalOpen(true);
-            }}
-            onDelete={handleDeleteCamera}
-          />
-        )}
+          {currentView === 'admin' && (
+            <CamerasAdmin
+              cameras={cameras}
+              onAdd={() => {
+                setEditingCamera(null);
+                setModalOpen(true);
+              }}
+              onEdit={(cam) => {
+                setEditingCamera(cam);
+                setModalOpen(true);
+              }}
+              onDelete={handleDeleteCamera}
+            />
+          )}
 
-        {currentView === 'users' && (
-          <UsersAdmin
-            users={users}
-            currentUserId={currentUser?.id}
-            onRefresh={loadData}
-          />
-        )}
-      </main>
+          {currentView === 'users' && (
+            <UsersAdmin
+              users={users}
+              currentUserId={currentUser?.id}
+              onRefresh={loadData}
+            />
+          )}
+        </main>
 
-      <CameraModal
-        isOpen={modalOpen}
-        camera={editingCamera}
-        onClose={() => setModalOpen(false)}
-        onSave={handleSaveCamera}
-      />
-    </div>
+        <CameraModal
+          isOpen={modalOpen}
+          camera={editingCamera}
+          onClose={() => setModalOpen(false)}
+          onSave={handleSaveCamera}
+        />
+      </div>
+    </AlertsProvider>
   );
 };
 

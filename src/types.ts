@@ -35,3 +35,15 @@ export interface User {
 export interface AuthResponse {
   token: string;
 }
+
+export interface MotionAlert {
+  id: number;
+  cameraId?: number;
+  cameraName: string;
+  snapshotPath: string;
+  detectedAt: string;
+  label: string;
+  confidence: number;
+  acknowledged: boolean;
+  severity: string;
+}

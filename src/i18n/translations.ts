@@ -230,6 +230,27 @@ export interface Translations {
     permUsersManage: string;
     permUsersManageDesc: string;
   };
+  alerts: {
+    title: string;
+    badge: string;
+    noAlerts: string;
+    noAlertsDesc: string;
+    markAllRead: string;
+    clearHistory: string;
+    motionDetected: string;
+    soundAlerts: string;
+    browserNotifications: string;
+    enableNotifications: string;
+    notificationsEnabled: string;
+    notificationsDenied: string;
+    ack: string;
+    acked: string;
+    delete: string;
+    activeAlarm: string;
+    cooldownActive: string;
+    justNow: string;
+    minutesAgo: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -463,6 +484,27 @@ export const translations: Record<Language, Translations> = {
       permUsersManage: 'Administrar Usuarios',
       permUsersManageDesc: 'Crear, editar y eliminar usuarios',
     },
+    alerts: {
+      title: 'Alertas de Movimiento',
+      badge: 'ALERTA',
+      noAlerts: 'SIN INCIDENCIAS',
+      noAlertsDesc: 'No hay alertas de movimiento registradas en el sector.',
+      markAllRead: 'Marcar todo como visto',
+      clearHistory: 'Limpiar historial',
+      motionDetected: 'Movimiento detectado',
+      soundAlerts: 'Alarma acústica',
+      browserNotifications: 'Notificaciones nativas',
+      enableNotifications: 'Activar en navegador',
+      notificationsEnabled: 'Notificaciones activas',
+      notificationsDenied: 'Notificaciones bloqueadas',
+      ack: 'Confirmar',
+      acked: 'Visto',
+      delete: 'Eliminar',
+      activeAlarm: 'ALARMA ACTIVA',
+      cooldownActive: 'Enfriamiento activo',
+      justNow: 'Ahora mismo',
+      minutesAgo: 'hace {m}m',
+    },
   },
   en: {
     common: {
@@ -693,6 +735,27 @@ export const translations: Record<Language, Translations> = {
       permUsersReadDesc: 'View users list',
       permUsersManage: 'Manage Users',
       permUsersManageDesc: 'Create, edit, and delete users',
+    },
+    alerts: {
+      title: 'Motion Alerts',
+      badge: 'ALERT',
+      noAlerts: 'NO INCIDENTS',
+      noAlertsDesc: 'No motion alerts recorded in the sector.',
+      markAllRead: 'Mark all as read',
+      clearHistory: 'Clear history',
+      motionDetected: 'Motion detected',
+      soundAlerts: 'Acoustic alarm',
+      browserNotifications: 'Native notifications',
+      enableNotifications: 'Enable in browser',
+      notificationsEnabled: 'Notifications active',
+      notificationsDenied: 'Notifications blocked',
+      ack: 'Acknowledge',
+      acked: 'Read',
+      delete: 'Delete',
+      activeAlarm: 'ACTIVE ALARM',
+      cooldownActive: 'Cooldown active',
+      justNow: 'Just now',
+      minutesAgo: '{m}m ago',
     },
   },
 };

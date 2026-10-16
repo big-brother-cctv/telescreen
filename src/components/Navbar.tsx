@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Users, LogOut, Radio, Terminal } from 'lucide-react';
+import { Users, LogOut, Radio, Terminal, Bell } from 'lucide-react';
 import { api } from '../services/api';
 import type { User } from '../types';
 import { useLanguage, LanguageSelector } from '../i18n/LanguageContext';
+import { useAlerts } from '../context/AlertsContext';
+import { AlertsDrawer } from './AlertsDrawer';
 
 interface NavbarProps {
   currentView: 'grid' | 'admin' | 'users';
@@ -13,6 +15,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, onLogout }) => {
   const { t, language } = useLanguage();
+  const { unreadCount, setIsDrawerOpen, isDrawerOpen } = useAlerts();
   const [apiOnline, setApiOnline] = useState<boolean>(true);
   const [time, setTime] = useState<string>('');
 
@@ -219,8 +222,57 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           )}
         </nav>
 
-        {/* Right Info: Language Selector, Clock, User Clearance & Logout */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+        {/* Right Info: Notifications, Language Selector, Clock, User Clearance & Logout */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          {/* Notification Bell Button */}
+          <button
+            onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+            title={t.alerts.title}
+            aria-label={t.alerts.title}
+            style={{
+              position: 'relative',
+              width: '34px',
+              height: '34px',
+              borderRadius: '6px',
+              background: unreadCount > 0 ? 'rgba(225, 29, 72, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+              border: `1px solid ${unreadCount > 0 ? 'var(--accent-red)' : 'var(--border-subtle)'}`,
+              color: unreadCount > 0 ? 'var(--accent-red)' : 'var(--text-secondary)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+              flexShrink: 0,
+            }}
+          >
+            <Bell size={16} />
+            {unreadCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '-4px',
+                  right: '-4px',
+                  minWidth: '16px',
+                  height: '16px',
+                  padding: '0 4px',
+                  borderRadius: '8px',
+                  background: 'var(--accent-red)',
+                  color: '#fff',
+                  fontSize: '0.62rem',
+                  fontWeight: 900,
+                  fontFamily: 'var(--font-mono)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 0 8px rgba(225, 29, 72, 0.8)',
+                  animation: 'pulse-glow 1.5s infinite',
+                }}
+              >
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </button>
+
           {/* Selector de idioma */}
           <LanguageSelector />
 
@@ -412,6 +464,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           </button>
         )}
       </nav>
+
+      {/* CCTV Alerts Drawer Modal */}
+      <AlertsDrawer />
     </>
   );
 };

@@ -3,6 +3,7 @@ import Hls from 'hls.js';
 import { Maximize2, Minimize2, Camera as CameraIcon, RefreshCw, AlertCircle, Radio, Terminal, X } from 'lucide-react';
 import type { Camera } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
+import { useAlerts } from '../context/AlertsContext';
 
 interface VideoPlayerProps {
   camera: Camera;
@@ -11,6 +12,8 @@ interface VideoPlayerProps {
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
   const { t } = useLanguage();
+  const { activeAlertCameras, setIsDrawerOpen } = useAlerts();
+  const hasActiveAlarm = activeAlertCameras.has(camera.name);
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -239,7 +242,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
   return (
     <div
       ref={containerRef}
-      className={`glass-panel telescreen-player-container ${isFullscreen ? 'player-fullscreen' : ''}`}
+      className={`glass-panel telescreen-player-container ${isFullscreen ? 'player-fullscreen' : ''} ${hasActiveAlarm ? 'alarm-active' : ''}`}
       onClick={handleContainerClick}
       onMouseMove={resetControlsTimer}
       style={{
@@ -435,6 +438,38 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
                 {isPlaying ? t.videoPlayer.liveShort : t.videoPlayer.tuningShort}
               </span>
             </div>
+
+            {/* Tactical Motion Alarm Badge */}
+            {hasActiveAlarm && (
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDrawerOpen(true);
+                }}
+                title={t.alerts.activeAlarm}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  padding: '3px 8px',
+                  borderRadius: '4px',
+                  background: 'rgba(225, 29, 72, 0.95)',
+                  boxShadow: '0 0 14px rgba(225, 29, 72, 0.85)',
+                  color: '#fff',
+                  fontSize: '0.66rem',
+                  fontWeight: 900,
+                  fontFamily: 'var(--font-mono)',
+                  letterSpacing: '0.04em',
+                  cursor: 'pointer',
+                  pointerEvents: 'auto',
+                  border: '1px solid #ff335f',
+                  animation: 'pulse-red 1.2s infinite',
+                }}
+              >
+                <AlertCircle size={12} />
+                <span>{t.alerts.badge}: {t.alerts.motionDetected.toUpperCase()}</span>
+              </div>
+            )}
 
             {/* Badges de señal */}
             <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>

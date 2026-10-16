@@ -1,4 +1,4 @@
-import type { Camera, User, AuthResponse } from '../types';
+import type { Camera, User, AuthResponse, MotionAlert } from '../types';
 
 const API_BASE = '/api';
 
@@ -115,5 +115,38 @@ export const api = {
     } catch {
       return false;
     }
-  }
+  },
+
+  // Motion Alerts
+  getAlerts: (params?: { limit?: number; offset?: number; camera_name?: string; acknowledged?: boolean }) => {
+    const query = new URLSearchParams();
+    if (params?.limit) query.set('limit', params.limit.toString());
+    if (params?.offset) query.set('offset', params.offset.toString());
+    if (params?.camera_name) query.set('camera_name', params.camera_name);
+    if (params?.acknowledged !== undefined) query.set('acknowledged', String(params.acknowledged));
+    const qs = query.toString();
+    return request<{ alerts: MotionAlert[]; total: number }>(`/alerts${qs ? `?${qs}` : ''}`);
+  },
+
+  getUnreadAlertsCount: () => request<{ unreadCount: number }>('/alerts/unread-count'),
+
+  ackAlert: (id: number) =>
+    request<{ message: string }>(`/alerts/${id}/ack`, {
+      method: 'PUT',
+    }),
+
+  ackAllAlerts: () =>
+    request<{ message: string }>('/alerts/ack-all', {
+      method: 'PUT',
+    }),
+
+  deleteAlert: (id: number) =>
+    request<void>(`/alerts/${id}`, {
+      method: 'DELETE',
+    }),
+
+  clearAllAlerts: () =>
+    request<{ message: string }>('/alerts', {
+      method: 'DELETE',
+    }),
 };
