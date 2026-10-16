@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/big-brother-cctv/telescreen/compare/v0.12.1...v0.13.0) (2026-10-16)
+
+
+### Features
+
+* implement tactical motion alerts system with real-time notifications and drawer UI ([2a11829](https://github.com/big-brother-cctv/telescreen/commit/2a118293e7eddab3a4817ea27575779e38f869cd))
+
 ## [0.12.1](https://github.com/big-brother-cctv/telescreen/compare/v0.12.0...v0.12.1) (2026-10-16)
 
 
