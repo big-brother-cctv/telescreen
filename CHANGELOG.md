@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/big-brother-cctv/telescreen/compare/v0.7.0...v0.8.0) (2026-10-16)
+
+
+### Features
+
+* enhance telescreen player with mobile fullscreen support and animated ticker navbar ([38ba096](https://github.com/big-brother-cctv/telescreen/commit/38ba09645d61c0f862c3e49ec5ef2fa4099d2ab6))
+
 ## [0.7.0](https://github.com/big-brother-cctv/telescreen/compare/v0.6.0...v0.7.0) (2026-10-16)
 
 
