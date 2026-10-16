@@ -24,24 +24,24 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
       case '1x1':
         return '1fr';
       case '2x2':
-        return 'repeat(auto-fit, minmax(460px, 1fr))';
+        return 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))';
       case '3x3':
-        return 'repeat(auto-fit, minmax(320px, 1fr))';
+        return 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))';
       default:
-        return 'repeat(auto-fill, minmax(390px, 1fr))';
+        return 'repeat(auto-fill, minmax(min(100%, 340px), 1fr))';
     }
   };
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1800px', margin: '0 auto' }}>
+    <div className="responsive-container">
       {/* Top Bar / Controls */}
       <div style={{
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: '16px',
-        marginBottom: '24px',
+        gap: '12px',
+        marginBottom: '20px',
       }}>
         {/* Title & Counter */}
         <div>
@@ -68,9 +68,9 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
         </div>
 
         {/* Actions & Filters */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', width: '100%', justifyContent: 'space-between' }}>
           {/* Search bar */}
-          <div style={{ position: 'relative', width: '230px' }}>
+          <div style={{ position: 'relative', flex: '1', minWidth: '180px', maxWidth: '360px' }}>
             <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
@@ -81,74 +81,77 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
             />
           </div>
 
-          {/* Layout Switcher */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '2px',
-          }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {/* Layout Switcher */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-md)',
+              padding: '2px',
+            }}>
+              <button
+                onClick={() => setLayout('auto')}
+                title="Mosaico Dinámico"
+                className="btn-ghost"
+                style={{
+                  padding: '6px',
+                  border: 'none',
+                  background: layout === 'auto' ? 'rgba(225, 29, 72, 0.2)' : 'transparent',
+                  color: layout === 'auto' ? '#fff' : 'var(--text-muted)',
+                }}
+              >
+                <LayoutGrid size={16} />
+              </button>
+              <button
+                onClick={() => setLayout('2x2')}
+                title="Cuadrícula Táctica 2x2"
+                className="btn-ghost"
+                style={{
+                  padding: '6px',
+                  border: 'none',
+                  background: layout === '2x2' ? 'rgba(225, 29, 72, 0.2)' : 'transparent',
+                  color: layout === '2x2' ? '#fff' : 'var(--text-muted)',
+                }}
+              >
+                <Grid3X3 size={16} />
+              </button>
+              <button
+                onClick={() => setLayout('1x1')}
+                title="Foco en Telepantalla Única"
+                className="btn-ghost"
+                style={{
+                  padding: '6px',
+                  border: 'none',
+                  background: layout === '1x1' ? 'rgba(225, 29, 72, 0.2)' : 'transparent',
+                  color: layout === '1x1' ? '#fff' : 'var(--text-muted)',
+                }}
+              >
+                <Square size={16} />
+              </button>
+            </div>
+
+            {/* Refresh */}
             <button
-              onClick={() => setLayout('auto')}
-              title="Mosaico Dinámico"
+              onClick={onRefresh}
+              disabled={isLoading}
               className="btn-ghost"
-              style={{
-                padding: '6px',
-                border: 'none',
-                background: layout === 'auto' ? 'rgba(225, 29, 72, 0.2)' : 'transparent',
-                color: layout === 'auto' ? '#fff' : 'var(--text-muted)',
-              }}
+              title="Refrescar Sintonía"
+              style={{ padding: '8px' }}
             >
-              <LayoutGrid size={16} />
+              <RefreshCw size={15} className={isLoading ? 'animate-spin' : ''} />
             </button>
+
+            {/* Add Camera */}
             <button
-              onClick={() => setLayout('2x2')}
-              title="Cuadrícula Táctica 2x2"
-              className="btn-ghost"
-              style={{
-                padding: '6px',
-                border: 'none',
-                background: layout === '2x2' ? 'rgba(225, 29, 72, 0.2)' : 'transparent',
-                color: layout === '2x2' ? '#fff' : 'var(--text-muted)',
-              }}
+              onClick={onAddCamera}
+              className="btn-primary"
             >
-              <Grid3X3 size={16} />
-            </button>
-            <button
-              onClick={() => setLayout('1x1')}
-              title="Foco en Telepantalla Única"
-              className="btn-ghost"
-              style={{
-                padding: '6px',
-                border: 'none',
-                background: layout === '1x1' ? 'rgba(225, 29, 72, 0.2)' : 'transparent',
-                color: layout === '1x1' ? '#fff' : 'var(--text-muted)',
-              }}
-            >
-              <Square size={16} />
+              <Plus size={16} />
+              <span>Asignar</span>
             </button>
           </div>
-
-          {/* Refresh */}
-          <button
-            onClick={onRefresh}
-            disabled={isLoading}
-            className="btn-ghost"
-            title="Refrescar Sintonía"
-          >
-            <RefreshCw size={15} className={isLoading ? 'animate-spin' : ''} />
-          </button>
-
-          {/* Add Camera */}
-          <button
-            onClick={onAddCamera}
-            className="btn-primary"
-          >
-            <Plus size={16} />
-            Asignar Telepantalla
-          </button>
         </div>
       </div>
 
@@ -157,7 +160,7 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
         <div style={{
           display: 'grid',
           gridTemplateColumns: getGridTemplate(),
-          gap: '20px',
+          gap: '16px',
         }}>
           {filteredCameras.map((camera) => (
             <VideoPlayer key={camera.id || camera.name} camera={camera} />

@@ -149,11 +149,14 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
       justifyContent: 'center',
       background: 'rgba(0, 0, 0, 0.88)',
       backdropFilter: 'blur(10px)',
-      padding: '16px',
+      padding: '12px',
     }}>
       <div className="glass-panel brutalist-border" style={{
         width: '100%',
         maxWidth: '680px',
+        maxHeight: '94vh',
+        display: 'flex',
+        flexDirection: 'column',
         background: '#0a0d14',
         borderRadius: '10px',
         overflow: 'hidden',
@@ -161,32 +164,34 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
       }}>
         {/* Header */}
         <div style={{
-          padding: '16px 20px',
+          padding: '14px 18px',
           borderBottom: '1px solid var(--border-party)',
           background: 'rgba(225, 29, 72, 0.08)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          gap: '8px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
             <div style={{
-              width: '36px',
-              height: '36px',
+              width: '34px',
+              height: '34px',
               borderRadius: '6px',
               background: 'linear-gradient(135deg, #be123c, #e11d48)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 14px rgba(225, 29, 72, 0.6)'
+              boxShadow: '0 0 14px rgba(225, 29, 72, 0.6)',
+              flexShrink: 0
             }}>
               <Radio size={18} color="#fff" />
             </div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1rem', color: '#fff', textTransform: 'uppercase', fontFamily: 'var(--font-display)', letterSpacing: '0.03em' }}>
-                {camera?.id ? `Reconfigurar Nodo: ${camera.name}` : 'Asignar / Enlazar Nueva Telepantalla'}
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#fff', textTransform: 'uppercase', fontFamily: 'var(--font-display)', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {camera?.id ? `Reconfigurar: ${camera.name}` : 'Enlazar Nueva Telepantalla'}
               </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-party)', fontFamily: 'var(--font-mono)' }}>
-                PROTOCOLOS: IP PULL • BROADCAST PUSH • EDGE DISTRIBUIDO • USB LOCAL • TEST
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-party)', fontFamily: 'var(--font-mono)' }}>
+                PROTOCOLOS: IP PULL • PUSH • EDGE • USB • TEST
               </div>
             </div>
           </div>
@@ -196,18 +201,17 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
           </button>
         </div>
 
-        {/* Tab Selector de Método de Conexión */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
+        {/* Tab Selector de Método de Conexión (Scrollable táctil en móvil) */}
+        <div className="responsive-tabs" style={{
           borderBottom: '1px solid var(--border-subtle)',
-          background: 'rgba(15, 20, 30, 0.6)'
+          background: 'rgba(15, 20, 30, 0.6)',
+          width: '100%',
         }}>
           <button
             type="button"
             onClick={() => handleTabChange('ip')}
             style={{
-              padding: '12px 6px',
+              padding: '12px 10px',
               border: 'none',
               background: activeTab === 'ip' ? 'rgba(225, 29, 72, 0.15)' : 'transparent',
               borderBottom: `2px solid ${activeTab === 'ip' ? 'var(--accent-red)' : 'transparent'}`,
@@ -219,6 +223,9 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
               flexDirection: 'column',
               alignItems: 'center',
               gap: '4px',
+              flex: 1,
+              minWidth: '110px',
+              flexShrink: 0,
               transition: 'all 0.15s ease'
             }}
           >
@@ -230,7 +237,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             type="button"
             onClick={() => handleTabChange('push')}
             style={{
-              padding: '12px 6px',
+              padding: '12px 10px',
               border: 'none',
               background: activeTab === 'push' ? 'rgba(225, 29, 72, 0.15)' : 'transparent',
               borderBottom: `2px solid ${activeTab === 'push' ? 'var(--accent-red)' : 'transparent'}`,
@@ -242,6 +249,9 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
               flexDirection: 'column',
               alignItems: 'center',
               gap: '4px',
+              flex: 1,
+              minWidth: '130px',
+              flexShrink: 0,
               transition: 'all 0.15s ease'
             }}
           >
@@ -253,7 +263,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
             type="button"
             onClick={() => handleTabChange('edge')}
             style={{
-              padding: '12px 6px',
+              padding: '12px 10px',
               border: 'none',
               background: activeTab === 'edge' ? 'rgba(225, 29, 72, 0.15)' : 'transparent',
               borderBottom: `2px solid ${activeTab === 'edge' ? 'var(--accent-red)' : 'transparent'}`,
@@ -265,18 +275,21 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
               flexDirection: 'column',
               alignItems: 'center',
               gap: '4px',
+              flex: 1,
+              minWidth: '135px',
+              flexShrink: 0,
               transition: 'all 0.15s ease'
             }}
           >
             <Terminal size={16} color={activeTab === 'edge' ? 'var(--accent-red)' : 'var(--text-muted)'} />
-            <span>AGENTE EDGE (RASPBERRY)</span>
+            <span>AGENTE EDGE (PI)</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleTabChange('usb')}
             style={{
-              padding: '12px 6px',
+              padding: '12px 10px',
               border: 'none',
               background: activeTab === 'usb' ? 'rgba(225, 29, 72, 0.15)' : 'transparent',
               borderBottom: `2px solid ${activeTab === 'usb' ? 'var(--accent-red)' : 'transparent'}`,
@@ -288,18 +301,21 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
               flexDirection: 'column',
               alignItems: 'center',
               gap: '4px',
+              flex: 1,
+              minWidth: '110px',
+              flexShrink: 0,
               transition: 'all 0.15s ease'
             }}
           >
             <HardDrive size={16} color={activeTab === 'usb' ? 'var(--accent-red)' : 'var(--text-muted)'} />
-            <span>USB LOCAL (V4L2)</span>
+            <span>USB LOCAL</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleTabChange('test')}
             style={{
-              padding: '12px 6px',
+              padding: '12px 10px',
               border: 'none',
               background: activeTab === 'test' ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
               borderBottom: `2px solid ${activeTab === 'test' ? 'var(--accent-amber)' : 'transparent'}`,
@@ -311,6 +327,9 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
               flexDirection: 'column',
               alignItems: 'center',
               gap: '4px',
+              flex: 1,
+              minWidth: '115px',
+              flexShrink: 0,
               transition: 'all 0.15s ease'
             }}
           >
@@ -501,10 +520,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
           )}
 
           {/* Parámetros de Calidad y Codificación */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '14px',
+          <div className="responsive-grid-2" style={{
             borderTop: '1px solid var(--border-subtle)',
             paddingTop: '16px'
           }}>

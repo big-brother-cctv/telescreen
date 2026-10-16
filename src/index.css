@@ -263,4 +263,96 @@ input:focus, select:focus {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #fda4af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================================================================
+   RESPONSIVE DESIGN SYSTEM (MOBILE & TABLET ADAPTATIONS)
+   ========================================================================= */
+
+.responsive-container {
+  padding: 24px;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.responsive-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.responsive-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.responsive-tabs {
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.responsive-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.table-responsive-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: flex;
+}
+
+/* Mobile & Tablet Media Queries */
+@media (max-width: 868px) {
+  .responsive-container {
+    padding: 12px;
+  }
+
+  .slogan-banner {
+    font-size: 0.62rem;
+    gap: 12px;
+    padding: 4px 8px;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+
+  .responsive-grid-2,
+  .responsive-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Padding inferior para la barra móvil de navegación */
+  body {
+    padding-bottom: 64px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.3rem !important;
+  }
+  
+  .btn-primary, .btn-amber, .btn-ghost, .btn-danger {
+    padding: 7px 12px;
+    font-size: 0.75rem;
+  }
 }

@@ -42,28 +42,30 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '24px',
+      padding: '16px',
       background: 'radial-gradient(ellipse at 50% 15%, rgba(225, 29, 72, 0.12) 0%, #07080b 70%)',
     }}>
       {/* 1984 Top Slogan */}
       <div style={{
         textAlign: 'center',
-        marginBottom: '20px',
+        marginBottom: '16px',
         color: '#fda4af',
         fontFamily: 'var(--font-display)',
-        fontSize: '0.75rem',
+        fontSize: '0.68rem',
         fontWeight: 800,
-        letterSpacing: '0.25em',
+        letterSpacing: '0.15em',
         textTransform: 'uppercase',
+        maxWidth: '100%',
+        padding: '0 8px'
       }}>
         WAR IS PEACE • FREEDOM IS SLAVERY • IGNORANCE IS STRENGTH
       </div>
 
       <div className="glass-panel brutalist-border" style={{
         width: '100%',
-        maxWidth: '440px',
+        maxWidth: '420px',
         background: 'rgba(12, 14, 20, 0.94)',
-        padding: '40px 32px',
+        padding: '30px 22px',
         borderRadius: '12px',
         boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8), 0 0 30px rgba(225, 29, 72, 0.2)',
       }}>

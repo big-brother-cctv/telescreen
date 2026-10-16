@@ -31,15 +31,15 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
   };
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1600px', margin: '0 auto' }}>
+    <div className="responsive-container">
       {/* Header */}
       <div style={{
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: '16px',
-        marginBottom: '24px',
+        gap: '14px',
+        marginBottom: '20px',
       }}>
         <div>
           <h1 style={{ fontSize: '1.6rem', fontWeight: 800, textTransform: 'uppercase', color: '#fff', letterSpacing: '0.02em' }}>
@@ -50,8 +50,8 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ position: 'relative', width: '250px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end', minWidth: '260px' }}>
+          <div style={{ position: 'relative', flex: 1, minWidth: '180px', maxWidth: '340px' }}>
             <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
@@ -62,9 +62,9 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
             />
           </div>
 
-          <button onClick={onAdd} className="btn-primary">
+          <button onClick={onAdd} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>
             <Plus size={16} />
-            Desplegar Nodo
+            <span>Desplegar Nodo</span>
           </button>
         </div>
       </div>

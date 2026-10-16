@@ -273,15 +273,15 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
   };
 
   return (
-    <div style={{ padding: '28px 24px', maxWidth: '1280px', margin: '0 auto' }}>
+    <div className="responsive-container">
       {/* Header */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: '28px',
+        marginBottom: '20px',
         flexWrap: 'wrap',
-        gap: '16px'
+        gap: '14px'
       }}>
         <div>
           <div style={{
@@ -295,15 +295,15 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
           }}>
             MINILUV // MINISTERIO DEL AMOR & SEGURIDAD DEL ESTADO
           </div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 900, textTransform: 'uppercase', color: '#fff', letterSpacing: '0.02em', margin: 0 }}>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 900, textTransform: 'uppercase', color: '#fff', letterSpacing: '0.02em', margin: 0 }}>
             Censo de Miembros del Partido
           </h1>
-          <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
             REGISTRO OFICIAL DE OPERADORES, ROLES JERÁRQUICOS Y PERMISOS DE TELEVIGILANCIA
           </p>
         </div>
 
-        <button onClick={openCreateModal} className="btn-primary" style={{ padding: '10px 18px' }}>
+        <button onClick={openCreateModal} className="btn-primary" style={{ padding: '9px 16px' }}>
           <UserPlus size={16} />
           <span>Afiliar Camarada</span>
         </button>
@@ -311,16 +311,16 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
 
       {/* Filter and Search Bar */}
       <div className="glass-panel brutalist-border" style={{
-        padding: '16px 20px',
-        marginBottom: '20px',
+        padding: '14px 16px',
+        marginBottom: '16px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '14px',
+        gap: '12px',
         background: 'rgba(12, 14, 20, 0.75)'
       }}>
-        <div style={{ position: 'relative', flex: '1', minWidth: '240px', maxWidth: '420px' }}>
+        <div style={{ position: 'relative', flex: '1', minWidth: '180px', maxWidth: '380px' }}>
           <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
           <input
             type="text"
@@ -331,9 +331,9 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
           />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-            Filtrar Rango:
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+            Filtrar:
           </span>
           {(['all', 'admin', 'operator', 'viewer'] as const).map((r) => (
             <button
@@ -341,8 +341,8 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               onClick={() => setRoleFilter(r)}
               className="btn-ghost"
               style={{
-                fontSize: '0.72rem',
-                padding: '6px 12px',
+                fontSize: '0.7rem',
+                padding: '5px 10px',
                 textTransform: 'uppercase',
                 fontFamily: 'var(--font-mono)',
                 background: roleFilter === r ? 'rgba(225, 29, 72, 0.18)' : 'transparent',
@@ -358,7 +358,8 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
 
       {/* Table */}
       <div className="glass-panel brutalist-border" style={{ overflow: 'hidden', boxShadow: '0 12px 36px rgba(0,0,0,0.5)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+        <div className="table-responsive-wrapper">
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
           <thead>
             <tr style={{
               background: 'rgba(225, 29, 72, 0.08)',
@@ -525,6 +526,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Modal Unificado (Creación / Edición) */}
@@ -538,20 +540,20 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
           justifyContent: 'center',
           background: 'rgba(0, 0, 0, 0.85)',
           backdropFilter: 'blur(10px)',
-          padding: '20px',
+          padding: '12px',
         }}>
           <div className="glass-panel brutalist-border" style={{
             width: '100%',
             maxWidth: '560px',
             background: '#0d1017',
-            padding: '32px',
+            padding: '24px 18px',
             borderRadius: '12px',
             boxShadow: '0 24px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(225, 29, 72, 0.15)',
-            maxHeight: '90vh',
+            maxHeight: '92vh',
             overflowY: 'auto'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <h2 style={{ fontSize: '1.35rem', fontWeight: 900, textTransform: 'uppercase', color: '#fff', margin: 0 }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 900, textTransform: 'uppercase', color: '#fff', margin: 0 }}>
                 {modalMode === 'create' ? 'Afiliar Nuevo Miembro' : 'Expediente del Camarada'}
               </h2>
               <span style={{
@@ -567,7 +569,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               </span>
             </div>
 
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '20px' }}>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '18px' }}>
               {modalMode === 'create'
                 ? 'El ingreso en el censo oficial concede credenciales de televigilancia bajo juramento a INGSOC.'
                 : `Actualización de rango, directivas y permisos para @${formData.username}.`}
@@ -592,9 +594,9 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
               </div>
             )}
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {/* Username & Name */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+              <div className="responsive-grid-2">
                 <div>
                   <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
                     Usuario *
@@ -644,7 +646,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                 <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>
                   Rango en Oceanía (Rol de Acceso)
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                <div className="responsive-grid-3">
                   {([
                     { id: 'admin', label: 'Partido Interior', desc: 'Supremo / Total', color: 'var(--accent-red)', icon: Award },
                     { id: 'operator', label: 'Partido Exterior', desc: 'Operador Nodos', color: 'var(--accent-amber)', icon: ShieldCheck },
@@ -692,7 +694,7 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
                 <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '10px' }}>
                   Directivas y Permisos Granulares
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div className="responsive-grid-2">
                   {ALL_AVAILABLE_PERMISSIONS.map((perm) => {
                     const isChecked = formData.permissions.includes(perm.id);
                     return (
