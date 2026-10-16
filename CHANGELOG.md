@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/big-brother-cctv/telescreen/compare/v0.6.0...v0.7.0) (2026-10-16)
+
+
+### Features
+
+* replace navbar eye icon with favicon logo and update document title ([d6c0473](https://github.com/big-brother-cctv/telescreen/commit/d6c04734e52755357ee14beaeaa7f2ef7f99159c))
+
 ## [0.6.0](https://github.com/big-brother-cctv/telescreen/compare/v0.5.0...v0.6.0) (2026-10-16)
 
 
