@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/big-brother-cctv/telescreen/compare/v0.12.0...v0.12.1) (2026-10-16)
+
+
+### Bug Fixes
+
+* update video player translations, styling, and fullscreen button layout ([adec1bd](https://github.com/big-brother-cctv/telescreen/commit/adec1bd84f8f52d2e452efc1464105592d43c941))
+
 ## [0.12.0](https://github.com/big-brother-cctv/telescreen/compare/v0.11.0...v0.12.0) (2026-10-16)
 
 
