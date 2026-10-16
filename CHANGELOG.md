@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/big-brother-cctv/telescreen/compare/v0.11.0...v0.12.0) (2026-10-16)
+
+
+### Features
+
+* optimize video player preview controls and streamline live grid toolbar layout ([7578f96](https://github.com/big-brother-cctv/telescreen/commit/7578f96970b397b393596a7d27bfd85bbd8657c6))
+
 ## [0.11.0](https://github.com/big-brother-cctv/telescreen/compare/v0.10.0...v0.11.0) (2026-10-16)
 
 
