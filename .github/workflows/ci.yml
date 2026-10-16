@@ -1,0 +1,46 @@
+name: CI - Telescreen Frontend
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches-ignore: [ "main" ]
+
+jobs:
+  typecheck-and-build:
+    name: Typecheck & Vite Production Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build (TypeScript & Vite)
+        run: npm run build
+
+  docker-dry-run:
+    name: Docker Build Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image (Validation only, no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: ghcr.io/${{ github.repository }}:ci-check
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
