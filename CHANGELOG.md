@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/big-brother-cctv/telescreen/compare/v0.9.0...v0.10.0) (2026-10-16)
+
+
+### Features
+
+* add internationalization support with English and Spanish translations ([8520892](https://github.com/big-brother-cctv/telescreen/commit/8520892d2fa6960cc2e44afc98a95349b40a681b))
+
 ## [0.9.0](https://github.com/big-brother-cctv/telescreen/compare/v0.8.0...v0.9.0) (2026-10-16)
 
 
