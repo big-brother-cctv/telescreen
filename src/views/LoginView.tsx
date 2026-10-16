@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, Lock, User as UserIcon, ShieldAlert, ArrowRight, KeyRound } from 'lucide-react';
+import { Eye, Lock, User as UserIcon, ShieldAlert, ArrowRight } from 'lucide-react';
 import { api, authStorage } from '../services/api';
 
 interface LoginViewProps {
@@ -33,12 +33,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const autofillDevCredentials = () => {
-    setUsername('admin');
-    setPassword('admin');
-    setError('');
   };
 
   return (
@@ -179,24 +173,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
             <ArrowRight size={16} />
           </button>
         </form>
-
-        {/* Quick Dev Autofill Button */}
-        <div style={{
-          marginTop: '24px',
-          paddingTop: '16px',
-          borderTop: '1px solid var(--border-subtle)',
-          textAlign: 'center',
-        }}>
-          <button
-            type="button"
-            onClick={autofillDevCredentials}
-            className="btn-ghost"
-            style={{ fontSize: '0.72rem', padding: '6px 12px', width: '100%', justifyContent: 'center', fontFamily: 'var(--font-mono)' }}
-          >
-            <KeyRound size={13} color="var(--accent-amber)" />
-            AUTORIZACIÓN PARTIDO INTERIOR: (admin / admin)
-          </button>
-        </div>
       </div>
 
       {/* Quote footer */}

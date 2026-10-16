@@ -19,11 +19,16 @@ export interface Camera {
   ingestUrl?: string;
 }
 
+export type UserRole = 'admin' | 'operator' | 'viewer';
+
 export interface User {
   id: number;
   username: string;
   email: string;
   name: string;
+  role?: UserRole | string;
+  permissions?: string;
+  disabled?: boolean;
   photo?: string;
 }
 

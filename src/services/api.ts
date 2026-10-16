@@ -90,7 +90,13 @@ export const api = {
   
   getMe: () => request<User>('/users/me'),
   
-  updateUser: (id: number, user: Partial<User>) =>
+  createUser: (user: Partial<User> & { password: string }) =>
+    request<User>('/users', {
+      method: 'POST',
+      body: JSON.stringify(user),
+    }),
+
+  updateUser: (id: number, user: Partial<User> & { password?: string }) =>
     request<User>(`/users/${id}`, {
       method: 'PUT',
       body: JSON.stringify(user),

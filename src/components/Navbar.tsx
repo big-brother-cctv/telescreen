@@ -161,19 +161,21 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             Nodos de Vigilancia
           </button>
 
-          <button
-            onClick={() => onNavigate('users')}
-            className="btn-ghost"
-            style={{
-              background: currentView === 'users' ? 'rgba(225, 29, 72, 0.16)' : 'transparent',
-              color: currentView === 'users' ? '#fff' : 'var(--text-secondary)',
-              borderColor: currentView === 'users' ? 'var(--accent-red)' : 'transparent',
-              textTransform: 'uppercase',
-            }}
-          >
-            <Users size={15} color={currentView === 'users' ? 'var(--accent-red)' : 'var(--text-secondary)'} />
-            Miembros del Partido
-          </button>
+          {user?.role !== 'viewer' && (
+            <button
+              onClick={() => onNavigate('users')}
+              className="btn-ghost"
+              style={{
+                background: currentView === 'users' ? 'rgba(225, 29, 72, 0.16)' : 'transparent',
+                color: currentView === 'users' ? '#fff' : 'var(--text-secondary)',
+                borderColor: currentView === 'users' ? 'var(--accent-red)' : 'transparent',
+                textTransform: 'uppercase',
+              }}
+            >
+              <Users size={15} color={currentView === 'users' ? 'var(--accent-red)' : 'var(--text-secondary)'} />
+              Miembros del Partido
+            </button>
+          )}
         </nav>
 
         {/* Timestamp & Operator Clearance */}
@@ -193,8 +195,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
               <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', textTransform: 'uppercase' }}>
                 {user?.name || user?.username || 'Camarada'}
               </div>
-              <div style={{ fontSize: '0.65rem', color: 'var(--text-party)', fontFamily: 'var(--font-mono)' }}>
-                INNER PARTY CLEARANCE
+              <div style={{
+                fontSize: '0.65rem',
+                color: user?.role === 'admin' || user?.username === 'admin' ? 'var(--accent-red)' : user?.role === 'viewer' ? '#38bdf8' : 'var(--accent-amber)',
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 700
+              }}>
+                {user?.role === 'admin' || user?.username === 'admin'
+                  ? 'INNER PARTY CLEARANCE'
+                  : user?.role === 'viewer'
+                  ? 'PROLE OBSERVER'
+                  : 'OUTER PARTY OPERATOR'}
               </div>
             </div>
 
