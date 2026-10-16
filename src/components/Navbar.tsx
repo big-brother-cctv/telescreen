@@ -266,13 +266,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
         </div>
       </header>
 
-      {/* Mobile Bottom Navigation Bar (Thumb Friendly) */}
+      {/* Mobile Bottom Navigation Bar (Thumb Friendly & Safe Area) */}
       <nav className="mobile-only" style={{
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
-        height: '58px',
+        height: 'calc(58px + env(safe-area-inset-bottom, 0px))',
         background: 'rgba(10, 12, 17, 0.96)',
         backdropFilter: 'blur(20px)',
         borderTop: '1px solid var(--border-party)',
@@ -280,7 +280,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
         alignItems: 'center',
         justifyContent: 'space-around',
         boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.8)',
-        padding: '0 8px'
+        padding: '0 8px',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)'
       }}>
         <button
           onClick={() => onNavigate('grid')}
