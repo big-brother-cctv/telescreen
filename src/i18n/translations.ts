@@ -250,6 +250,9 @@ export interface Translations {
     cooldownActive: string;
     justNow: string;
     minutesAgo: string;
+    testAlert: string;
+    viewInPanel: string;
+    zoomSnapshot: string;
   };
 }
 
@@ -504,6 +507,9 @@ export const translations: Record<Language, Translations> = {
       cooldownActive: 'Enfriamiento activo',
       justNow: 'Ahora mismo',
       minutesAgo: 'hace {m}m',
+      testAlert: 'Probar alerta de movimiento',
+      viewInPanel: 'Ver en panel',
+      zoomSnapshot: 'Ampliar captura',
     },
   },
   en: {
@@ -756,6 +762,9 @@ export const translations: Record<Language, Translations> = {
       cooldownActive: 'Cooldown active',
       justNow: 'Just now',
       minutesAgo: '{m}m ago',
+      testAlert: 'Test motion alert',
+      viewInPanel: 'View in panel',
+      zoomSnapshot: 'Zoom snapshot',
     },
   },
 };

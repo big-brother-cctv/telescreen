@@ -8,6 +8,8 @@ import { UsersAdmin } from './views/UsersAdmin';
 import { LoginView } from './views/LoginView';
 import { CameraModal } from './components/CameraModal';
 import { AlertsProvider } from './context/AlertsContext';
+import { MotionToastContainer } from './components/MotionToast';
+import { SnapshotModal } from './components/SnapshotModal';
 
 export const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(Boolean(authStorage.getToken()));
@@ -135,6 +137,10 @@ export const App: React.FC = () => {
           onClose={() => setModalOpen(false)}
           onSave={handleSaveCamera}
         />
+
+        {/* Global Motion Notification Toasts & Snapshot Lightbox */}
+        <MotionToastContainer />
+        <SnapshotModal />
       </div>
     </AlertsProvider>
   );

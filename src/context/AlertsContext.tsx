@@ -7,6 +7,8 @@ interface AlertsContextType {
   alerts: MotionAlert[];
   unreadCount: number;
   activeAlertCameras: Set<string>;
+  activeToasts: MotionAlert[];
+  dismissToast: (id: number) => void;
   soundEnabled: boolean;
   setSoundEnabled: (enabled: boolean) => void;
   browserNotificationsEnabled: boolean;
@@ -17,8 +19,11 @@ interface AlertsContextType {
   deleteAlert: (id: number) => Promise<void>;
   clearAllAlerts: () => Promise<void>;
   refreshAlerts: () => Promise<void>;
+  triggerTestAlert: (cameraName?: string) => Promise<void>;
   isDrawerOpen: boolean;
   setIsDrawerOpen: (open: boolean) => void;
+  previewImage: { url: string; title: string; time: string } | null;
+  setPreviewImage: (img: { url: string; title: string; time: string } | null) => void;
 }
 
 const AlertsContext = createContext<AlertsContextType | undefined>(undefined);
@@ -62,7 +67,9 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [alerts, setAlerts] = useState<MotionAlert[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [activeAlertCameras, setActiveAlertCameras] = useState<Set<string>>(new Set());
+  const [activeToasts, setActiveToasts] = useState<MotionAlert[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [previewImage, setPreviewImage] = useState<{ url: string; title: string; time: string } | null>(null);
 
   const [soundEnabled, setSoundEnabledState] = useState<boolean>(() => {
     return localStorage.getItem('bb_alert_sound') !== 'false';
@@ -77,6 +84,10 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const setSoundEnabled = (val: boolean) => {
     setSoundEnabledState(val);
     localStorage.setItem('bb_alert_sound', String(val));
+  };
+
+  const dismissToast = (id: number) => {
+    setActiveToasts((prev) => prev.filter((item) => item.id !== id));
   };
 
   const requestNotificationPermission = async (): Promise<boolean> => {
@@ -98,11 +109,10 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       return next;
     });
 
-    // Clear existing timer if any
     const existing = cameraAlertTimersRef.current.get(cameraName);
     if (existing) clearTimeout(existing);
 
-    // Keep camera highlighted for 25 seconds
+    // Resaltar cámara durante 25 segundos
     const timer = setTimeout(() => {
       setActiveAlertCameras((prev) => {
         const next = new Set(prev);
@@ -134,14 +144,14 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
-  // Initial load
+  // Carga inicial
   useEffect(() => {
     if (authStorage.getToken()) {
       refreshAlerts();
     }
   }, []);
 
-  // SSE Realtime Subscription
+  // Suscripción SSE en tiempo real
   useEffect(() => {
     const token = authStorage.getToken();
     if (!token) return;
@@ -151,30 +161,35 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     const connectSSE = () => {
       try {
-        // SSE natively connects to /api/alerts/stream
         eventSource = new EventSource('/api/alerts/stream');
 
         eventSource.addEventListener('alert', (event: MessageEvent) => {
           try {
             const newAlert: MotionAlert = JSON.parse(event.data);
+
             setAlerts((prev) => {
-              // Avoid duplicates
               if (prev.some((a) => a.id === newAlert.id)) return prev;
               return [newAlert, ...prev.slice(0, 49)];
             });
             setUnreadCount((c) => c + 1);
 
-            // Mark camera tile with tactical pulse
+            // Añadir al toast flotante visible en pantalla
+            setActiveToasts((prev) => [newAlert, ...prev.filter((t) => t.id !== newAlert.id)].slice(0, 3));
+            setTimeout(() => {
+              setActiveToasts((prev) => prev.filter((t) => t.id !== newAlert.id));
+            }, 9000);
+
+            // Marcar tile de cámara en LiveGrid
             if (newAlert.cameraName) {
               markCameraActive(newAlert.cameraName);
             }
 
-            // Play synthesized tactical audio beep
+            // Reproducir alarma acústica sintetizada
             if (localStorage.getItem('bb_alert_sound') !== 'false') {
               playTacticalAlarmTone();
             }
 
-            // Native Browser Notification (100% locally created by browser)
+            // Notificación nativa del navegador
             if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
               const snapshotUrl = newAlert.snapshotPath ? `/api/alerts/snapshots/${newAlert.snapshotPath.split('/').pop()}` : '/favicon.svg';
               try {
@@ -184,7 +199,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                   tag: `bb-alert-${newAlert.id}`,
                 });
               } catch {
-                // Ignore notification display restrictions in background
+                // Ignore
               }
             }
           } catch (e) {
@@ -197,7 +212,6 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             eventSource.close();
             eventSource = null;
           }
-          // Reconnect after 5s
           retryTimeout = setTimeout(connectSSE, 5000);
         };
       } catch (err) {
@@ -215,7 +229,6 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       if (retryTimeout) {
         clearTimeout(retryTimeout);
       }
-      // Clear timers
       cameraAlertTimersRef.current.forEach((t) => clearTimeout(t));
       cameraAlertTimersRef.current.clear();
     };
@@ -228,6 +241,9 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a))
       );
       setUnreadCount((c) => Math.max(0, c - 1));
+      setActiveToasts((prev) =>
+        prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a))
+      );
     } catch (err) {
       console.error('Failed to ack alert:', err);
     }
@@ -238,6 +254,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       await api.ackAllAlerts();
       setAlerts((prev) => prev.map((a) => ({ ...a, acknowledged: true })));
       setUnreadCount(0);
+      setActiveToasts([]);
     } catch (err) {
       console.error('Failed to ack all alerts:', err);
     }
@@ -247,7 +264,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     try {
       await api.deleteAlert(id);
       setAlerts((prev) => prev.filter((a) => a.id !== id));
-      // Re-fetch unread count
+      setActiveToasts((prev) => prev.filter((a) => a.id !== id));
       const res = await api.getUnreadAlertsCount();
       if (typeof res?.unreadCount === 'number') {
         setUnreadCount(res.unreadCount);
@@ -262,9 +279,76 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       await api.clearAllAlerts();
       setAlerts([]);
       setUnreadCount(0);
+      setActiveToasts([]);
       setActiveAlertCameras(new Set());
     } catch (err) {
       console.error('Failed to clear all alerts:', err);
+    }
+  };
+
+  // Simular alerta de prueba táctica con captura generada
+  const triggerTestAlert = async (cameraName = 'camera') => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 360;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#0a0d14';
+        ctx.fillRect(0, 0, 640, 360);
+
+        // Cuadrícula táctica
+        ctx.strokeStyle = '#1e2638';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < 640; x += 40) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, 360);
+          ctx.stroke();
+        }
+        for (let y = 0; y < 360; y += 40) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(640, y);
+          ctx.stroke();
+        }
+
+        // Bounding box de movimiento en rojo
+        ctx.strokeStyle = '#e11d48';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(180, 80, 280, 190);
+        ctx.fillStyle = 'rgba(225, 29, 72, 0.18)';
+        ctx.fillRect(180, 80, 280, 190);
+
+        // Crosshair central
+        ctx.beginPath();
+        ctx.arc(320, 175, 12, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        ctx.fillStyle = '#e11d48';
+        ctx.font = 'bold 15px monospace';
+        ctx.fillText('TARGET DETECTED [MOTION 99.2%]', 185, 72);
+
+        ctx.fillStyle = '#00f0ff';
+        ctx.font = 'bold 13px monospace';
+        ctx.fillText(`CAM: ${cameraName.toUpperCase()}`, 20, 30);
+        ctx.fillText(`TIMESTAMP: ${new Date().toISOString()}`, 20, 50);
+      }
+
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+      const formData = new FormData();
+      formData.append('camera_name', cameraName);
+      formData.append('label', 'motion');
+      formData.append('severity', 'warning');
+      formData.append('confidence', '0.99');
+      formData.append('ignore_cooldown', 'true');
+      if (blob) {
+        formData.append('image', blob, `test_motion_${Date.now()}.jpg`);
+      }
+
+      await api.createAlert(formData);
+    } catch (e) {
+      console.error('Error triggering test alert:', e);
     }
   };
 
@@ -274,6 +358,8 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         alerts,
         unreadCount,
         activeAlertCameras,
+        activeToasts,
+        dismissToast,
         soundEnabled,
         setSoundEnabled,
         browserNotificationsEnabled: notificationPermission === 'granted',
@@ -284,8 +370,11 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         deleteAlert,
         clearAllAlerts,
         refreshAlerts,
+        triggerTestAlert,
         isDrawerOpen,
         setIsDrawerOpen,
+        previewImage,
+        setPreviewImage,
       }}
     >
       {children}

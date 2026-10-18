@@ -690,3 +690,13 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
+@keyframes countdownBar {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAlerts } from '../context/AlertsContext';
 import { useLanguage } from '../i18n/LanguageContext';
 import {
@@ -14,7 +14,8 @@ import {
   Clock,
   Maximize2,
   ShieldCheck,
-  AlertTriangle
+  AlertTriangle,
+  Zap
 } from 'lucide-react';
 
 export const AlertsDrawer: React.FC = () => {
@@ -33,9 +34,9 @@ export const AlertsDrawer: React.FC = () => {
     ackAllAlerts,
     deleteAlert,
     clearAllAlerts,
+    triggerTestAlert,
+    setPreviewImage,
   } = useAlerts();
-
-  const [previewImage, setPreviewImage] = useState<{ url: string; title: string; time: string } | null>(null);
 
   if (!isDrawerOpen) return null;
 
@@ -207,6 +208,27 @@ export const AlertsDrawer: React.FC = () => {
               }}
             >
               {browserNotificationsEnabled ? <Bell size={16} /> : <BellOff size={16} />}
+            </button>
+
+            {/* Test Simulated Motion Alert Button */}
+            <button
+              onClick={() => triggerTestAlert()}
+              title={t.alerts.testAlert}
+              aria-label={t.alerts.testAlert}
+              style={{
+                background: 'rgba(225, 29, 72, 0.15)',
+                border: '1px solid rgba(225, 29, 72, 0.4)',
+                color: 'var(--accent-red)',
+                borderRadius: '6px',
+                padding: '6px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Zap size={16} />
             </button>
 
             {/* Close Drawer Button */}
@@ -576,101 +598,6 @@ export const AlertsDrawer: React.FC = () => {
           )}
         </div>
       </aside>
-
-      {/* Snapshot Lightbox Modal */}
-      {previewImage && (
-        <div
-          onClick={() => setPreviewImage(null)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0, 0, 0, 0.92)',
-            backdropFilter: 'blur(12px)',
-            zIndex: 1100,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-            animation: 'fadeIn 0.2s ease',
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              position: 'relative',
-              maxWidth: '92vw',
-              maxHeight: '88vh',
-              display: 'flex',
-              flexDirection: 'column',
-              background: '#090a0f',
-              border: '1px solid var(--border-party)',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.95)',
-            }}
-          >
-            {/* Modal Top Bar */}
-            <div
-              style={{
-                padding: '10px 16px',
-                background: 'rgba(15, 18, 26, 0.95)',
-                borderBottom: '1px solid var(--border-subtle)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '12px',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontWeight: 900,
-                    fontSize: '0.85rem',
-                    color: '#fff',
-                  }}
-                >
-                  {previewImage.title}
-                </span>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', fontFamily: 'var(--font-mono)' }}>
-                  {previewImage.time}
-                </span>
-              </div>
-
-              <button
-                onClick={() => setPreviewImage(null)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Snapshot Image */}
-            <div style={{ background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img
-                src={previewImage.url}
-                alt="Motion Alert Snapshot"
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: 'calc(88vh - 50px)',
-                  objectFit: 'contain',
-                  display: 'block',
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

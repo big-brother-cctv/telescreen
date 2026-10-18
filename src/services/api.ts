@@ -149,4 +149,10 @@ export const api = {
     request<{ message: string }>('/alerts', {
       method: 'DELETE',
     }),
+
+  createAlert: (formData: FormData) =>
+    request<MotionAlert>('/alerts', {
+      method: 'POST',
+      body: formData,
+    }),
 };
