@@ -17,6 +17,10 @@ export interface Camera {
   lastSeen?: string;
   streamUrl?: string;
   ingestUrl?: string;
+  motionEnabled?: boolean;
+  motionThreshold?: number;
+  motionFrames?: number;
+  motionCooldown?: number;
 }
 
 export type UserRole = 'admin' | 'operator' | 'viewer';

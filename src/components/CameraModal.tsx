@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Radio, Globe, Tv, HardDrive, Share2, Terminal, Copy, Check, Info } from 'lucide-react';
+import { X, Save, Radio, Globe, Tv, HardDrive, Share2, Terminal, Copy, Check, Info, ShieldAlert } from 'lucide-react';
 import type { Camera } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
 
@@ -26,6 +26,10 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
     tune: 'zerolatency',
     buffer: '1000000',
     rotation: '0',
+    motionEnabled: true,
+    motionThreshold: 350,
+    motionFrames: 2,
+    motionCooldown: 15,
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -49,6 +53,10 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
         tune: camera.tune || 'zerolatency',
         buffer: camera.buffer || '1000000',
         rotation: camera.rotation || '0',
+        motionEnabled: camera.motionEnabled !== undefined ? camera.motionEnabled : true,
+        motionThreshold: camera.motionThreshold || 350,
+        motionFrames: camera.motionFrames || 2,
+        motionCooldown: camera.motionCooldown || 15,
       });
       if (mode === 'push') setActiveTab('push');
       else if (mode === 'test' || camera.sourceType === 'test') setActiveTab('test');
@@ -68,6 +76,10 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
         tune: 'zerolatency',
         buffer: '1000000',
         rotation: '0',
+        motionEnabled: true,
+        motionThreshold: 350,
+        motionFrames: 2,
+        motionCooldown: 15,
       });
       setActiveTab('ip');
     }
@@ -590,6 +602,125 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
                 <option value="270">270°</option>
               </select>
             </div>
+          </div>
+
+          {/* Parámetros de Vigilancia Táctica y Detección de Movimiento (Motion Daemon) */}
+          <div style={{
+            marginTop: '20px',
+            padding: '16px',
+            background: 'rgba(15, 18, 26, 0.75)',
+            border: `1px solid ${formData.motionEnabled !== false ? 'rgba(225, 29, 72, 0.4)' : 'var(--border-subtle)'}`,
+            borderRadius: '8px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ShieldAlert size={16} color={formData.motionEnabled !== false ? 'var(--accent-red)' : 'var(--text-muted)'} />
+                <span style={{ fontSize: '0.82rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Detección de Movimiento (Motion Daemon)
+                </span>
+              </div>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none' }}>
+                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: formData.motionEnabled !== false ? 'var(--accent-teal)' : 'var(--text-muted)', fontWeight: 700 }}>
+                  {formData.motionEnabled !== false ? 'ACTIVADA' : 'PAUSADA'}
+                </span>
+                <input
+                  type="checkbox"
+                  checked={formData.motionEnabled !== false}
+                  onChange={(e) => setFormData({ ...formData, motionEnabled: e.target.checked })}
+                  style={{ width: '16px', height: '16px', accentColor: 'var(--accent-red)', cursor: 'pointer' }}
+                />
+              </label>
+            </div>
+
+            {formData.motionEnabled !== false && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {/* Selector de Sensibilidad con presets */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>
+                      Sensibilidad de Detección (Umbral: {formData.motionThreshold || 350} px)
+                    </label>
+                    <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                      {(formData.motionThreshold || 350) <= 200 ? '⚡ Alta (Reactiva)' : (formData.motionThreshold || 350) <= 450 ? '🎯 Media (Recomendada)' : '🛡️ Baja (Filtro fuerte)'}
+                    </span>
+                  </div>
+
+                  {/* Presets rápidos */}
+                  <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+                    {[
+                      { label: '⚡ Alta (150px)', val: 150 },
+                      { label: '🎯 Media (350px)', val: 350 },
+                      { label: '🛡️ Baja (600px)', val: 600 },
+                    ].map((p) => (
+                      <button
+                        key={p.val}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, motionThreshold: p.val })}
+                        style={{
+                          flex: 1,
+                          padding: '4px 8px',
+                          fontSize: '0.68rem',
+                          fontFamily: 'var(--font-mono)',
+                          fontWeight: 700,
+                          borderRadius: '4px',
+                          border: `1px solid ${formData.motionThreshold === p.val ? 'var(--accent-red)' : 'var(--border-subtle)'}`,
+                          background: formData.motionThreshold === p.val ? 'rgba(225, 29, 72, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                          color: formData.motionThreshold === p.val ? '#fff' : 'var(--text-secondary)',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <input
+                    type="range"
+                    min="50"
+                    max="1200"
+                    step="25"
+                    value={formData.motionThreshold || 350}
+                    onChange={(e) => setFormData({ ...formData, motionThreshold: Number(e.target.value) })}
+                    style={{ width: '100%', accentColor: 'var(--accent-red)' }}
+                  />
+                </div>
+
+                <div className="responsive-grid-2">
+                  {/* Frames mínimos consecutivos */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 700, textTransform: 'uppercase' }}>
+                      Persistencia (Frames Mínimos)
+                    </label>
+                    <select
+                      value={formData.motionFrames || 2}
+                      onChange={(e) => setFormData({ ...formData, motionFrames: Number(e.target.value) })}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="1">1 Frame (Instantáneo - muy sensible)</option>
+                      <option value="2">2 Frames (Recomendado - personas)</option>
+                      <option value="3">3 Frames (Movimiento sostenido)</option>
+                      <option value="5">5 Frames (Muy estricto)</option>
+                    </select>
+                  </div>
+
+                  {/* Cooldown entre alertas */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 700, textTransform: 'uppercase' }}>
+                      Enfriamiento / Cooldown (Segundos)
+                    </label>
+                    <input
+                      type="number"
+                      min="5"
+                      max="120"
+                      value={formData.motionCooldown || 15}
+                      onChange={(e) => setFormData({ ...formData, motionCooldown: Number(e.target.value) })}
+                      placeholder="15"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Footer actions */}

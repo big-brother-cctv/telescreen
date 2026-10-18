@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Camera } from '../types';
-import { Plus, Edit2, Trash2, Search, Radio, LayoutGrid, List } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Radio, LayoutGrid, List, ShieldAlert } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 
 interface CamerasAdminProps {
@@ -160,9 +160,8 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                 <th style={{ padding: '14px 18px' }}>{t.camerasAdmin.colCamera}</th>
                 <th style={{ padding: '14px 18px' }}>{t.camerasAdmin.colTypeMode}</th>
                 <th style={{ padding: '14px 18px' }}>{t.camerasAdmin.colSource}</th>
-                <th style={{ padding: '14px 18px' }}>{t.camerasAdmin.colQuality}</th>
                 <th style={{ padding: '14px 18px' }}>CÓDEC</th>
-                <th style={{ padding: '14px 18px' }}>PRESET / TUNE</th>
+                <th style={{ padding: '14px 18px' }}>DETECCIÓN MOTION</th>
                 <th style={{ padding: '14px 18px', textAlign: 'right' }}>{t.camerasAdmin.colActions}</th>
               </tr>
             </thead>
@@ -290,10 +289,23 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                         {cam.codec || 'libx264'}
                       </td>
 
-                      {/* Preset & Tune */}
-                      <td style={{ padding: '16px 18px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', fontSize: '0.78rem' }}>
-                        <div>PRESET: <span style={{ color: '#fff' }}>{cam.preset || 'ultrafast'}</span></div>
-                        <div>TUNE: <span style={{ color: 'var(--text-party)' }}>{cam.tune || 'zerolatency'}</span></div>
+                      {/* Motion Detection */}
+                      <td style={{ padding: '16px 18px' }}>
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          background: cam.motionEnabled !== false ? 'rgba(225, 29, 72, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                          border: `1px solid ${cam.motionEnabled !== false ? 'rgba(225, 29, 72, 0.35)' : 'var(--border-subtle)'}`,
+                          fontSize: '0.68rem',
+                          fontFamily: 'var(--font-mono)',
+                          color: cam.motionEnabled !== false ? '#fff' : 'var(--text-muted)',
+                        }}>
+                          <ShieldAlert size={12} color={cam.motionEnabled !== false ? 'var(--accent-red)' : 'var(--text-muted)'} />
+                          <span>{cam.motionEnabled !== false ? `ACTIVA (${cam.motionThreshold || 350}px)` : 'PAUSADA'}</span>
+                        </div>
                       </td>
 
                       {/* Actions */}
@@ -428,6 +440,23 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                   <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
                     {cam.preset || 'ultrafast'} • {cam.tune || 'zerolatency'}
                   </span>
+                </div>
+
+                {/* Motion badge in card */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '0.68rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: cam.motionEnabled !== false ? '#fff' : 'var(--text-muted)',
+                  background: cam.motionEnabled !== false ? 'rgba(225, 29, 72, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  border: `1px solid ${cam.motionEnabled !== false ? 'rgba(225, 29, 72, 0.3)' : 'var(--border-subtle)'}`,
+                }}>
+                  <ShieldAlert size={12} color={cam.motionEnabled !== false ? 'var(--accent-red)' : 'var(--text-muted)'} />
+                  <span>Detección Motion: {cam.motionEnabled !== false ? `Activa (${cam.motionThreshold || 350}px - ${cam.motionFrames || 2}f)` : 'Pausada'}</span>
                 </div>
 
                 {/* Actions row: Touch friendly */}
