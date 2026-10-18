@@ -59,6 +59,12 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated) {
       loadData();
+      const interval = setInterval(() => {
+        api.getCameras().then((cams) => {
+          if (cams) setCameras(cams);
+        }).catch(() => {});
+      }, 5000);
+      return () => clearInterval(interval);
     }
   }, [isAuthenticated]);
 

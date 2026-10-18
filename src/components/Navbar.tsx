@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, LogOut, Radio, Terminal, Bell, LayoutDashboard, ShieldAlert } from 'lucide-react';
+import { Users, LogOut, Radio, Terminal, Bell, LayoutDashboard, ShieldAlert, Clock } from 'lucide-react';
 import { api } from '../services/api';
 import type { User } from '../types';
 import { useLanguage, LanguageSelector } from '../i18n/LanguageContext';
@@ -267,17 +267,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           )}
         </nav>
 
-        {/* Right Info: Notifications, Language Selector, Clock, User Clearance & Logout */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-          {/* Notification Bell Button */}
+        {/* Right Info: Notifications, Language, Tactical Clock, User Profile & Logout */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+          {/* Notification Bell Button (Desktop only drawer shortcut) */}
           <button
             onClick={() => setIsDrawerOpen(!isDrawerOpen)}
             title={t.alerts.title}
             aria-label={t.alerts.title}
+            className="desktop-only"
             style={{
               position: 'relative',
-              width: '34px',
-              height: '34px',
+              width: '32px',
+              height: '32px',
               borderRadius: '6px',
               background: unreadCount > 0 ? 'rgba(225, 29, 72, 0.15)' : 'rgba(255, 255, 255, 0.04)',
               border: `1px solid ${unreadCount > 0 ? 'var(--accent-red)' : 'var(--border-subtle)'}`,
@@ -290,26 +291,26 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
               flexShrink: 0,
             }}
           >
-            <Bell size={16} />
+            <Bell size={15} />
             {unreadCount > 0 && (
               <span
                 style={{
                   position: 'absolute',
                   top: '-4px',
                   right: '-4px',
-                  minWidth: '16px',
-                  height: '16px',
-                  padding: '0 4px',
+                  minWidth: '15px',
+                  height: '15px',
+                  padding: '0 3px',
                   borderRadius: '8px',
                   background: 'var(--accent-red)',
                   color: '#fff',
-                  fontSize: '0.62rem',
+                  fontSize: '0.6rem',
                   fontWeight: 900,
                   fontFamily: 'var(--font-mono)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 0 8px rgba(225, 29, 72, 0.8)',
+                  boxShadow: '0 0 6px rgba(225, 29, 72, 0.8)',
                   animation: 'pulse-glow 1.5s infinite',
                 }}
               >
@@ -321,75 +322,130 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           {/* Selector de idioma */}
           <LanguageSelector />
 
-          <div className="desktop-only" style={{
-            fontSize: '0.7rem',
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--text-muted)',
-            textAlign: 'right'
-          }}>
-            <div style={{ color: 'var(--accent-amber)', fontWeight: 600 }}>BIG BROTHER</div>
-            <div>{time}</div>
+          {/* Divider on Desktop */}
+          <div className="desktop-only" style={{ width: '1px', height: '18px', background: 'var(--border-subtle)', margin: '0 2px' }} />
+
+          {/* Tactical Clock Pill (Desktop only) */}
+          <div
+            className="desktop-only"
+            style={{
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px 8px',
+              borderRadius: '6px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid var(--border-subtle)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.72rem',
+              color: 'var(--text-secondary)',
+              letterSpacing: '0.04em',
+            }}
+          >
+            <Clock size={12} color="var(--accent-amber)" />
+            <span>{time}</span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {/* Desktop user text info */}
-            <div className="desktop-only" style={{ textAlign: 'right' }}>
-              <div style={{
-                fontSize: '0.78rem',
+          {/* Divider on Desktop */}
+          <div className="desktop-only" style={{ width: '1px', height: '18px', background: 'var(--border-subtle)', margin: '0 2px' }} />
+
+          {/* Desktop User Capsule (Streamlined, no vertical stack) */}
+          <div
+            className="desktop-only"
+            style={{
+              alignItems: 'center',
+              gap: '8px',
+              padding: '3px 8px',
+              borderRadius: '6px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid var(--border-subtle)',
+            }}
+          >
+            <span
+              style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: clearanceColor,
+                boxShadow: `0 0 6px ${clearanceColor}`,
+                flexShrink: 0,
+              }}
+            />
+            <span
+              style={{
+                fontSize: '0.76rem',
                 fontWeight: 700,
                 color: '#fff',
                 fontFamily: 'var(--font-mono)',
-                textTransform: 'none',
-                maxWidth: '120px',
+                maxWidth: '130px',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}>
-                @{user?.username || user?.name || t.common.user}
-              </div>
-              <div style={{
-                fontSize: '0.62rem',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              @{user?.username || user?.name || t.common.user}
+            </span>
+            <span
+              style={{
+                fontSize: '0.6rem',
                 color: clearanceColor,
                 fontFamily: 'var(--font-mono)',
                 fontWeight: 800,
-                letterSpacing: '0.04em'
-              }}>
-                {clearanceLabel}
-              </div>
-            </div>
-
-            {/* Mobile user badge: compact initials with clearance indicator */}
-            <div
-              className="mobile-only"
-              title={`@${user?.username || user?.name || ''} (${clearanceLabel})`}
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '6px',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: `1px solid ${clearanceColor}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '0.7rem',
-                fontWeight: 800,
-                fontFamily: 'var(--font-mono)',
-                color: '#fff',
-                flexShrink: 0
+                letterSpacing: '0.04em',
+                padding: '1px 5px',
+                borderRadius: '3px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                textTransform: 'uppercase',
               }}
             >
-              {(user?.username || 'U').substring(0, 2).toUpperCase()}
-            </div>
-
-            <button
-              onClick={onLogout}
-              title={t.navbar.logout}
-              className="btn-ghost"
-              style={{ padding: '6px', borderRadius: '6px', flexShrink: 0 }}
-            >
-              <LogOut size={16} color="var(--accent-red)" />
-            </button>
+              {clearanceLabel}
+            </span>
           </div>
+
+          {/* Mobile User Compact Capsule */}
+          <div
+            className="mobile-only"
+            title={`@${user?.username || user?.name || ''} (${clearanceLabel})`}
+            style={{
+              alignItems: 'center',
+              gap: '5px',
+              padding: '3px 7px',
+              borderRadius: '6px',
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: `1px solid ${clearanceColor}`,
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              fontFamily: 'var(--font-mono)',
+              color: '#fff',
+              flexShrink: 0,
+              maxWidth: '110px',
+            }}
+          >
+            <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: clearanceColor, flexShrink: 0 }} />
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              @{user?.username || user?.name || 'user'}
+            </span>
+          </div>
+
+          {/* Logout Button */}
+          <button
+            onClick={onLogout}
+            title={t.navbar.logout}
+            aria-label={t.navbar.logout}
+            className="btn-ghost"
+            style={{
+              width: '32px',
+              height: '32px',
+              padding: 0,
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              borderColor: 'rgba(225, 29, 72, 0.2)',
+            }}
+          >
+            <LogOut size={15} color="var(--accent-red)" />
+          </button>
         </div>
       </header>
 

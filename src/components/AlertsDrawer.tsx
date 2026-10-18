@@ -14,8 +14,7 @@ import {
   Clock,
   Maximize2,
   ShieldCheck,
-  AlertTriangle,
-  Zap
+  AlertTriangle
 } from 'lucide-react';
 
 export const AlertsDrawer: React.FC = () => {
@@ -34,7 +33,6 @@ export const AlertsDrawer: React.FC = () => {
     ackAllAlerts,
     deleteAlert,
     clearAllAlerts,
-    triggerTestAlert,
     setPreviewImage,
   } = useAlerts();
 
@@ -208,27 +206,6 @@ export const AlertsDrawer: React.FC = () => {
               }}
             >
               {browserNotificationsEnabled ? <Bell size={16} /> : <BellOff size={16} />}
-            </button>
-
-            {/* Test Simulated Motion Alert Button */}
-            <button
-              onClick={() => triggerTestAlert()}
-              title={t.alerts.testAlert}
-              aria-label={t.alerts.testAlert}
-              style={{
-                background: 'rgba(225, 29, 72, 0.15)',
-                border: '1px solid rgba(225, 29, 72, 0.4)',
-                color: 'var(--accent-red)',
-                borderRadius: '6px',
-                padding: '6px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <Zap size={16} />
             </button>
 
             {/* Close Drawer Button */}

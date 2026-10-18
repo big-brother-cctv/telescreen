@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { Camera } from '../types';
 import { useAlerts } from '../context/AlertsContext';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -8,7 +8,6 @@ import {
   ShieldAlert,
   Volume2,
   VolumeX,
-  Zap,
   CheckCheck,
   Maximize2,
   Clock,
@@ -43,12 +42,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     activeAlertCameras,
     soundEnabled,
     setSoundEnabled,
-    triggerTestAlert,
     ackAllAlerts,
     setPreviewImage,
   } = useAlerts();
 
-  const onlineCamerasCount = cameras.filter((c) => c.status === 'online').length;
+  const onlineCount = cameras.filter((c) => c.status === 'online').length;
+  const standbyCount = cameras.filter((c) => c.status === 'standby' || !c.status).length;
+  const isOnlineSystem = cameras.length > 0;
+
+  // Sectores en alarma activa (combinando eventos SSE en tiempo real y alertas no leídas recientes)
+  const activeAlarmSectors = useMemo(() => {
+    const sectors = new Set<string>(activeAlertCameras);
+    const recentCutoff = Date.now() - 3 * 60 * 1000; // últimos 3 minutos
+    alerts.forEach((a) => {
+      if (!a.acknowledged && new Date(a.detectedAt).getTime() > recentCutoff) {
+        if (a.cameraName) sectors.add(a.cameraName);
+      }
+    });
+    return sectors;
+  }, [activeAlertCameras, alerts]);
+
   const recentAlertsWithPhotos = alerts.filter((a) => a.snapshotPath).slice(0, 6);
 
   const formatTime = (isoString: string) => {
@@ -89,22 +102,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* Action Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => triggerTestAlert()}
-            className="btn-ghost"
-            style={{
-              background: 'rgba(225, 29, 72, 0.15)',
-              borderColor: 'var(--accent-red)',
-              color: '#fff',
-              fontSize: '0.75rem',
-              gap: '6px',
-            }}
-            title={t.dashboardView.testAlert}
-          >
-            <Zap size={14} color="var(--accent-red)" />
-            <span>{t.dashboardView.testAlert}</span>
-          </button>
-
           <button
             onClick={ackAllAlerts}
             disabled={unreadCount === 0}
@@ -173,11 +170,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div style={{ marginTop: '12px' }}>
             <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff', fontFamily: 'var(--font-display)' }}>
-              {onlineCamerasCount} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 500 }}>/ {cameras.length} ONLINE</span>
+              {onlineCount > 0 ? onlineCount : cameras.length}{' '}
+              <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                / {cameras.length} {onlineCount > 0 ? 'ONLINE' : 'CANALES'}
+              </span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', fontSize: '0.7rem', color: onlineCamerasCount > 0 ? '#10b981' : 'var(--accent-amber)' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: onlineCamerasCount > 0 ? '#10b981' : 'var(--accent-amber)' }} />
-              <span>{onlineCamerasCount > 0 ? `${onlineCamerasCount} transmisiones RTSP/HLS activas` : 'Sin cámaras conectadas'}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', fontSize: '0.7rem', color: isOnlineSystem ? '#10b981' : 'var(--accent-amber)' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: isOnlineSystem ? '#10b981' : 'var(--accent-amber)' }} />
+              <span>
+                {cameras.length === 0
+                  ? 'Sin cámaras conectadas'
+                  : onlineCount > 0
+                  ? `${onlineCount} en vivo • ${standbyCount} en espera`
+                  : `${cameras.length} transmisión(es) RTSP/HLS en sistema`}
+              </span>
             </div>
           </div>
         </div>
@@ -244,11 +250,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
           <div style={{ marginTop: '12px' }}>
-            <div style={{ fontSize: '1.8rem', fontWeight: 900, color: activeAlertCameras.size > 0 ? 'var(--accent-red)' : '#fff', fontFamily: 'var(--font-display)' }}>
-              {activeAlertCameras.size} <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>SECTORES</span>
+            <div style={{ fontSize: '1.8rem', fontWeight: 900, color: activeAlarmSectors.size > 0 ? 'var(--accent-red)' : '#fff', fontFamily: 'var(--font-display)' }}>
+              {activeAlarmSectors.size} <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>SECTORES</span>
             </div>
-            <div style={{ fontSize: '0.7rem', color: activeAlertCameras.size > 0 ? 'var(--accent-red)' : 'var(--text-secondary)', marginTop: '6px', fontFamily: 'var(--font-mono)' }}>
-              {activeAlertCameras.size > 0 ? Array.from(activeAlertCameras).join(', ').toUpperCase() : 'Ninguna alarma activa en curso'}
+            <div style={{ fontSize: '0.7rem', color: activeAlarmSectors.size > 0 ? 'var(--accent-red)' : 'var(--text-secondary)', marginTop: '6px', fontFamily: 'var(--font-mono)' }}>
+              {activeAlarmSectors.size > 0 ? Array.from(activeAlarmSectors).join(', ').toUpperCase() : 'Ninguna alarma activa en curso'}
             </div>
           </div>
         </div>
@@ -488,13 +494,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div
                 key={cam.id}
                 style={{
-                  border: activeAlertCameras.has(cam.name)
+                  border: activeAlarmSectors.has(cam.name)
                     ? '2px solid var(--accent-red)'
                     : '1px solid var(--border-subtle)',
                   borderRadius: '6px',
                   overflow: 'hidden',
                   position: 'relative',
-                  boxShadow: activeAlertCameras.has(cam.name)
+                  boxShadow: activeAlarmSectors.has(cam.name)
                     ? '0 0 15px rgba(225, 29, 72, 0.4)'
                     : 'none',
                 }}

@@ -19,7 +19,6 @@ interface AlertsContextType {
   deleteAlert: (id: number) => Promise<void>;
   clearAllAlerts: () => Promise<void>;
   refreshAlerts: () => Promise<void>;
-  triggerTestAlert: (cameraName?: string) => Promise<void>;
   isDrawerOpen: boolean;
   setIsDrawerOpen: (open: boolean) => void;
   previewImage: { url: string; title: string; time: string } | null;
@@ -80,6 +79,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   });
 
   const cameraAlertTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const previousAlertIdsRef = useRef<Set<number>>(new Set());
 
   const setSoundEnabled = (val: boolean) => {
     setSoundEnabledState(val);
@@ -134,7 +134,31 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       ]);
 
       if (resAlerts.status === 'fulfilled' && resAlerts.value?.alerts) {
-        setAlerts(resAlerts.value.alerts);
+        const fetchedAlerts = resAlerts.value.alerts;
+
+        // Si entran alertas nuevas vía polling, activar toast, sonido y bordes activos
+        if (previousAlertIdsRef.current.size > 0) {
+          const brandNewAlerts = fetchedAlerts.filter(
+            (a) => !previousAlertIdsRef.current.has(a.id) && !a.acknowledged
+          );
+          if (brandNewAlerts.length > 0) {
+            setActiveToasts((prev) => [
+              ...brandNewAlerts.slice(0, 2),
+              ...prev.filter((t) => !brandNewAlerts.some((b) => b.id === t.id)),
+            ].slice(0, 3));
+
+            brandNewAlerts.forEach((a) => {
+              if (a.cameraName) markCameraActive(a.cameraName);
+            });
+
+            if (localStorage.getItem('bb_alert_sound') !== 'false') {
+              playTacticalAlarmTone();
+            }
+          }
+        }
+
+        previousAlertIdsRef.current = new Set(fetchedAlerts.map((a) => a.id));
+        setAlerts(fetchedAlerts);
       }
       if (resUnread.status === 'fulfilled' && typeof resUnread.value?.unreadCount === 'number') {
         setUnreadCount(resUnread.value.unreadCount);
@@ -144,11 +168,17 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
-  // Carga inicial
+  // Carga inicial y bucle de polling resiliente cada 4s
   useEffect(() => {
-    if (authStorage.getToken()) {
+    if (!authStorage.getToken()) return;
+
+    refreshAlerts();
+
+    const pollInterval = setInterval(() => {
       refreshAlerts();
-    }
+    }, 4000);
+
+    return () => clearInterval(pollInterval);
   }, []);
 
   // Suscripción SSE en tiempo real
@@ -292,72 +322,6 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
-  // Simular alerta de prueba táctica con captura generada
-  const triggerTestAlert = async (cameraName = 'camera') => {
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = 640;
-      canvas.height = 360;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.fillStyle = '#0a0d14';
-        ctx.fillRect(0, 0, 640, 360);
-
-        // Cuadrícula táctica
-        ctx.strokeStyle = '#1e2638';
-        ctx.lineWidth = 1;
-        for (let x = 0; x < 640; x += 40) {
-          ctx.beginPath();
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, 360);
-          ctx.stroke();
-        }
-        for (let y = 0; y < 360; y += 40) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(640, y);
-          ctx.stroke();
-        }
-
-        // Bounding box de movimiento en rojo
-        ctx.strokeStyle = '#e11d48';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(180, 80, 280, 190);
-        ctx.fillStyle = 'rgba(225, 29, 72, 0.18)';
-        ctx.fillRect(180, 80, 280, 190);
-
-        // Crosshair central
-        ctx.beginPath();
-        ctx.arc(320, 175, 12, 0, 2 * Math.PI);
-        ctx.stroke();
-
-        ctx.fillStyle = '#e11d48';
-        ctx.font = 'bold 15px monospace';
-        ctx.fillText('TARGET DETECTED [MOTION 99.2%]', 185, 72);
-
-        ctx.fillStyle = '#00f0ff';
-        ctx.font = 'bold 13px monospace';
-        ctx.fillText(`CAM: ${cameraName.toUpperCase()}`, 20, 30);
-        ctx.fillText(`TIMESTAMP: ${new Date().toISOString()}`, 20, 50);
-      }
-
-      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.9));
-      const formData = new FormData();
-      formData.append('camera_name', cameraName);
-      formData.append('label', 'motion');
-      formData.append('severity', 'warning');
-      formData.append('confidence', '0.99');
-      formData.append('ignore_cooldown', 'true');
-      if (blob) {
-        formData.append('image', blob, `test_motion_${Date.now()}.jpg`);
-      }
-
-      await api.createAlert(formData);
-    } catch (e) {
-      console.error('Error triggering test alert:', e);
-    }
-  };
-
   return (
     <AlertsContext.Provider
       value={{
@@ -376,7 +340,6 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         deleteAlert,
         clearAllAlerts,
         refreshAlerts,
-        triggerTestAlert,
         isDrawerOpen,
         setIsDrawerOpen,
         previewImage,

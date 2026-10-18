@@ -13,7 +13,6 @@ import {
   CheckCheck,
   Grid,
   List,
-  Zap,
   RefreshCw,
   Search,
   Calendar,
@@ -34,7 +33,6 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
     deleteAlert,
     clearAllAlerts,
     refreshAlerts,
-    triggerTestAlert,
     setPreviewImage,
   } = useAlerts();
 
@@ -183,21 +181,6 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
 
         {/* Global Action Toolbar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => triggerTestAlert()}
-            className="btn-ghost"
-            style={{
-              background: 'rgba(225, 29, 72, 0.15)',
-              borderColor: 'var(--accent-red)',
-              color: '#fff',
-              fontSize: '0.75rem',
-              gap: '6px',
-            }}
-            title={t.alerts.testAlert}
-          >
-            <Zap size={14} color="var(--accent-red)" />
-            <span>{t.alerts.testAlert}</span>
-          </button>
 
           <button
             onClick={ackAllAlerts}
@@ -441,14 +424,6 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', maxWidth: '420px' }}>
             {t.alertsTab.emptyDesc}
           </div>
-          <button
-            onClick={() => triggerTestAlert()}
-            className="btn-ghost"
-            style={{ marginTop: '12px', fontSize: '0.75rem', gap: '6px', background: 'rgba(225, 29, 72, 0.12)' }}
-          >
-            <Zap size={14} color="var(--accent-red)" />
-            <span>Simular Alerta de Movimiento Ahora</span>
-          </button>
         </div>
       ) : viewMode === 'gallery' ? (
         /* Large Photo Gallery Mode */
