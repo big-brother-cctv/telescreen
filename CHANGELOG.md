@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/big-brother-cctv/telescreen/compare/v0.14.0...v0.15.0) (2026-10-18)
+
+
+### Features
+
+* add dedicated Alerts and Dashboard views with enhanced filtering and management tools ([815d4cb](https://github.com/big-brother-cctv/telescreen/commit/815d4cb607316d1228081f3fa1878726ecb286bb))
+
 ## [0.14.0](https://github.com/big-brother-cctv/telescreen/compare/v0.13.0...v0.14.0) (2026-10-18)
 
 
