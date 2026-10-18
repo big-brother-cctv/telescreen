@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import type { Camera, User } from './types';
 import { api, authStorage } from './services/api';
 import { Navbar } from './components/Navbar';
+import { DashboardView } from './views/DashboardView';
+import { AlertsView } from './views/AlertsView';
 import { LiveGrid } from './views/LiveGrid';
 import { CamerasAdmin } from './views/CamerasAdmin';
 import { UsersAdmin } from './views/UsersAdmin';
@@ -13,7 +15,7 @@ import { SnapshotModal } from './components/SnapshotModal';
 
 export const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(Boolean(authStorage.getToken()));
-  const [currentView, setCurrentView] = useState<'grid' | 'admin' | 'users'>('grid');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'grid' | 'alerts' | 'admin' | 'users'>('dashboard');
   
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [cameras, setCameras] = useState<Camera[]>([]);
@@ -95,6 +97,23 @@ export const App: React.FC = () => {
         />
 
         <main style={{ flex: 1 }}>
+          {currentView === 'dashboard' && (
+            <DashboardView
+              cameras={cameras}
+              isLoading={loading}
+              onRefresh={loadData}
+              onNavigate={setCurrentView}
+              onAddCamera={() => {
+                setEditingCamera(null);
+                setModalOpen(true);
+              }}
+            />
+          )}
+
+          {currentView === 'alerts' && (
+            <AlertsView cameras={cameras} />
+          )}
+
           {currentView === 'grid' && (
             <LiveGrid
               cameras={cameras}

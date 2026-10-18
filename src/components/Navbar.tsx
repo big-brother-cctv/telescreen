@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, LogOut, Radio, Terminal, Bell } from 'lucide-react';
+import { Users, LogOut, Radio, Terminal, Bell, LayoutDashboard, ShieldAlert } from 'lucide-react';
 import { api } from '../services/api';
 import type { User } from '../types';
 import { useLanguage, LanguageSelector } from '../i18n/LanguageContext';
@@ -7,8 +7,8 @@ import { useAlerts } from '../context/AlertsContext';
 import { AlertsDrawer } from './AlertsDrawer';
 
 interface NavbarProps {
-  currentView: 'grid' | 'admin' | 'users';
-  onNavigate: (view: 'grid' | 'admin' | 'users') => void;
+  currentView: 'dashboard' | 'grid' | 'alerts' | 'admin' | 'users';
+  onNavigate: (view: 'dashboard' | 'grid' | 'alerts' | 'admin' | 'users') => void;
   user: User | null;
   onLogout: () => void;
 }
@@ -178,6 +178,20 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
         {/* Desktop Navigation Tabs */}
         <nav className="desktop-only" style={{ alignItems: 'center', gap: '8px' }}>
           <button
+            onClick={() => onNavigate('dashboard')}
+            className="btn-ghost"
+            style={{
+              background: currentView === 'dashboard' ? 'rgba(225, 29, 72, 0.16)' : 'transparent',
+              color: currentView === 'dashboard' ? '#fff' : 'var(--text-secondary)',
+              borderColor: currentView === 'dashboard' ? 'var(--accent-red)' : 'transparent',
+              textTransform: 'uppercase',
+            }}
+          >
+            <LayoutDashboard size={15} color={currentView === 'dashboard' ? 'var(--accent-red)' : 'var(--text-secondary)'} />
+            {t.navbar.dashboard}
+          </button>
+
+          <button
             onClick={() => onNavigate('grid')}
             className="btn-ghost"
             style={{
@@ -189,6 +203,37 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           >
             <Radio size={15} color={currentView === 'grid' ? 'var(--accent-red)' : 'var(--text-secondary)'} />
             {t.navbar.liveCameras}
+          </button>
+
+          <button
+            onClick={() => onNavigate('alerts')}
+            className="btn-ghost"
+            style={{
+              background: currentView === 'alerts' ? 'rgba(225, 29, 72, 0.16)' : 'transparent',
+              color: currentView === 'alerts' ? '#fff' : 'var(--text-secondary)',
+              borderColor: currentView === 'alerts' ? 'var(--accent-red)' : 'transparent',
+              textTransform: 'uppercase',
+              position: 'relative',
+            }}
+          >
+            <ShieldAlert size={15} color={currentView === 'alerts' ? 'var(--accent-red)' : 'var(--text-secondary)'} />
+            <span>{t.navbar.notificationsTab}</span>
+            {unreadCount > 0 && (
+              <span
+                style={{
+                  background: 'var(--accent-red)',
+                  color: '#fff',
+                  fontSize: '0.62rem',
+                  fontWeight: 800,
+                  fontFamily: 'var(--font-mono)',
+                  padding: '1px 5px',
+                  borderRadius: '10px',
+                  marginLeft: '2px',
+                }}
+              >
+                {unreadCount}
+              </span>
+            )}
           </button>
 
           <button
@@ -293,13 +338,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
                 fontSize: '0.78rem',
                 fontWeight: 700,
                 color: '#fff',
-                textTransform: 'uppercase',
+                fontFamily: 'var(--font-mono)',
+                textTransform: 'none',
                 maxWidth: '120px',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap'
               }}>
-                {user?.name || user?.username || t.common.user}
+                @{user?.username || user?.name || t.common.user}
               </div>
               <div style={{
                 fontSize: '0.62rem',
@@ -315,13 +361,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             {/* Mobile user badge: compact initials with clearance indicator */}
             <div
               className="mobile-only"
-              title={`${user?.name || user?.username || ''} (${clearanceLabel})`}
+              title={`@${user?.username || user?.name || ''} (${clearanceLabel})`}
               style={{
                 width: '28px',
                 height: '28px',
                 borderRadius: '6px',
                 background: 'rgba(255, 255, 255, 0.04)',
                 border: `1px solid ${clearanceColor}`,
+                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '0.7rem',
@@ -364,6 +411,39 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
         paddingBottom: 'env(safe-area-inset-bottom, 0px)'
       }}>
         <button
+          onClick={() => onNavigate('dashboard')}
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '3px',
+            background: 'transparent',
+            border: 'none',
+            color: currentView === 'dashboard' ? '#fff' : 'var(--text-muted)',
+            padding: '6px 4px',
+            position: 'relative'
+          }}
+        >
+          {currentView === 'dashboard' && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: '20%',
+              right: '20%',
+              height: '2px',
+              background: 'var(--accent-red)',
+              boxShadow: '0 0 8px var(--accent-red)'
+            }} />
+          )}
+          <LayoutDashboard size={18} color={currentView === 'dashboard' ? 'var(--accent-red)' : 'var(--text-muted)'} />
+          <span style={{ fontSize: '0.62rem', fontWeight: currentView === 'dashboard' ? 800 : 500, fontFamily: 'var(--font-display)' }}>
+            {t.navbar.dashboard}
+          </span>
+        </button>
+
+        <button
           onClick={() => onNavigate('grid')}
           style={{
             flex: 1,
@@ -391,8 +471,57 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             }} />
           )}
           <Radio size={18} color={currentView === 'grid' ? 'var(--accent-red)' : 'var(--text-muted)'} />
-          <span style={{ fontSize: '0.68rem', fontWeight: currentView === 'grid' ? 800 : 500, fontFamily: 'var(--font-display)' }}>
+          <span style={{ fontSize: '0.62rem', fontWeight: currentView === 'grid' ? 800 : 500, fontFamily: 'var(--font-display)' }}>
             {t.navbar.live}
+          </span>
+        </button>
+
+        <button
+          onClick={() => onNavigate('alerts')}
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '3px',
+            background: 'transparent',
+            border: 'none',
+            color: currentView === 'alerts' ? '#fff' : 'var(--text-muted)',
+            padding: '6px 4px',
+            position: 'relative'
+          }}
+        >
+          {currentView === 'alerts' && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: '20%',
+              right: '20%',
+              height: '2px',
+              background: 'var(--accent-red)',
+              boxShadow: '0 0 8px var(--accent-red)'
+            }} />
+          )}
+          <div style={{ position: 'relative' }}>
+            <ShieldAlert size={18} color={currentView === 'alerts' ? 'var(--accent-red)' : 'var(--text-muted)'} />
+            {unreadCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '-3px',
+                  right: '-6px',
+                  width: '7px',
+                  height: '7px',
+                  borderRadius: '50%',
+                  background: 'var(--accent-red)',
+                  boxShadow: '0 0 6px var(--accent-red)',
+                }}
+              />
+            )}
+          </div>
+          <span style={{ fontSize: '0.62rem', fontWeight: currentView === 'alerts' ? 800 : 500, fontFamily: 'var(--font-display)' }}>
+            {t.navbar.notificationsTab}
           </span>
         </button>
 

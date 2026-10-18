@@ -130,15 +130,29 @@ export const api = {
 
   getUnreadAlertsCount: () => request<{ unreadCount: number }>('/alerts/unread-count'),
 
-  ackAlert: (id: number) =>
-    request<{ message: string }>(`/alerts/${id}/ack`, {
-      method: 'PUT',
-    }),
+  ackAlert: async (id: number) => {
+    try {
+      return await request<{ message: string }>(`/alerts/${id}/ack`, {
+        method: 'POST',
+      });
+    } catch {
+      return await request<{ message: string }>(`/alerts/${id}/ack`, {
+        method: 'PUT',
+      });
+    }
+  },
 
-  ackAllAlerts: () =>
-    request<{ message: string }>('/alerts/ack-all', {
-      method: 'PUT',
-    }),
+  ackAllAlerts: async () => {
+    try {
+      return await request<{ message: string }>('/alerts/ack-all', {
+        method: 'POST',
+      });
+    } catch {
+      return await request<{ message: string }>('/alerts/ack-all', {
+        method: 'PUT',
+      });
+    }
+  },
 
   deleteAlert: (id: number) =>
     request<void>(`/alerts/${id}`, {

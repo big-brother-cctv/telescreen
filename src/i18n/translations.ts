@@ -37,6 +37,8 @@ export interface Translations {
     cameraManagement: string;
     cameras: string;
     users: string;
+    dashboard: string;
+    notificationsTab: string;
     logout: string;
     language: string;
   };
@@ -254,6 +256,42 @@ export interface Translations {
     viewInPanel: string;
     zoomSnapshot: string;
   };
+  dashboardView: {
+    title: string;
+    subtitle: string;
+    totalCameras: string;
+    onlineCameras: string;
+    standbyCameras: string;
+    totalAlerts: string;
+    unreadAlerts: string;
+    activeAlarms: string;
+    systemHealth: string;
+    operational: string;
+    liveFeeds: string;
+    recentSnapshots: string;
+    noSnapshots: string;
+    viewLiveGrid: string;
+    viewAllAlerts: string;
+    quickActions: string;
+    testAlert: string;
+    markAllSeen: string;
+    manageCameras: string;
+  };
+  alertsTab: {
+    title: string;
+    subtitle: string;
+    filterAll: string;
+    filterUnread: string;
+    filterRead: string;
+    allCameras: string;
+    galleryMode: string;
+    tableMode: string;
+    confidence: string;
+    downloadSnapshot: string;
+    zoomSnapshot: string;
+    emptyTitle: string;
+    emptyDesc: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -294,6 +332,8 @@ export const translations: Record<Language, Translations> = {
       cameraManagement: 'Gestión de Cámaras',
       cameras: 'Cámaras',
       users: 'Usuarios',
+      dashboard: 'Dashboard',
+      notificationsTab: 'Notificaciones',
       logout: 'Cerrar sesión',
       language: 'Idioma',
     },
@@ -511,6 +551,42 @@ export const translations: Record<Language, Translations> = {
       viewInPanel: 'Ver en panel',
       zoomSnapshot: 'Ampliar captura',
     },
+    dashboardView: {
+      title: 'CENTRO DE CONTROL CCTV',
+      subtitle: 'Monitorización táctica en tiempo real, telemetría y detección de eventos',
+      totalCameras: 'Cámaras Totales',
+      onlineCameras: 'En Emisión Online',
+      standbyCameras: 'En Espera / Standby',
+      totalAlerts: 'Incidentes Detectados',
+      unreadAlerts: 'Alertas Pendientes',
+      activeAlarms: 'Sectores en Alarma',
+      systemHealth: 'Estado de la Red',
+      operational: 'OPERATIVO',
+      liveFeeds: 'Vigilancia de Cámaras',
+      recentSnapshots: 'Capturas de Movimiento Recientes',
+      noSnapshots: 'No hay capturas registradas todavía en el sector.',
+      viewLiveGrid: 'Mosaico en Vivo',
+      viewAllAlerts: 'Ver Historial Completo',
+      quickActions: 'Acciones Tácticas',
+      testAlert: 'Simular Detección ⚡',
+      markAllSeen: 'Marcar Todo Visto',
+      manageCameras: 'Ajustes de Cámaras',
+    },
+    alertsTab: {
+      title: 'HISTORIAL DE NOTIFICACIONES Y CAPTURAS',
+      subtitle: 'Registro fotográfico forense y alertas de intrusión en tiempo real',
+      filterAll: 'Todas las alertas',
+      filterUnread: 'Pendientes (Sin leer)',
+      filterRead: 'Atendidas (Leídas)',
+      allCameras: 'Todas las cámaras',
+      galleryMode: 'Mosaico de Fotos',
+      tableMode: 'Lista Detallada',
+      confidence: 'Confianza',
+      downloadSnapshot: 'Descargar foto',
+      zoomSnapshot: 'Ampliar captura',
+      emptyTitle: 'SECTOR SEGURO',
+      emptyDesc: 'No hay alertas ni detecciones de movimiento registradas con los filtros seleccionados.',
+    },
   },
   en: {
     common: {
@@ -549,6 +625,8 @@ export const translations: Record<Language, Translations> = {
       cameraManagement: 'Camera Management',
       cameras: 'Cameras',
       users: 'Users',
+      dashboard: 'Dashboard',
+      notificationsTab: 'Notifications',
       logout: 'Sign Out',
       language: 'Language',
     },
@@ -765,6 +843,42 @@ export const translations: Record<Language, Translations> = {
       testAlert: 'Test motion alert',
       viewInPanel: 'View in panel',
       zoomSnapshot: 'Zoom snapshot',
+    },
+    dashboardView: {
+      title: 'CCTV COMMAND CENTER',
+      subtitle: 'Real-time tactical monitoring, telemetry and incident detection',
+      totalCameras: 'Total Cameras',
+      onlineCameras: 'Streaming Online',
+      standbyCameras: 'Standby / Offline',
+      totalAlerts: 'Detected Incidents',
+      unreadAlerts: 'Pending Alerts',
+      activeAlarms: 'Sectors in Alarm',
+      systemHealth: 'Network Status',
+      operational: 'OPERATIONAL',
+      liveFeeds: 'Camera Surveillance',
+      recentSnapshots: 'Recent Motion Snapshots',
+      noSnapshots: 'No snapshots recorded yet in the sector.',
+      viewLiveGrid: 'Live Matrix',
+      viewAllAlerts: 'View Full History',
+      quickActions: 'Tactical Actions',
+      testAlert: 'Simulate Detection ⚡',
+      markAllSeen: 'Mark All Seen',
+      manageCameras: 'Camera Settings',
+    },
+    alertsTab: {
+      title: 'NOTIFICATIONS & SNAPSHOT ARCHIVE',
+      subtitle: 'Forensic photo log and real-time intrusion alarms',
+      filterAll: 'All alerts',
+      filterUnread: 'Pending (Unread)',
+      filterRead: 'Acknowledged',
+      allCameras: 'All cameras',
+      galleryMode: 'Photo Gallery',
+      tableMode: 'Detailed List',
+      confidence: 'Confidence',
+      downloadSnapshot: 'Download photo',
+      zoomSnapshot: 'Zoom snapshot',
+      emptyTitle: 'SECTOR SECURE',
+      emptyDesc: 'No alerts or motion events recorded matching the selected filters.',
     },
   },
 };

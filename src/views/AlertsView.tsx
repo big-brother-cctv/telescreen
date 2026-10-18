@@ -1,0 +1,869 @@
+import React, { useState, useMemo } from 'react';
+import type { Camera } from '../types';
+import { useAlerts } from '../context/AlertsContext';
+import { useLanguage } from '../i18n/LanguageContext';
+import {
+  ShieldAlert,
+  Clock,
+  Check,
+  Trash2,
+  Maximize2,
+  Download,
+  Filter,
+  CheckCheck,
+  Grid,
+  List,
+  Zap,
+  RefreshCw,
+  Search,
+  Calendar,
+  AlertTriangle
+} from 'lucide-react';
+
+interface AlertsViewProps {
+  cameras: Camera[];
+}
+
+export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
+  const { t } = useLanguage();
+  const {
+    alerts,
+    unreadCount,
+    ackAlert,
+    ackAllAlerts,
+    deleteAlert,
+    clearAllAlerts,
+    refreshAlerts,
+    triggerTestAlert,
+    setPreviewImage,
+  } = useAlerts();
+
+  const [selectedCamera, setSelectedCamera] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'unread' | 'read'>('all');
+  const [viewMode, setViewMode] = useState<'gallery' | 'table'>('gallery');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refreshAlerts();
+    setTimeout(() => setIsRefreshing(false), 400);
+  };
+
+  const formatTime = (isoString: string) => {
+    try {
+      const d = new Date(isoString);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    } catch {
+      return isoString;
+    }
+  };
+
+  const formatDate = (isoString: string) => {
+    try {
+      const d = new Date(isoString);
+      return d.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' });
+    } catch {
+      return '';
+    }
+  };
+
+  const getTimeAgo = (isoString: string) => {
+    try {
+      const diffSec = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000);
+      if (diffSec < 60) return t.alerts.justNow;
+      const mins = Math.floor(diffSec / 60);
+      if (mins < 60) return t.alerts.minutesAgo.replace('{m}', String(mins));
+      const hours = Math.floor(mins / 60);
+      return `hace ${hours}h`;
+    } catch {
+      return '';
+    }
+  };
+
+  // Filtrado reactivo de alertas
+  const filteredAlerts = useMemo(() => {
+    return alerts.filter((alert) => {
+      // Filtro de cámara
+      if (selectedCamera !== 'all' && alert.cameraName !== selectedCamera) {
+        return false;
+      }
+      // Filtro de estado
+      if (statusFilter === 'unread' && alert.acknowledged) {
+        return false;
+      }
+      if (statusFilter === 'read' && !alert.acknowledged) {
+        return false;
+      }
+      // Búsqueda por texto libre
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const matchesCam = alert.cameraName.toLowerCase().includes(query);
+        const matchesLabel = (alert.label || '').toLowerCase().includes(query);
+        if (!matchesCam && !matchesLabel) return false;
+      }
+      return true;
+    });
+  }, [alerts, selectedCamera, statusFilter, searchQuery]);
+
+  return (
+    <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '1600px', margin: '0 auto', width: '100%' }}>
+      {/* View Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '16px',
+          borderBottom: '1px solid var(--border-party)',
+          paddingBottom: '16px',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '8px',
+              background: 'rgba(225, 29, 72, 0.2)',
+              border: '1px solid var(--accent-red)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 15px rgba(225, 29, 72, 0.3)',
+            }}
+          >
+            <ShieldAlert size={22} color="var(--accent-red)" />
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <h1
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 900,
+                  fontSize: '1.3rem',
+                  letterSpacing: '0.04em',
+                  color: '#fff',
+                  margin: 0,
+                  textTransform: 'uppercase',
+                }}
+              >
+                {t.alertsTab.title}
+              </h1>
+              {unreadCount > 0 && (
+                <span
+                  style={{
+                    background: 'var(--accent-red)',
+                    color: '#fff',
+                    fontSize: '0.7rem',
+                    fontWeight: 800,
+                    fontFamily: 'var(--font-mono)',
+                    padding: '2px 8px',
+                    borderRadius: '10px',
+                    boxShadow: '0 0 10px var(--accent-red)',
+                  }}
+                >
+                  {unreadCount} PENDIENTES
+                </span>
+              )}
+            </div>
+            <p
+              style={{
+                color: 'var(--text-muted)',
+                fontSize: '0.78rem',
+                margin: '4px 0 0 0',
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
+              {t.alertsTab.subtitle}
+            </p>
+          </div>
+        </div>
+
+        {/* Global Action Toolbar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => triggerTestAlert()}
+            className="btn-ghost"
+            style={{
+              background: 'rgba(225, 29, 72, 0.15)',
+              borderColor: 'var(--accent-red)',
+              color: '#fff',
+              fontSize: '0.75rem',
+              gap: '6px',
+            }}
+            title={t.alerts.testAlert}
+          >
+            <Zap size={14} color="var(--accent-red)" />
+            <span>{t.alerts.testAlert}</span>
+          </button>
+
+          <button
+            onClick={ackAllAlerts}
+            disabled={unreadCount === 0}
+            className="btn-ghost"
+            style={{
+              fontSize: '0.75rem',
+              gap: '6px',
+              opacity: unreadCount > 0 ? 1 : 0.5,
+              cursor: unreadCount > 0 ? 'pointer' : 'default',
+            }}
+            title={t.alerts.markAllRead}
+          >
+            <CheckCheck size={14} color={unreadCount > 0 ? 'var(--accent-teal)' : 'var(--text-muted)'} />
+            <span>{t.alerts.markAllRead}</span>
+          </button>
+
+          <button
+            onClick={clearAllAlerts}
+            disabled={alerts.length === 0}
+            className="btn-ghost"
+            style={{
+              fontSize: '0.75rem',
+              gap: '6px',
+              color: 'var(--accent-red)',
+              opacity: alerts.length > 0 ? 1 : 0.5,
+              cursor: alerts.length > 0 ? 'pointer' : 'default',
+            }}
+            title={t.alerts.clearHistory}
+          >
+            <Trash2 size={13} />
+            <span className="desktop-only">{t.alerts.clearHistory}</span>
+          </button>
+
+          <button
+            onClick={handleRefresh}
+            className="btn-ghost"
+            style={{ fontSize: '0.75rem', gap: '6px' }}
+            title={t.common.refresh}
+          >
+            <RefreshCw size={14} className={isRefreshing ? 'spin' : ''} />
+          </button>
+        </div>
+      </div>
+
+      {/* Filter and View Mode Control Bar */}
+      <div
+        style={{
+          background: 'rgba(13, 16, 24, 0.8)',
+          border: '1px solid var(--border-party)',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px',
+        }}
+      >
+        {/* Left: Filter Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', flex: 1 }}>
+          {/* Camera Selector */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Filter size={14} color="var(--text-muted)" />
+            <select
+              value={selectedCamera}
+              onChange={(e) => setSelectedCamera(e.target.value)}
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--border-subtle)',
+                color: '#fff',
+                fontSize: '0.75rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '6px 10px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              <option value="all" style={{ background: '#0b0d13' }}>
+                {t.alertsTab.allCameras}
+              </option>
+              {cameras.map((c) => (
+                <option key={c.id} value={c.name} style={{ background: '#0b0d13' }}>
+                  {c.name.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Status Filter Buttons */}
+          <div style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.4)', borderRadius: '4px', padding: '2px', border: '1px solid var(--border-subtle)' }}>
+            <button
+              onClick={() => setStatusFilter('all')}
+              style={{
+                background: statusFilter === 'all' ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+                border: 'none',
+                color: statusFilter === 'all' ? '#fff' : 'var(--text-muted)',
+                fontSize: '0.72rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '4px 8px',
+                borderRadius: '3px',
+                cursor: 'pointer',
+              }}
+            >
+              {t.alertsTab.filterAll}
+            </button>
+            <button
+              onClick={() => setStatusFilter('unread')}
+              style={{
+                background: statusFilter === 'unread' ? 'rgba(225, 29, 72, 0.25)' : 'transparent',
+                border: 'none',
+                color: statusFilter === 'unread' ? 'var(--accent-red)' : 'var(--text-muted)',
+                fontSize: '0.72rem',
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 700,
+                padding: '4px 8px',
+                borderRadius: '3px',
+                cursor: 'pointer',
+              }}
+            >
+              {t.alertsTab.filterUnread}
+            </button>
+            <button
+              onClick={() => setStatusFilter('read')}
+              style={{
+                background: statusFilter === 'read' ? 'rgba(0, 240, 255, 0.15)' : 'transparent',
+                border: 'none',
+                color: statusFilter === 'read' ? 'var(--accent-teal)' : 'var(--text-muted)',
+                fontSize: '0.72rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '4px 8px',
+                borderRadius: '3px',
+                cursor: 'pointer',
+              }}
+            >
+              {t.alertsTab.filterRead}
+            </button>
+          </div>
+
+          {/* Search box */}
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <Search size={13} color="var(--text-muted)" style={{ position: 'absolute', left: '8px' }} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar cámara o etiqueta..."
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--border-subtle)',
+                color: '#fff',
+                fontSize: '0.75rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '6px 10px 6px 26px',
+                borderRadius: '4px',
+                width: '180px',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Right: Layout Switcher (Gallery vs Table) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            Mostrando {filteredAlerts.length} de {alerts.length}
+          </span>
+          <div style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.4)', borderRadius: '4px', padding: '2px', border: '1px solid var(--border-subtle)' }}>
+            <button
+              onClick={() => setViewMode('gallery')}
+              title={t.alertsTab.galleryMode}
+              style={{
+                background: viewMode === 'gallery' ? 'rgba(225, 29, 72, 0.25)' : 'transparent',
+                border: 'none',
+                color: viewMode === 'gallery' ? '#fff' : 'var(--text-muted)',
+                padding: '4px 8px',
+                borderRadius: '3px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.7rem',
+              }}
+            >
+              <Grid size={14} />
+              <span className="desktop-only">{t.alertsTab.galleryMode}</span>
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              title={t.alertsTab.tableMode}
+              style={{
+                background: viewMode === 'table' ? 'rgba(225, 29, 72, 0.25)' : 'transparent',
+                border: 'none',
+                color: viewMode === 'table' ? '#fff' : 'var(--text-muted)',
+                padding: '4px 8px',
+                borderRadius: '3px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.7rem',
+              }}
+            >
+              <List size={14} />
+              <span className="desktop-only">{t.alertsTab.tableMode}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Area: Gallery or Table */}
+      {filteredAlerts.length === 0 ? (
+        <div
+          style={{
+            padding: '60px 20px',
+            textAlign: 'center',
+            background: 'rgba(13, 16, 24, 0.5)',
+            border: '1px dashed var(--border-subtle)',
+            borderRadius: '8px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          <div
+            style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: 'rgba(255, 255, 255, 0.03)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <ShieldAlert size={28} color="var(--text-muted)" />
+          </div>
+          <div style={{ fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#fff' }}>
+            {t.alertsTab.emptyTitle}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', maxWidth: '420px' }}>
+            {t.alertsTab.emptyDesc}
+          </div>
+          <button
+            onClick={() => triggerTestAlert()}
+            className="btn-ghost"
+            style={{ marginTop: '12px', fontSize: '0.75rem', gap: '6px', background: 'rgba(225, 29, 72, 0.12)' }}
+          >
+            <Zap size={14} color="var(--accent-red)" />
+            <span>Simular Alerta de Movimiento Ahora</span>
+          </button>
+        </div>
+      ) : viewMode === 'gallery' ? (
+        /* Large Photo Gallery Mode */
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: '18px',
+          }}
+        >
+          {filteredAlerts.map((alert) => {
+            const snapshotUrl = alert.snapshotPath
+              ? `/api/alerts/snapshots/${alert.snapshotPath.split('/').pop()}`
+              : '';
+
+            return (
+              <div
+                key={alert.id}
+                style={{
+                  background: alert.acknowledged
+                    ? 'rgba(14, 17, 26, 0.75)'
+                    : 'linear-gradient(135deg, rgba(225, 29, 72, 0.12) 0%, rgba(18, 22, 34, 0.9) 100%)',
+                  border: `1px solid ${
+                    alert.acknowledged ? 'var(--border-subtle)' : 'rgba(225, 29, 72, 0.65)'
+                  }`,
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  boxShadow: alert.acknowledged
+                    ? 'none'
+                    : '0 6px 24px rgba(225, 29, 72, 0.18)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {/* Photo Viewer Container */}
+                <div
+                  onClick={() =>
+                    snapshotUrl &&
+                    setPreviewImage({
+                      url: snapshotUrl,
+                      title: alert.cameraName.toUpperCase(),
+                      time: `${formatDate(alert.detectedAt)} ${formatTime(alert.detectedAt)}`,
+                    })
+                  }
+                  style={{
+                    height: '200px',
+                    background: '#05070a',
+                    position: 'relative',
+                    cursor: snapshotUrl ? 'pointer' : 'default',
+                    overflow: 'hidden',
+                  }}
+                  title={snapshotUrl ? t.alertsTab.zoomSnapshot : ''}
+                >
+                  {snapshotUrl ? (
+                    <>
+                      <img
+                        src={snapshotUrl}
+                        alt="Motion Snapshot"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                      <div
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'rgba(0, 0, 0, 0.4)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          opacity: 0,
+                          transition: 'opacity 0.15s ease',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+                        onMouseLeave={(e) => (e.currentTarget.style.opacity = '0')}
+                      >
+                        <Maximize2 size={24} color="#fff" />
+                      </div>
+                    </>
+                  ) : (
+                    <div
+                      style={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        color: 'var(--text-muted)',
+                      }}
+                    >
+                      <AlertTriangle size={28} color="var(--accent-red)" />
+                      <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)' }}>Sin imagen adjunta</span>
+                    </div>
+                  )}
+
+                  {/* Status Overlay Badge */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      left: '10px',
+                      background: alert.acknowledged ? 'rgba(0, 240, 255, 0.9)' : 'rgba(225, 29, 72, 0.95)',
+                      color: alert.acknowledged ? '#000' : '#fff',
+                      fontSize: '0.65rem',
+                      fontWeight: 900,
+                      fontFamily: 'var(--font-mono)',
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      letterSpacing: '0.04em',
+                      boxShadow: alert.acknowledged ? 'none' : '0 0 10px rgba(225, 29, 72, 0.6)',
+                    }}
+                  >
+                    {alert.acknowledged ? t.alerts.acked.toUpperCase() : t.alerts.badge}
+                  </div>
+
+                  {/* Confidence Badge */}
+                  {alert.confidence && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        background: 'rgba(0, 0, 0, 0.75)',
+                        color: '#fff',
+                        fontSize: '0.62rem',
+                        fontFamily: 'var(--font-mono)',
+                        padding: '2px 6px',
+                        borderRadius: '3px',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                      }}
+                    >
+                      {Math.round(alert.confidence * 100)}% CONF
+                    </div>
+                  )}
+                </div>
+
+                {/* Card Info & Actions */}
+                <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-display)',
+                        fontWeight: 900,
+                        fontSize: '0.9rem',
+                        color: '#fff',
+                        letterSpacing: '0.02em',
+                      }}
+                    >
+                      {alert.cameraName.toUpperCase()}
+                    </span>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '0.7rem',
+                        fontFamily: 'var(--font-mono)',
+                        color: 'var(--text-muted)',
+                      }}
+                    >
+                      <Clock size={12} />
+                      <span>{formatTime(alert.detectedAt)}</span>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      fontSize: '0.7rem',
+                      fontFamily: 'var(--font-mono)',
+                      color: 'var(--text-secondary)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Calendar size={12} color="var(--text-muted)" />
+                      <span>{formatDate(alert.detectedAt)}</span>
+                    </div>
+                    <span>{getTimeAgo(alert.detectedAt)}</span>
+                  </div>
+
+                  {/* Card Bottom Buttons */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                      paddingTop: '10px',
+                      marginTop: '4px',
+                    }}
+                  >
+                    {!alert.acknowledged ? (
+                      <button
+                        onClick={() => ackAlert(alert.id)}
+                        style={{
+                          background: 'rgba(225, 29, 72, 0.2)',
+                          border: '1px solid var(--accent-red)',
+                          color: '#fff',
+                          borderRadius: '4px',
+                          padding: '4px 10px',
+                          fontSize: '0.72rem',
+                          fontFamily: 'var(--font-mono)',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                        }}
+                      >
+                        <Check size={13} />
+                        <span>{t.alerts.ack}</span>
+                      </button>
+                    ) : (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          color: 'var(--accent-teal)',
+                          fontSize: '0.72rem',
+                          fontFamily: 'var(--font-mono)',
+                          fontWeight: 700,
+                        }}
+                      >
+                        <Check size={13} />
+                        <span>{t.alerts.acked}</span>
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {snapshotUrl && (
+                        <a
+                          href={snapshotUrl}
+                          download={`snapshot_${alert.cameraName}_${alert.id}.jpg`}
+                          style={{
+                            background: 'transparent',
+                            border: '1px solid var(--border-subtle)',
+                            color: 'var(--text-muted)',
+                            borderRadius: '4px',
+                            padding: '4px 6px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                          title={t.alertsTab.downloadSnapshot}
+                        >
+                          <Download size={13} />
+                        </a>
+                      )}
+
+                      <button
+                        onClick={() => deleteAlert(alert.id)}
+                        style={{
+                          background: 'transparent',
+                          border: '1px solid var(--border-subtle)',
+                          color: 'var(--text-muted)',
+                          borderRadius: '4px',
+                          padding: '4px 6px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                        title={t.alerts.delete}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-red)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        /* Table / List Mode */
+        <div
+          style={{
+            background: 'rgba(13, 16, 24, 0.8)',
+            border: '1px solid var(--border-party)',
+            borderRadius: '8px',
+            overflow: 'hidden',
+          }}
+        >
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.78rem' }}>
+            <thead>
+              <tr style={{ background: 'rgba(18, 22, 34, 0.95)', borderBottom: '1px solid var(--border-party)' }}>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>CAPTURA</th>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>CÁMARA</th>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>HORA / FECHA</th>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>ETIQUETA</th>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>ESTADO</th>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textAlign: 'right' }}>ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAlerts.map((alert) => {
+                const snapshotUrl = alert.snapshotPath
+                  ? `/api/alerts/snapshots/${alert.snapshotPath.split('/').pop()}`
+                  : '';
+
+                return (
+                  <tr
+                    key={alert.id}
+                    style={{
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                      background: alert.acknowledged ? 'transparent' : 'rgba(225, 29, 72, 0.05)',
+                    }}
+                  >
+                    <td style={{ padding: '10px 16px' }}>
+                      {snapshotUrl ? (
+                        <div
+                          onClick={() =>
+                            setPreviewImage({
+                              url: snapshotUrl,
+                              title: alert.cameraName.toUpperCase(),
+                              time: `${formatDate(alert.detectedAt)} ${formatTime(alert.detectedAt)}`,
+                            })
+                          }
+                          style={{
+                            width: '64px',
+                            height: '40px',
+                            borderRadius: '4px',
+                            overflow: 'hidden',
+                            background: '#000',
+                            border: '1px solid var(--border-subtle)',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <img src={snapshotUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Sin foto</span>
+                      )}
+                    </td>
+
+                    <td style={{ padding: '10px 16px', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#fff' }}>
+                      {alert.cameraName.toUpperCase()}
+                    </td>
+
+                    <td style={{ padding: '10px 16px', fontFamily: 'var(--font-mono)' }}>
+                      <div>{formatTime(alert.detectedAt)}</div>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.68rem' }}>{formatDate(alert.detectedAt)} ({getTimeAgo(alert.detectedAt)})</div>
+                    </td>
+
+                    <td style={{ padding: '10px 16px', fontFamily: 'var(--font-mono)', color: 'var(--accent-party)' }}>
+                      {alert.label?.toUpperCase() || 'MOTION'}
+                    </td>
+
+                    <td style={{ padding: '10px 16px' }}>
+                      <span
+                        style={{
+                          background: alert.acknowledged ? 'rgba(0, 240, 255, 0.15)' : 'rgba(225, 29, 72, 0.2)',
+                          color: alert.acknowledged ? 'var(--accent-teal)' : 'var(--accent-red)',
+                          border: `1px solid ${alert.acknowledged ? 'var(--accent-teal)' : 'var(--accent-red)'}`,
+                          padding: '2px 6px',
+                          borderRadius: '3px',
+                          fontSize: '0.68rem',
+                          fontFamily: 'var(--font-mono)',
+                          fontWeight: 700,
+                        }}
+                      >
+                        {alert.acknowledged ? t.alerts.acked : t.alerts.badge}
+                      </span>
+                    </td>
+
+                    <td style={{ padding: '10px 16px', textAlign: 'right' }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                        {!alert.acknowledged && (
+                          <button
+                            onClick={() => ackAlert(alert.id)}
+                            style={{
+                              background: 'rgba(225, 29, 72, 0.15)',
+                              border: '1px solid var(--accent-red)',
+                              color: '#fff',
+                              borderRadius: '4px',
+                              padding: '4px 8px',
+                              fontSize: '0.7rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {t.alerts.ack}
+                          </button>
+                        )}
+                        <button
+                          onClick={() => deleteAlert(alert.id)}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--text-muted)',
+                            cursor: 'pointer',
+                            padding: '4px',
+                          }}
+                          title={t.alerts.delete}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};

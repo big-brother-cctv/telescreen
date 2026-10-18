@@ -235,28 +235,34 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   }, [t]);
 
   const ackAlert = async (id: number) => {
+    // Actualización optimista inmediata en la UI
+    setAlerts((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a))
+    );
+    setUnreadCount((c) => Math.max(0, c - 1));
+    setActiveToasts((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a))
+    );
+
     try {
       await api.ackAlert(id);
-      setAlerts((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a))
-      );
-      setUnreadCount((c) => Math.max(0, c - 1));
-      setActiveToasts((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a))
-      );
     } catch (err) {
       console.error('Failed to ack alert:', err);
+      refreshAlerts();
     }
   };
 
   const ackAllAlerts = async () => {
+    // Actualización optimista inmediata en la UI
+    setAlerts((prev) => prev.map((a) => ({ ...a, acknowledged: true })));
+    setUnreadCount(0);
+    setActiveToasts([]);
+
     try {
       await api.ackAllAlerts();
-      setAlerts((prev) => prev.map((a) => ({ ...a, acknowledged: true })));
-      setUnreadCount(0);
-      setActiveToasts([]);
     } catch (err) {
       console.error('Failed to ack all alerts:', err);
+      refreshAlerts();
     }
   };
 
