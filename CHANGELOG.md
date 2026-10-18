@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/big-brother-cctv/telescreen/compare/v0.15.0...v0.16.0) (2026-10-18)
+
+
+### Features
+
+* add motion detection configuration fields and status badges to camera management ([0ebcca6](https://github.com/big-brother-cctv/telescreen/commit/0ebcca62a35918a50d41609ffbaa539f20d79c7f))
+
 ## [0.15.0](https://github.com/big-brother-cctv/telescreen/compare/v0.14.0...v0.15.0) (2026-10-18)
 
 
