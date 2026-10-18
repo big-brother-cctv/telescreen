@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/big-brother-cctv/telescreen/compare/v0.13.0...v0.14.0) (2026-10-18)
+
+
+### Features
+
+* implement real-time motion toast notifications and snapshot modal preview via SSE and API ([35f792e](https://github.com/big-brother-cctv/telescreen/commit/35f792ed68a06b80ad9d951c30dbfeebc755391e))
+
 ## [0.13.0](https://github.com/big-brother-cctv/telescreen/compare/v0.12.1...v0.13.0) (2026-10-16)
 
 
