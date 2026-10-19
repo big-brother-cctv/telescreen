@@ -193,26 +193,28 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           });
         };
 
-        pc.onconnectionstatechange = () => {
+        const checkConnected = () => {
           if (isCancelled) return;
-          if (pc.connectionState === 'connected') {
-            if (whepTimeout) clearTimeout(whepTimeout);
+          const isConn = pc.connectionState === 'connected' || pc.iceConnectionState === 'connected';
+          if (isConn) {
+            if (whepTimeout) {
+              clearTimeout(whepTimeout);
+              whepTimeout = null;
+            }
             setActiveProtocol('webrtc');
             setIsRetrying(false);
             setHasError(false);
-          } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-            console.warn(`[WebRTC] State: ${pc.connectionState}, falling back to HLS`);
+          } else if (
+            pc.connectionState === 'failed' ||
+            pc.iceConnectionState === 'failed'
+          ) {
+            console.warn(`[WebRTC] Connection failed (conn: ${pc.connectionState}, ice: ${pc.iceConnectionState}), falling back to HLS`);
             startHls();
           }
         };
 
-        // Fallback automático si WebRTC no conecta en 3.5s (p. ej. UDP no disponible tras Cloudflare Tunnel)
-        whepTimeout = setTimeout(() => {
-          if (!isCancelled && pc.connectionState !== 'connected') {
-            console.warn('[WebRTC] Timeout after 3.5s, falling back to HLS');
-            startHls();
-          }
-        }, 3500);
+        pc.onconnectionstatechange = checkConnected;
+        pc.oniceconnectionstatechange = checkConnected;
 
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
@@ -257,6 +259,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
         if (isCancelled) return;
 
         await pc.setRemoteDescription({ type: 'answer', sdp: answerSdp });
+        checkConnected();
+
+        // Timeout failsafe: si no conecta tras 6s del answer, fallback a HLS
+        whepTimeout = setTimeout(() => {
+          if (!isCancelled && pc.connectionState !== 'connected' && pc.iceConnectionState !== 'connected') {
+            console.warn(`[WebRTC] Timeout after 6s (conn: ${pc.connectionState}, ice: ${pc.iceConnectionState}), falling back to HLS`);
+            startHls();
+          }
+        }, 6000);
       } catch (err) {
         console.warn('[WebRTC] Negotiation error, falling back to HLS:', err);
         startHls();
