@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.0](https://github.com/big-brother-cctv/telescreen/compare/v0.22.0...v0.23.0) (2026-10-19)
+
+
+### Features
+
+* implement service worker for push notifications and PWA support ([fbe02d1](https://github.com/big-brother-cctv/telescreen/commit/fbe02d18f9a64b38c9f0de632d2460b9ccd76739))
+
 ## [0.22.0](https://github.com/big-brother-cctv/telescreen/compare/v0.21.0...v0.22.0) (2026-10-19)
 
 
