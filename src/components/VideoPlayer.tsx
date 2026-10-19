@@ -8,9 +8,10 @@ import { useAlerts } from '../context/AlertsContext';
 interface VideoPlayerProps {
   camera: Camera;
   onEdit?: (camera: Camera) => void;
+  onStreamStatusChange?: (cameraName: string, isPlaying: boolean) => void;
 }
 
-export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
+export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera, onStreamStatusChange }) => {
   const { t } = useLanguage();
   const { activeAlertCameras, setIsDrawerOpen } = useAlerts();
   const hasActiveAlarm = activeAlertCameras.has(camera.name);
@@ -23,6 +24,18 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [controlsVisible, setControlsVisible] = useState<boolean>(true);
   const [isSelected, setIsSelected] = useState<boolean>(false);
+
+  // Sync real-time stream playback state with parent (e.g. Dashboard live indicator)
+  useEffect(() => {
+    if (camera.name) {
+      onStreamStatusChange?.(camera.name, isPlaying);
+    }
+    return () => {
+      if (camera.name) {
+        onStreamStatusChange?.(camera.name, false);
+      }
+    };
+  }, [camera.name, isPlaying, onStreamStatusChange]);
   const [activeProtocol, setActiveProtocol] = useState<'webrtc' | 'hls'>('webrtc');
   const [preferredProtocol, setPreferredProtocol] = useState<'webrtc' | 'hls'>('webrtc');
   const [streamQuality, setStreamQuality] = useState<'main' | 'sub'>('main');

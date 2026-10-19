@@ -95,6 +95,9 @@ export const AlertsDrawer: React.FC = () => {
         <div
           style={{
             padding: '16px 20px',
+            paddingTop: 'max(16px, env(safe-area-inset-top, 0px))',
+            paddingLeft: 'max(20px, env(safe-area-inset-left, 0px))',
+            paddingRight: 'max(20px, env(safe-area-inset-right, 0px))',
             borderBottom: '1px solid var(--border-party)',
             display: 'flex',
             alignItems: 'center',

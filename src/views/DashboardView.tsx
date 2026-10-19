@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { Camera } from '../types';
 import { useAlerts } from '../context/AlertsContext';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -47,8 +47,47 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     setPreviewImage,
   } = useAlerts();
 
-  const onlineCount = cameras.filter((c) => c.status === 'online').length;
-  const standbyCount = cameras.filter((c) => c.status === 'standby' || !c.status).length;
+  // Active stream playback tracker (fed by VideoPlayer real-time playback & direct HLS probe)
+  const [liveStreams, setLiveStreams] = useState<Set<string>>(new Set());
+
+  const handleStreamStatus = useCallback((camName: string, isLive: boolean) => {
+    if (!camName) return;
+    const key = camName.toLowerCase().trim();
+    setLiveStreams((prev) => {
+      const next = new Set(prev);
+      if (isLive) {
+        next.add(key);
+      } else {
+        next.delete(key);
+      }
+      return next;
+    });
+  }, []);
+
+  // Probe direct MediaMTX HLS stream endpoints on mount or cameras change
+  useEffect(() => {
+    if (!cameras || cameras.length === 0) return;
+    cameras.forEach((cam) => {
+      if (!cam.name) return;
+      const key = cam.name.toLowerCase().trim();
+      fetch(`/stream/${encodeURIComponent(cam.name)}/index.m3u8`, { method: 'HEAD', cache: 'no-store' })
+        .then((res) => {
+          if (res.ok) {
+            setLiveStreams((prev) => new Set(prev).add(key));
+          }
+        })
+        .catch(() => {});
+    });
+  }, [cameras]);
+
+  const isCameraOnline = (c: Camera) => {
+    const statusLower = (c.status || '').toLowerCase().trim();
+    const nameKey = (c.name || '').toLowerCase().trim();
+    return statusLower === 'online' || liveStreams.has(nameKey);
+  };
+
+  const onlineCount = cameras.filter(isCameraOnline).length;
+  const standbyCount = Math.max(0, cameras.length - onlineCount);
 
   // Sectores en alarma activa (combinando eventos SSE en tiempo real y alertas no leídas recientes)
   const activeAlarmSectors = useMemo(() => {
@@ -456,7 +495,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         ) : (
           <div className="dashboard-feeds-grid">
             {cameras.slice(0, 4).map((cam) => (
-              <VideoPlayer key={cam.id || cam.name} camera={cam} />
+              <VideoPlayer
+                key={cam.id || cam.name}
+                camera={cam}
+                onStreamStatusChange={handleStreamStatus}
+              />
             ))}
           </div>
         )}

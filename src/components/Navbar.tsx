@@ -89,9 +89,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
         zIndex: 50,
         background: 'rgba(8, 9, 13, 0.94)',
         backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--border-party)',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.7)',
         width: '100%',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingLeft: 'env(safe-area-inset-left, 0px)',
+        paddingRight: 'env(safe-area-inset-right, 0px)',
+        boxSizing: 'border-box',
       }}>
         <div className="navbar-container" style={{
           height: '62px',
@@ -462,13 +467,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
         height: 'calc(58px + env(safe-area-inset-bottom, 0px))',
         background: 'rgba(10, 12, 17, 0.96)',
         backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
         borderTop: '1px solid var(--border-party)',
         zIndex: 99,
         alignItems: 'center',
         justifyContent: 'space-around',
         boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.8)',
-        padding: '0 8px',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+        padding: '0 max(8px, env(safe-area-inset-left, 0px))',
+        paddingRight: 'max(8px, env(safe-area-inset-right, 0px))',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        boxSizing: 'border-box',
       }}>
         <button
           onClick={() => onNavigate('dashboard')}

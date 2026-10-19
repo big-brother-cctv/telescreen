@@ -562,17 +562,18 @@ input:focus, select:focus, textarea:focus {
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
   box-sizing: border-box;
 }
 
 .responsive-container {
   padding: 24px;
-  padding-top: calc(16px + env(safe-area-inset-top, 0px));
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
   box-sizing: border-box;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 
 .responsive-grid-2 {
@@ -622,9 +623,16 @@ input:focus, select:focus, textarea:focus {
 
 /* Mobile & Tablet Media Queries */
 @media (max-width: 868px) {
+  /* Ticker oculto en movil para no colisionar con el notch ni malgastar espacio de pantalla */
+  .ticker-wrapper {
+    display: none !important;
+  }
+
   .responsive-container {
     padding: 12px;
-    padding-top: calc(8px + env(safe-area-inset-top, 0px));
+    padding-top: 12px;
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
   }
 
   /* Prevenir zoom forzado en campos de formulario en iOS Safari */
