@@ -157,7 +157,7 @@ export const AlertsDrawer: React.FC = () => {
                   fontFamily: 'var(--font-mono)',
                 }}
               >
-                100% IN-HOUSE • REAL-TIME SSE
+                {t.alerts.drawerSubtitle}
               </div>
             </div>
           </div>
@@ -214,7 +214,7 @@ export const AlertsDrawer: React.FC = () => {
             {/* Close Drawer Button */}
             <button
               onClick={() => setIsDrawerOpen(false)}
-              aria-label="Cerrar panel de alertas"
+              aria-label={t.alerts.closeDrawerAria}
               style={{
                 background: 'transparent',
                 border: 'none',
@@ -245,32 +245,41 @@ export const AlertsDrawer: React.FC = () => {
               gap: '12px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Bell size={18} color="var(--accent-amber)" style={{ flexShrink: 0 }} />
-              <div style={{ fontSize: '0.75rem', color: '#fff', lineHeight: 1.3 }}>
-                <span style={{ fontWeight: 800, display: 'block' }}>Notificaciones en este móvil</span>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.68rem' }}>
-                  Recibe alertas instantáneas y sonido al detectar movimiento
-                </span>
-              </div>
-            </div>
-            <button
-              onClick={() => requestNotificationPermission()}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '6px',
-                background: 'var(--accent-red)',
-                border: 'none',
-                color: '#fff',
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                flexShrink: 0,
-                boxShadow: '0 0 10px rgba(225, 29, 72, 0.5)',
-              }}
-            >
-              Activar
-            </button>
+            {(() => {
+              const isMobile = typeof window !== 'undefined' && (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768);
+              return (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Bell size={18} color="var(--accent-amber)" style={{ flexShrink: 0 }} />
+                    <div style={{ fontSize: '0.75rem', color: '#fff', lineHeight: 1.3 }}>
+                      <span style={{ fontWeight: 800, display: 'block' }}>
+                        {isMobile ? t.alerts.bannerMobileTitle : t.alerts.bannerPcTitle}
+                      </span>
+                      <span style={{ color: 'var(--text-secondary)', fontSize: '0.68rem' }}>
+                        {isMobile ? t.alerts.bannerMobileDesc : t.alerts.bannerPcDesc}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => requestNotificationPermission()}
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      background: 'var(--accent-red)',
+                      border: 'none',
+                      color: '#fff',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                      boxShadow: '0 0 10px rgba(225, 29, 72, 0.5)',
+                    }}
+                  >
+                    {isMobile ? t.alerts.activateMobileBtn : t.alerts.activatePcBtn}
+                  </button>
+                </>
+              );
+            })()}
           </div>
         )}
 
@@ -542,7 +551,7 @@ export const AlertsDrawer: React.FC = () => {
                           marginTop: '2px',
                         }}
                       >
-                        ETIQUETA: {alert.label?.toUpperCase() || 'MOTION'}
+                        {t.alerts.labelPrefix}: {alert.label?.toUpperCase() || 'MOTION'}
                       </div>
                     </div>
                   </div>

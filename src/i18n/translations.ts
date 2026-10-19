@@ -268,6 +268,22 @@ export interface Translations {
     testAlert: string;
     viewInPanel: string;
     zoomSnapshot: string;
+    bannerMobileTitle: string;
+    bannerPcTitle: string;
+    bannerMobileDesc: string;
+    bannerPcDesc: string;
+    activateMobileBtn: string;
+    activatePcBtn: string;
+    notificationsBtnActive: string;
+    notificationsBtnEnable: string;
+    notificationsTooltipActive: string;
+    notificationsTooltipEnable: string;
+    welcomeTitle: string;
+    welcomeBody: string;
+    drawerSubtitle: string;
+    labelPrefix: string;
+    sectorPrefix: string;
+    closeDrawerAria: string;
   };
   dashboardView: {
     title: string;
@@ -609,6 +625,22 @@ export const translations: Record<Language, Translations> = {
       testAlert: 'Probar alerta de movimiento',
       viewInPanel: 'Ver en panel',
       zoomSnapshot: 'Ampliar captura',
+      bannerMobileTitle: 'Notificaciones en tu Móvil',
+      bannerPcTitle: 'Notificaciones de Escritorio para PC',
+      bannerMobileDesc: 'En iPhone: Añade a la pantalla de inicio (Compartir > Añadir a inicio), abre la app y pulsa Activar.',
+      bannerPcDesc: 'Recibe avisos nativos en tu pantalla con captura y sonido cuando se detecte una persona o vehículo.',
+      activateMobileBtn: 'Activar en Móvil',
+      activatePcBtn: 'Activar en este PC',
+      notificationsBtnActive: 'Notificaciones',
+      notificationsBtnEnable: 'Activar Notificaciones',
+      notificationsTooltipActive: 'Notificaciones activadas',
+      notificationsTooltipEnable: 'Activar notificaciones en este navegador',
+      welcomeTitle: '🚨 Big Brother CCTV',
+      welcomeBody: 'Notificaciones de escritorio activadas correctamente',
+      drawerSubtitle: '100% LOCAL • SSE EN TIEMPO REAL',
+      labelPrefix: 'ETIQUETA',
+      sectorPrefix: 'SECTOR',
+      closeDrawerAria: 'Cerrar panel de notificaciones',
     },
     dashboardView: {
       title: 'CENTRO DE CONTROL CCTV',
@@ -948,6 +980,22 @@ export const translations: Record<Language, Translations> = {
       testAlert: 'Test motion alert',
       viewInPanel: 'View in panel',
       zoomSnapshot: 'Zoom snapshot',
+      bannerMobileTitle: 'Notifications on Mobile',
+      bannerPcTitle: 'Desktop PC Notifications',
+      bannerMobileDesc: 'On iPhone: Add to Home Screen (Share > Add to Home Screen), open app and tap Enable.',
+      bannerPcDesc: 'Receive native on-screen desktop alerts with snapshot preview and sound on target detection.',
+      activateMobileBtn: 'Enable on Mobile',
+      activatePcBtn: 'Enable on this PC',
+      notificationsBtnActive: 'Notifications',
+      notificationsBtnEnable: 'Enable Notifications',
+      notificationsTooltipActive: 'Notifications enabled',
+      notificationsTooltipEnable: 'Enable notifications in this browser',
+      welcomeTitle: '🚨 Big Brother CCTV',
+      welcomeBody: 'Desktop notifications successfully activated',
+      drawerSubtitle: '100% IN-HOUSE • REAL-TIME SSE',
+      labelPrefix: 'LABEL',
+      sectorPrefix: 'SECTOR',
+      closeDrawerAria: 'Close notifications drawer',
     },
     dashboardView: {
       title: 'CCTV COMMAND CENTER',

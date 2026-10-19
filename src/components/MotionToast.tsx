@@ -245,7 +245,7 @@ const SingleMotionToast: React.FC<SingleToastProps> = ({ alert, onDismiss }) => 
               marginTop: '2px',
             }}
           >
-            SECTOR: <span style={{ color: 'var(--accent-party)' }}>{alert.label?.toUpperCase() || 'MOTION'}</span>
+            {t.alerts.sectorPrefix}: <span style={{ color: 'var(--accent-party)' }}>{alert.label?.toUpperCase() || 'MOTION'}</span>
           </div>
         </div>
       </div>

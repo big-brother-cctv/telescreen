@@ -101,38 +101,30 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const title = `🚨 CCTV - ${newAlert.cameraName.toUpperCase()}`;
     const body = `${t.alerts.motionDetected} (${newAlert.label || 'motion'})`;
 
-    // 1. Try modern Service Worker registration showNotification (Required for iOS PWA and Android Mobile)
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready
-        .then((reg) => {
-          return reg.showNotification(title, {
-            body,
-            icon: '/favicon-96x96.png',
-            badge: '/favicon-96x96.png',
-            image: snapshotUrl,
-            vibrate: [200, 100, 200, 100, 200],
-            tag: `bb-alert-${newAlert.id}`,
-            renotify: true,
-            data: { url: '/?view=alerts', id: newAlert.id },
-          } as NotificationOptions);
-        })
-        .catch(() => {
-          // Fallback to legacy desktop Notification constructor
-          try {
-            new Notification(title, {
+    try {
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready
+          .then((reg) => {
+            return reg.showNotification(title, {
               body,
-              icon: snapshotUrl,
+              icon: '/favicon-96x96.png',
+              badge: '/favicon-96x96.png',
+              image: snapshotUrl,
+              vibrate: [200, 100, 200, 100, 200],
               tag: `bb-alert-${newAlert.id}`,
-            });
-          } catch {}
-        });
-    } else {
+              renotify: true,
+              data: { url: '/?view=alerts', id: newAlert.id },
+            } as NotificationOptions);
+          })
+          .catch(() => {
+            new Notification(title, { body, icon: snapshotUrl, tag: `bb-alert-${newAlert.id}` });
+          });
+      } else {
+        new Notification(title, { body, icon: snapshotUrl, tag: `bb-alert-${newAlert.id}` });
+      }
+    } catch {
       try {
-        new Notification(title, {
-          body,
-          icon: snapshotUrl,
-          tag: `bb-alert-${newAlert.id}`,
-        });
+        new Notification(title, { body, icon: snapshotUrl, tag: `bb-alert-${newAlert.id}` });
       } catch {}
     }
   };
@@ -142,18 +134,29 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     try {
       const perm = await Notification.requestPermission();
       setNotificationPermission(perm);
-      if (perm === 'granted' && 'serviceWorker' in navigator) {
-        navigator.serviceWorker.ready
-          .then((reg) => {
-            reg.showNotification('🚨 Big Brother Telescreen', {
-              body: 'Notificaciones tácticas nativas activadas correctamente',
-              icon: '/favicon-96x96.png',
-              badge: '/favicon-96x96.png',
-              vibrate: [100, 50, 100],
-              tag: 'bb-welcome',
-            } as NotificationOptions);
-          })
-          .catch(() => {});
+      if (perm === 'granted') {
+        const welcomeTitle = t.alerts.welcomeTitle;
+        const welcomeBody = t.alerts.welcomeBody;
+        try {
+          if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.ready
+              .then((reg) => {
+                reg.showNotification(welcomeTitle, {
+                  body: welcomeBody,
+                  icon: '/favicon-96x96.png',
+                  badge: '/favicon-96x96.png',
+                  tag: 'bb-welcome',
+                } as NotificationOptions);
+              })
+              .catch(() => {
+                new Notification(welcomeTitle, { body: welcomeBody, icon: '/favicon-96x96.png' });
+              });
+          } else {
+            new Notification(welcomeTitle, { body: welcomeBody, icon: '/favicon-96x96.png' });
+          }
+        } catch {
+          new Notification(welcomeTitle, { body: welcomeBody, icon: '/favicon-96x96.png' });
+        }
       }
       return perm === 'granted';
     } catch {
