@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/big-brother-cctv/telescreen/compare/v0.16.0...v0.17.0) (2026-10-19)
+
+
+### Features
+
+* add internationalization, responsive layout styles, and grid components for dashboard and alerts views ([9fa39b6](https://github.com/big-brother-cctv/telescreen/commit/9fa39b646d77562330727289d8a11259629ac328))
+
 ## [0.16.0](https://github.com/big-brother-cctv/telescreen/compare/v0.15.0...v0.16.0) (2026-10-18)
 
 
