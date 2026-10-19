@@ -232,6 +232,48 @@ export const AlertsDrawer: React.FC = () => {
           </div>
         </div>
 
+        {/* Mobile Notification Activation Banner */}
+        {notificationPermission !== 'granted' && (
+          <div
+            style={{
+              padding: '12px 16px',
+              background: 'linear-gradient(90deg, rgba(225, 29, 72, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%)',
+              borderBottom: '1px solid rgba(225, 29, 72, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Bell size={18} color="var(--accent-amber)" style={{ flexShrink: 0 }} />
+              <div style={{ fontSize: '0.75rem', color: '#fff', lineHeight: 1.3 }}>
+                <span style={{ fontWeight: 800, display: 'block' }}>Notificaciones en este móvil</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.68rem' }}>
+                  Recibe alertas instantáneas y sonido al detectar movimiento
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={() => requestNotificationPermission()}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '6px',
+                background: 'var(--accent-red)',
+                border: 'none',
+                color: '#fff',
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                flexShrink: 0,
+                boxShadow: '0 0 10px rgba(225, 29, 72, 0.5)',
+              }}
+            >
+              Activar
+            </button>
+          </div>
+        )}
+
         {/* Action Bar (Mark All, Clear All) */}
         {alerts.length > 0 && (
           <div
