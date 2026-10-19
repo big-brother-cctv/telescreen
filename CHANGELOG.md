@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.1](https://github.com/big-brother-cctv/telescreen/compare/v0.20.0...v0.20.1) (2026-10-19)
+
+
+### Bug Fixes
+
+* improve WebRTC connection reliability by including ICE state checks and adjusting timeout duration ([bf4f84a](https://github.com/big-brother-cctv/telescreen/commit/bf4f84af3e1ddd8eef54e520a0116e6a742ca4b7))
+
 ## [0.20.0](https://github.com/big-brother-cctv/telescreen/compare/v0.19.0...v0.20.0) (2026-10-19)
 
 
