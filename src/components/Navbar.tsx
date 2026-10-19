@@ -83,21 +83,24 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
       </div>
 
       {/* Main Top Header */}
-      <header style={{
+      <header className="navbar-header" style={{
         position: 'sticky',
         top: 0,
         zIndex: 50,
         background: 'rgba(8, 9, 13, 0.94)',
         backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--border-party)',
-        padding: '0 16px',
-        height: '62px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.7)',
-        gap: '12px'
+        width: '100%',
       }}>
+        <div className="navbar-container" style={{
+          height: '62px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '12px',
+          width: '100%',
+        }}>
         {/* Brand & CCTV Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
           <div 
@@ -446,6 +449,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           >
             <LogOut size={15} color="var(--accent-red)" />
           </button>
+        </div>
         </div>
       </header>
 

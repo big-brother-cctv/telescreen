@@ -509,9 +509,14 @@ input:focus, select:focus, textarea:focus {
    CCTV CAMERA GRID LAYOUTS (1x1, 2x2, 3x3, AUTO)
    ========================================================================= */
 .cctv-grid-1x1 {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.cctv-grid-1x1 > * {
+  width: 100%;
+  max-width: min(100%, 1400px);
 }
 
 .cctv-grid-2x2 {
@@ -550,12 +555,21 @@ input:focus, select:focus, textarea:focus {
    RESPONSIVE DESIGN SYSTEM (MOBILE & TABLET ADAPTATIONS)
    ========================================================================= */
 
+.navbar-container {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
 .responsive-container {
   padding: 24px;
   padding-top: calc(16px + env(safe-area-inset-top, 0px));
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .responsive-grid-2 {
@@ -905,5 +919,83 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
+/* =========================================================================
+   ULTRAWIDE & COMMAND CENTER ADAPTATIONS (21:9, 32:9, 1440p Wide, 4K)
+   ========================================================================= */
+@media (min-width: 1800px) {
+  .responsive-container,
+  .navbar-container {
+    max-width: 95vw;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
 
+  .dashboard-metrics-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
 
+  .dashboard-feeds-grid {
+    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+    gap: 20px;
+  }
+
+  .dashboard-snapshots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .dashboard-infra-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .cctv-grid-auto {
+    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+    gap: 20px;
+  }
+
+  .cctv-grid-2x2 {
+    max-width: 2200px;
+    margin: 0 auto;
+  }
+
+  .alerts-gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .responsive-container,
+  .navbar-container {
+    max-width: 96vw;
+    padding-left: 44px;
+    padding-right: 44px;
+  }
+
+  .dashboard-feeds-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .dashboard-snapshots-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .cctv-grid-auto {
+    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+    gap: 24px;
+  }
+
+  .cctv-grid-2x2 {
+    max-width: 2400px;
+    margin: 0 auto;
+  }
+
+  .alerts-gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 24px;
+  }
+}
