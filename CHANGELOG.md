@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://github.com/big-brother-cctv/telescreen/compare/v0.17.0...v0.18.0) (2026-10-19)
+
+
+### Features
+
+* add network infrastructure telemetry panel, actuator health proxy, and improve video player controls ([e155c93](https://github.com/big-brother-cctv/telescreen/commit/e155c93b5ff082685dfb6794dceb177ce3fd9608))
+
 ## [0.17.0](https://github.com/big-brother-cctv/telescreen/compare/v0.16.0...v0.17.0) (2026-10-19)
 
 
