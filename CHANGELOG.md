@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.27.0](https://github.com/big-brother-cctv/telescreen/compare/v0.26.0...v0.27.0) (2026-10-19)
+
+
+### Features
+
+* add YOLOv8 AI filtering and confidence settings to camera configuration modal ([e87805c](https://github.com/big-brother-cctv/telescreen/commit/e87805c0ff6809cb49e472a4a481bbf4b70aba32))
+
 ## [0.26.0](https://github.com/big-brother-cctv/telescreen/compare/v0.25.0...v0.26.0) (2026-10-19)
 
 
