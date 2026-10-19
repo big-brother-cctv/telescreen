@@ -23,6 +23,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [controlsVisible, setControlsVisible] = useState<boolean>(true);
   const [isSelected, setIsSelected] = useState<boolean>(false);
+  const [activeProtocol, setActiveProtocol] = useState<'webrtc' | 'hls'>('webrtc');
+  const [preferredProtocol, setPreferredProtocol] = useState<'webrtc' | 'hls'>('webrtc');
+  const [streamQuality, setStreamQuality] = useState<'main' | 'sub'>('main');
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Auto-hide preview touch selection after 4s
@@ -63,7 +66,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
     }
   };
 
-  const streamUrl = `/stream/${camera.name}/index.m3u8`;
+  const activeStreamName = streamQuality === 'sub' ? `${camera.name}_sub` : camera.name;
+  const hlsStreamUrl = `/stream/${activeStreamName}/index.m3u8`;
+  const whepUrl = `/whep/${activeStreamName}/whep`;
 
   const setupPlayer = () => {
     const video = videoRef.current;
@@ -72,54 +77,202 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
     setHasError(false);
     setIsRetrying(true);
 
-    if (Hls.isSupported()) {
-      const hls = new Hls({
-        liveSyncDurationCount: 3,
-        liveMaxLatencyDurationCount: 6,
-        maxLiveSyncPlaybackRate: 1.5,
-        enableWorker: true,
-      });
+    let isCancelled = false;
+    let currentPc: RTCPeerConnection | null = null;
+    let currentHls: Hls | null = null;
+    let sessionUrl: string | null = null;
+    let whepTimeout: ReturnType<typeof setTimeout> | null = null;
 
-      hls.loadSource(streamUrl);
-      hls.attachMedia(video);
+    const cleanupActiveResources = () => {
+      if (whepTimeout) {
+        clearTimeout(whepTimeout);
+        whepTimeout = null;
+      }
+      if (currentPc) {
+        currentPc.close();
+        currentPc = null;
+      }
+      if (sessionUrl) {
+        fetch(sessionUrl, { method: 'DELETE' }).catch(() => {});
+        sessionUrl = null;
+      }
+      if (currentHls) {
+        currentHls.destroy();
+        currentHls = null;
+      }
+      if (video.srcObject) {
+        try {
+          const stream = video.srcObject as MediaStream;
+          stream.getTracks().forEach((track) => track.stop());
+        } catch {}
+        video.srcObject = null;
+      }
+    };
 
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        setIsRetrying(false);
-        video.play().catch(() => {
-          video.muted = true;
-          video.play().catch(() => {});
+    const startHls = () => {
+      if (isCancelled) return;
+      cleanupActiveResources();
+      setActiveProtocol('hls');
+
+      if (Hls.isSupported()) {
+        const hls = new Hls({
+          lowLatencyMode: true,
+          liveSyncDurationCount: 2,
+          liveMaxLatencyDurationCount: 4,
+          maxLiveSyncPlaybackRate: 1.5,
+          enableWorker: true,
         });
-      });
+        currentHls = hls;
 
-      hls.on(Hls.Events.ERROR, (_, data) => {
-        if (data.fatal) {
-          switch (data.type) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              hls.startLoad();
-              break;
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              hls.recoverMediaError();
-              break;
-            default:
-              hls.destroy();
-              setHasError(true);
-              setIsRetrying(false);
-              break;
+        hls.loadSource(hlsStreamUrl);
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          if (isCancelled) return;
+          setIsRetrying(false);
+          video.play().catch(() => {
+            video.muted = true;
+            video.play().catch(() => {});
+          });
+        });
+
+        hls.on(Hls.Events.ERROR, (_, data) => {
+          if (isCancelled) return;
+          if (data.fatal) {
+            switch (data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+                hls.startLoad();
+                break;
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                hls.recoverMediaError();
+                break;
+              default:
+                hls.destroy();
+                setHasError(true);
+                setIsRetrying(false);
+                break;
+            }
           }
-        }
-      });
+        });
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = hlsStreamUrl;
+        video.play().catch(() => {});
+        setIsRetrying(false);
+      } else {
+        setHasError(true);
+        setIsRetrying(false);
+      }
+    };
 
-      return () => {
-        hls.destroy();
-      };
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = streamUrl;
-      video.play().catch(() => {});
-      setIsRetrying(false);
+    const startWebRtc = async () => {
+      try {
+        const pc = new RTCPeerConnection({
+          iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+          ],
+          bundlePolicy: 'max-bundle',
+        });
+        currentPc = pc;
+
+        pc.addTransceiver('video', { direction: 'recvonly' });
+        pc.addTransceiver('audio', { direction: 'recvonly' });
+
+        pc.ontrack = (event) => {
+          if (isCancelled) return;
+          if (event.streams && event.streams[0]) {
+            video.srcObject = event.streams[0];
+          } else {
+            video.srcObject = new MediaStream([event.track]);
+          }
+          setIsRetrying(false);
+          setHasError(false);
+          video.play().catch(() => {
+            video.muted = true;
+            video.play().catch(() => {});
+          });
+        };
+
+        pc.onconnectionstatechange = () => {
+          if (isCancelled) return;
+          if (pc.connectionState === 'connected') {
+            if (whepTimeout) clearTimeout(whepTimeout);
+            setActiveProtocol('webrtc');
+            setIsRetrying(false);
+            setHasError(false);
+          } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+            console.warn(`[WebRTC] State: ${pc.connectionState}, falling back to HLS`);
+            startHls();
+          }
+        };
+
+        // Fallback automático si WebRTC no conecta en 3.5s (p. ej. UDP no disponible tras Cloudflare Tunnel)
+        whepTimeout = setTimeout(() => {
+          if (!isCancelled && pc.connectionState !== 'connected') {
+            console.warn('[WebRTC] Timeout after 3.5s, falling back to HLS');
+            startHls();
+          }
+        }, 3500);
+
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+
+        await new Promise<void>((resolve) => {
+          if (pc.iceGatheringState === 'complete') {
+            resolve();
+          } else {
+            const onGatherChange = () => {
+              if (pc.iceGatheringState === 'complete') {
+                pc.removeEventListener('icegatheringstatechange', onGatherChange);
+                resolve();
+              }
+            };
+            pc.addEventListener('icegatheringstatechange', onGatherChange);
+            setTimeout(resolve, 600);
+          }
+        });
+
+        if (isCancelled) return;
+
+        const res = await fetch(whepUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/sdp',
+          },
+          body: pc.localDescription?.sdp || offer.sdp,
+        });
+
+        if (!res.ok) {
+          console.warn(`[WebRTC] WHEP endpoint returned ${res.status}, falling back to HLS`);
+          startHls();
+          return;
+        }
+
+        const loc = res.headers.get('Location');
+        if (loc) {
+          sessionUrl = loc.startsWith('http') ? loc : `/whep${loc.startsWith('/') ? '' : '/'}${loc}`;
+        }
+
+        const answerSdp = await res.text();
+        if (isCancelled) return;
+
+        await pc.setRemoteDescription({ type: 'answer', sdp: answerSdp });
+      } catch (err) {
+        console.warn('[WebRTC] Negotiation error, falling back to HLS:', err);
+        startHls();
+      }
+    };
+
+    if (preferredProtocol === 'hls' || typeof RTCPeerConnection === 'undefined') {
+      startHls();
     } else {
-      setHasError(true);
-      setIsRetrying(false);
+      startWebRtc();
     }
+
+    return () => {
+      isCancelled = true;
+      cleanupActiveResources();
+    };
   };
 
   useEffect(() => {
@@ -127,7 +280,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
     return () => {
       if (cleanup) cleanup();
     };
-  }, [camera.name]);
+  }, [camera.name, preferredProtocol, streamQuality]);
 
   // Lock body scroll when fullscreen is active
   useEffect(() => {
@@ -319,6 +472,58 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
               {camera.name}
             </div>
 
+            {/* Protocol Switcher Badge */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setPreferredProtocol(prev => prev === 'webrtc' ? 'hls' : 'webrtc');
+              }}
+              title={activeProtocol === 'webrtc' ? "WebRTC ultra-baja latencia (<0.3s) - Clic para forzar HLS" : "LL-HLS (~1.5s) - Clic para forzar WebRTC"}
+              style={{
+                fontSize: '0.65rem',
+                fontWeight: 800,
+                padding: '3px 8px',
+                borderRadius: '4px',
+                background: activeProtocol === 'webrtc' ? 'rgba(34, 197, 94, 0.25)' : 'rgba(234, 179, 8, 0.25)',
+                color: activeProtocol === 'webrtc' ? '#4ade80' : '#fde047',
+                fontFamily: 'var(--font-mono)',
+                border: `1px solid ${activeProtocol === 'webrtc' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(234, 179, 8, 0.5)'}`,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <Radio size={10} />
+              <span>{activeProtocol === 'webrtc' ? 'WEBRTC' : 'LL-HLS'}</span>
+            </button>
+
+            {/* Quality Substream Switcher */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setStreamQuality(prev => prev === 'main' ? 'sub' : 'main');
+              }}
+              title={streamQuality === 'main' ? "HD (Stream principal) - Clic para cambiar a SD (Sub-stream ligero)" : "SD (Sub-stream) - Clic para HD"}
+              style={{
+                fontSize: '0.65rem',
+                fontWeight: 800,
+                padding: '3px 8px',
+                borderRadius: '4px',
+                background: streamQuality === 'main' ? 'rgba(56, 189, 248, 0.2)' : 'rgba(168, 85, 247, 0.2)',
+                color: streamQuality === 'main' ? 'var(--accent-cyan)' : '#c084fc',
+                fontFamily: 'var(--font-mono)',
+                border: `1px solid ${streamQuality === 'main' ? 'rgba(56, 189, 248, 0.4)' : 'rgba(168, 85, 247, 0.4)'}`,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {streamQuality === 'main' ? 'HD' : 'SD'}
+            </button>
+
             {/* Mode & Quality Badges */}
             <span style={{
               fontSize: '0.65rem',
@@ -482,6 +687,60 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
 
             {/* Badges de señal */}
             <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+              {/* Protocol selector badge */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPreferredProtocol(prev => prev === 'webrtc' ? 'hls' : 'webrtc');
+                }}
+                title={activeProtocol === 'webrtc' ? "WebRTC ultra-baja latencia (<0.3s) - Clic para forzar HLS" : "LL-HLS (~1.5s) - Clic para forzar WebRTC"}
+                style={{
+                  pointerEvents: 'auto',
+                  fontSize: '0.62rem',
+                  fontWeight: 800,
+                  padding: '2px 6px',
+                  borderRadius: '3px',
+                  background: activeProtocol === 'webrtc' ? 'rgba(34, 197, 94, 0.25)' : 'rgba(234, 179, 8, 0.25)',
+                  color: activeProtocol === 'webrtc' ? '#4ade80' : '#fde047',
+                  fontFamily: 'var(--font-mono)',
+                  border: `1px solid ${activeProtocol === 'webrtc' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(234, 179, 8, 0.5)'}`,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <Radio size={9} />
+                <span>{activeProtocol === 'webrtc' ? 'WEBRTC' : 'LL-HLS'}</span>
+              </button>
+
+              {/* Substream / Quality selector */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setStreamQuality(prev => prev === 'main' ? 'sub' : 'main');
+                }}
+                title={streamQuality === 'main' ? "HD (Stream principal) - Clic para cambiar a SD (Sub-stream ligero)" : "SD (Sub-stream ligero) - Clic para HD"}
+                style={{
+                  pointerEvents: 'auto',
+                  fontSize: '0.62rem',
+                  fontWeight: 800,
+                  padding: '2px 6px',
+                  borderRadius: '3px',
+                  background: streamQuality === 'main' ? 'rgba(56, 189, 248, 0.2)' : 'rgba(168, 85, 247, 0.2)',
+                  color: streamQuality === 'main' ? 'var(--accent-cyan)' : '#c084fc',
+                  fontFamily: 'var(--font-mono)',
+                  border: `1px solid ${streamQuality === 'main' ? 'rgba(56, 189, 248, 0.4)' : 'rgba(168, 85, 247, 0.4)'}`,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {streamQuality === 'main' ? 'HD' : 'SD'}
+              </button>
+
               <span style={{
                 fontSize: '0.62rem',
                 fontWeight: 800,
@@ -564,7 +823,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
                   {t.videoPlayer.noStream}
                 </div>
                 <div className="desktop-only" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', maxWidth: '280px' }}>
-                  {t.videoPlayer.waitingStream} <code className="mono">{streamUrl}</code>
+                  {t.videoPlayer.waitingStream} <code className="mono">{hlsStreamUrl}</code>
                 </div>
                 <button
                   onClick={setupPlayer}

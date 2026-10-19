@@ -15,6 +15,11 @@ export default defineConfig({
         target: 'http://localhost:8888',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/stream/, ''),
+      },
+      '/whep': {
+        target: 'http://localhost:8889',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/whep/, ''),
       }
     }
   }
