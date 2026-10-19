@@ -130,36 +130,69 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   const requestNotificationPermission = async (): Promise<boolean> => {
-    if (typeof window === 'undefined' || !('Notification' in window)) return false;
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      alert(t.alerts.notificationsInsecureContext);
+      return false;
+    }
+
+    if (window.isSecureContext === false && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      alert(t.alerts.notificationsInsecureContext);
+      return false;
+    }
+
+    if (Notification.permission === 'denied') {
+      alert(t.alerts.notificationsBlockedHelp);
+      setNotificationPermission('denied');
+      return false;
+    }
+
     try {
-      const perm = await Notification.requestPermission();
+      let perm: NotificationPermission;
+      try {
+        perm = await Notification.requestPermission();
+      } catch {
+        // Fallback for older browsers accepting callback
+        perm = await new Promise<NotificationPermission>((resolve) => {
+          Notification.requestPermission((p) => resolve(p));
+        });
+      }
+
       setNotificationPermission(perm);
+
+      if (perm === 'denied') {
+        alert(t.alerts.notificationsBlockedHelp);
+        return false;
+      }
+
       if (perm === 'granted') {
         const welcomeTitle = t.alerts.welcomeTitle;
         const welcomeBody = t.alerts.welcomeBody;
+
+        if (localStorage.getItem('bb_alert_sound') !== 'false') {
+          playTacticalAlarmTone();
+        }
+
         try {
           if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.ready
-              .then((reg) => {
-                reg.showNotification(welcomeTitle, {
-                  body: welcomeBody,
-                  icon: '/favicon-96x96.png',
-                  badge: '/favicon-96x96.png',
-                  tag: 'bb-welcome',
-                } as NotificationOptions);
-              })
-              .catch(() => {
-                new Notification(welcomeTitle, { body: welcomeBody, icon: '/favicon-96x96.png' });
-              });
+            const reg = await navigator.serviceWorker.ready;
+            await reg.showNotification(welcomeTitle, {
+              body: welcomeBody,
+              icon: '/favicon-96x96.png',
+              badge: '/favicon-96x96.png',
+              tag: 'bb-welcome',
+            } as NotificationOptions);
           } else {
             new Notification(welcomeTitle, { body: welcomeBody, icon: '/favicon-96x96.png' });
           }
         } catch {
-          new Notification(welcomeTitle, { body: welcomeBody, icon: '/favicon-96x96.png' });
+          try {
+            new Notification(welcomeTitle, { body: welcomeBody, icon: '/favicon-96x96.png' });
+          } catch {}
         }
       }
       return perm === 'granted';
-    } catch {
+    } catch (e) {
+      console.warn('Failed to request notification permission:', e);
       return false;
     }
   };

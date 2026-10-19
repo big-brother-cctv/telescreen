@@ -255,14 +255,17 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
       {/* Push Notification Guide Banner if permission not granted */}
       {notificationPermission !== 'granted' && (() => {
         const isMobile = typeof window !== 'undefined' && (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768);
+        const isDenied = notificationPermission === 'denied';
         return (
           <div
             style={{
               margin: '0 0 16px 0',
               padding: '12px 16px',
               borderRadius: '8px',
-              background: 'linear-gradient(90deg, rgba(225, 29, 72, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%)',
-              border: '1px solid rgba(225, 29, 72, 0.3)',
+              background: isDenied
+                ? 'linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%)'
+                : 'linear-gradient(90deg, rgba(225, 29, 72, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%)',
+              border: `1px solid ${isDenied ? 'rgba(239, 68, 68, 0.4)' : 'rgba(225, 29, 72, 0.3)'}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -271,32 +274,42 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Bell size={20} color="var(--accent-amber)" style={{ flexShrink: 0 }} />
+              <Bell size={20} color={isDenied ? 'var(--accent-red)' : 'var(--accent-amber)'} style={{ flexShrink: 0 }} />
               <div>
                 <div style={{ fontWeight: 800, fontSize: '0.82rem', color: '#fff' }}>
-                  {isMobile ? t.alerts.bannerMobileTitle : t.alerts.bannerPcTitle}
+                  {isDenied
+                    ? t.alerts.notificationsDenied
+                    : isMobile
+                    ? t.alerts.bannerMobileTitle
+                    : t.alerts.bannerPcTitle}
                 </div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                  {isMobile ? t.alerts.bannerMobileDesc : t.alerts.bannerPcDesc}
+                  {isDenied
+                    ? t.alerts.notificationsBlockedHelp
+                    : isMobile
+                    ? t.alerts.bannerMobileDesc
+                    : t.alerts.bannerPcDesc}
                 </div>
               </div>
             </div>
-            <button
-              onClick={() => requestNotificationPermission()}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '6px',
-                background: 'var(--accent-red)',
-                border: 'none',
-                color: '#fff',
-                fontSize: '0.76rem',
-                fontWeight: 800,
-                cursor: 'pointer',
-                boxShadow: '0 0 12px rgba(225, 29, 72, 0.5)',
-              }}
-            >
-              {isMobile ? t.alerts.activateMobileBtn : t.alerts.activatePcBtn}
-            </button>
+            {!isDenied && (
+              <button
+                onClick={() => requestNotificationPermission()}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  background: 'var(--accent-red)',
+                  border: 'none',
+                  color: '#fff',
+                  fontSize: '0.76rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  boxShadow: '0 0 12px rgba(225, 29, 72, 0.5)',
+                }}
+              >
+                {isMobile ? t.alerts.activateMobileBtn : t.alerts.activatePcBtn}
+              </button>
+            )}
           </div>
         );
       })()}

@@ -233,55 +233,64 @@ export const AlertsDrawer: React.FC = () => {
         </div>
 
         {/* Mobile Notification Activation Banner */}
-        {notificationPermission !== 'granted' && (
-          <div
-            style={{
-              padding: '12px 16px',
-              background: 'linear-gradient(90deg, rgba(225, 29, 72, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%)',
-              borderBottom: '1px solid rgba(225, 29, 72, 0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '12px',
-            }}
-          >
-            {(() => {
-              const isMobile = typeof window !== 'undefined' && (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768);
-              return (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Bell size={18} color="var(--accent-amber)" style={{ flexShrink: 0 }} />
-                    <div style={{ fontSize: '0.75rem', color: '#fff', lineHeight: 1.3 }}>
-                      <span style={{ fontWeight: 800, display: 'block' }}>
-                        {isMobile ? t.alerts.bannerMobileTitle : t.alerts.bannerPcTitle}
-                      </span>
-                      <span style={{ color: 'var(--text-secondary)', fontSize: '0.68rem' }}>
-                        {isMobile ? t.alerts.bannerMobileDesc : t.alerts.bannerPcDesc}
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => requestNotificationPermission()}
-                    style={{
-                      padding: '6px 12px',
-                      borderRadius: '6px',
-                      background: 'var(--accent-red)',
-                      border: 'none',
-                      color: '#fff',
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      flexShrink: 0,
-                      boxShadow: '0 0 10px rgba(225, 29, 72, 0.5)',
-                    }}
-                  >
-                    {isMobile ? t.alerts.activateMobileBtn : t.alerts.activatePcBtn}
-                  </button>
-                </>
-              );
-            })()}
-          </div>
-        )}
+        {notificationPermission !== 'granted' && (() => {
+          const isMobile = typeof window !== 'undefined' && (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768);
+          const isDenied = notificationPermission === 'denied';
+          return (
+            <div
+              style={{
+                padding: '12px 16px',
+                background: isDenied
+                  ? 'linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(185, 28, 28, 0.1) 100%)'
+                  : 'linear-gradient(90deg, rgba(225, 29, 72, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%)',
+                borderBottom: `1px solid ${isDenied ? 'rgba(239, 68, 68, 0.4)' : 'rgba(225, 29, 72, 0.3)'}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Bell size={18} color={isDenied ? 'var(--accent-red)' : 'var(--accent-amber)'} style={{ flexShrink: 0 }} />
+                <div style={{ fontSize: '0.75rem', color: '#fff', lineHeight: 1.3 }}>
+                  <span style={{ fontWeight: 800, display: 'block' }}>
+                    {isDenied
+                      ? t.alerts.notificationsDenied
+                      : isMobile
+                      ? t.alerts.bannerMobileTitle
+                      : t.alerts.bannerPcTitle}
+                  </span>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.68rem' }}>
+                    {isDenied
+                      ? t.alerts.notificationsBlockedHelp
+                      : isMobile
+                      ? t.alerts.bannerMobileDesc
+                      : t.alerts.bannerPcDesc}
+                  </span>
+                </div>
+              </div>
+              {!isDenied && (
+                <button
+                  onClick={() => requestNotificationPermission()}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    background: 'var(--accent-red)',
+                    border: 'none',
+                    color: '#fff',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                    boxShadow: '0 0 10px rgba(225, 29, 72, 0.5)',
+                  }}
+                >
+                  {isMobile ? t.alerts.activateMobileBtn : t.alerts.activatePcBtn}
+                </button>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Action Bar (Mark All, Clear All) */}
         {alerts.length > 0 && (

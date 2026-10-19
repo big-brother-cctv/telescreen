@@ -284,6 +284,8 @@ export interface Translations {
     labelPrefix: string;
     sectorPrefix: string;
     closeDrawerAria: string;
+    notificationsBlockedHelp: string;
+    notificationsInsecureContext: string;
   };
   dashboardView: {
     title: string;
@@ -641,6 +643,8 @@ export const translations: Record<Language, Translations> = {
       labelPrefix: 'ETIQUETA',
       sectorPrefix: 'SECTOR',
       closeDrawerAria: 'Cerrar panel de notificaciones',
+      notificationsBlockedHelp: 'Las notificaciones están bloqueadas en tu navegador. Haz clic en el candado 🔒 en la barra de direcciones para permitirlas.',
+      notificationsInsecureContext: 'Las notificaciones del navegador requieren HTTPS. Accede mediante https://telescreen.rdvl.net',
     },
     dashboardView: {
       title: 'CENTRO DE CONTROL CCTV',
@@ -996,6 +1000,8 @@ export const translations: Record<Language, Translations> = {
       labelPrefix: 'LABEL',
       sectorPrefix: 'SECTOR',
       closeDrawerAria: 'Close notifications drawer',
+      notificationsBlockedHelp: 'Notifications are blocked by your browser. Click the lock icon 🔒 in the address bar to allow them.',
+      notificationsInsecureContext: 'Browser notifications require HTTPS. Please connect via https://telescreen.rdvl.net',
     },
     dashboardView: {
       title: 'CCTV COMMAND CENTER',
