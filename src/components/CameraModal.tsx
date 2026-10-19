@@ -18,7 +18,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
     sourceType: 'rtsp',
     connectionMode: 'pull',
     sourceUrl: '',
-    device: '/dev/video0',
+    device: '',
     resolution: '1280x720',
     fps: '25',
     codec: 'libx264',
@@ -40,12 +40,13 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
   useEffect(() => {
     if (camera) {
       const mode = camera.connectionMode || (camera.sourceUrl ? 'pull' : (camera.sourceType === 'test' ? 'test' : 'local'));
+      const isHardware = mode === 'local' || camera.sourceType === 'v4l2' || mode === 'edge';
       setFormData({
         name: camera.name || '',
         sourceType: camera.sourceType || (camera.sourceUrl ? 'rtsp' : 'v4l2'),
         connectionMode: mode,
         sourceUrl: camera.sourceUrl || '',
-        device: camera.device || '/dev/video0',
+        device: isHardware ? (camera.device || '/dev/video0') : (camera.device || ''),
         resolution: camera.resolution || '1280x720',
         fps: camera.fps || '25',
         codec: camera.codec || 'libx264',
@@ -68,7 +69,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
         sourceType: 'rtsp',
         connectionMode: 'pull',
         sourceUrl: '',
-        device: '/dev/video0',
+        device: '',
         resolution: '1280x720',
         fps: '25',
         codec: 'libx264',
@@ -97,15 +98,15 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
   const handleTabChange = (tab: 'ip' | 'push' | 'edge' | 'usb' | 'test') => {
     setActiveTab(tab);
     if (tab === 'ip') {
-      setFormData(prev => ({ ...prev, sourceType: 'rtsp', connectionMode: 'pull' }));
+      setFormData(prev => ({ ...prev, sourceType: 'rtsp', connectionMode: 'pull', device: '' }));
     } else if (tab === 'push') {
-      setFormData(prev => ({ ...prev, sourceType: 'rtsp', connectionMode: 'push' }));
+      setFormData(prev => ({ ...prev, sourceType: 'rtsp', connectionMode: 'push', device: '' }));
     } else if (tab === 'edge') {
-      setFormData(prev => ({ ...prev, sourceType: 'v4l2', connectionMode: 'push' }));
+      setFormData(prev => ({ ...prev, sourceType: 'v4l2', connectionMode: 'push', device: prev.device || '/dev/video0' }));
     } else if (tab === 'usb') {
-      setFormData(prev => ({ ...prev, sourceType: 'v4l2', connectionMode: 'local' }));
+      setFormData(prev => ({ ...prev, sourceType: 'v4l2', connectionMode: 'local', device: prev.device || '/dev/video0' }));
     } else if (tab === 'test') {
-      setFormData(prev => ({ ...prev, sourceType: 'test', connectionMode: 'test' }));
+      setFormData(prev => ({ ...prev, sourceType: 'test', connectionMode: 'test', device: '' }));
     }
   };
 

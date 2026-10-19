@@ -286,7 +286,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Recent Motion Snapshots Section */}
-      <div style={{ background: 'rgba(13, 16, 24, 0.8)', border: '1px solid var(--border-party)', borderRadius: '8px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div className="dashboard-panel">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <CameraIcon size={18} color="var(--accent-red)" />
@@ -420,7 +420,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Live Cameras Mini-Grid Preview */}
-      <div style={{ background: 'rgba(13, 16, 24, 0.8)', border: '1px solid var(--border-party)', borderRadius: '8px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div className="dashboard-panel">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Layers size={18} color="var(--accent-teal)" />
@@ -432,7 +432,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             <button
               onClick={onAddCamera}
               className="btn-ghost"
@@ -466,17 +466,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Network Infrastructure Telemetry Section (Responsive Tactical Panel) */}
-      <div
-        style={{
-          background: 'rgba(13, 16, 24, 0.85)',
-          border: '1px solid var(--border-party)',
-          borderRadius: '8px',
-          padding: '16px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '14px',
-        }}
-      >
+      <div className="dashboard-panel">
         {/* Panel Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -502,104 +492,104 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           {/* Node 1: MediaMTX */}
           <div className="dashboard-infra-card">
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(0, 240, 255, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(0, 240, 255, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Radio size={15} color="var(--accent-teal)" />
                 </div>
-                <div>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {t.dashboardView.infraMediaMtx}
                   </div>
-                  <div style={{ fontSize: '0.66rem', color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ fontSize: '0.66rem', color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     RTSP :8554 • HLS :8888
                   </div>
                 </div>
               </div>
-              <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 6px', borderRadius: '3px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.4)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 6px', borderRadius: '3px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.4)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 ONLINE
               </span>
             </div>
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span>{cameras.length} {t.dashboardView.totalCameras.toLowerCase()}</span>
-              <span style={{ color: 'var(--text-secondary)' }}>API :9997</span>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cameras.length} {t.dashboardView.totalCameras.toLowerCase()}</span>
+              <span style={{ color: 'var(--text-secondary)', flexShrink: 0 }}>API :9997</span>
             </div>
           </div>
 
           {/* Node 2: API Core */}
           <div className="dashboard-infra-card">
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(56, 189, 248, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(56, 189, 248, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Server size={15} color="var(--accent-cyan)" />
                 </div>
-                <div>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {t.dashboardView.infraApi}
                   </div>
-                  <div style={{ fontSize: '0.66rem', color: 'var(--accent-teal)', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ fontSize: '0.66rem', color: 'var(--accent-teal)', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     REST :8080 • Gin Engine
                   </div>
                 </div>
               </div>
-              <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 6px', borderRadius: '3px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.4)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 6px', borderRadius: '3px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.4)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 ONLINE
               </span>
             </div>
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span>JWT Auth • SSE Stream</span>
-              <span style={{ color: '#10b981' }}>HEALTH OK</span>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>JWT Auth • SSE Stream</span>
+              <span style={{ color: '#10b981', flexShrink: 0 }}>HEALTH OK</span>
             </div>
           </div>
 
           {/* Node 3: Motion Detector Daemon */}
           <div className="dashboard-infra-card">
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(245, 158, 11, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(245, 158, 11, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Activity size={15} color="var(--accent-amber)" />
                 </div>
-                <div>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {t.dashboardView.infraMotion}
                   </div>
-                  <div style={{ fontSize: '0.66rem', color: 'var(--accent-amber)', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ fontSize: '0.66rem', color: 'var(--accent-amber)', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     Motion Daemon :8083
                   </div>
                 </div>
               </div>
-              <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 6px', borderRadius: '3px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.4)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 6px', borderRadius: '3px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.4)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 {t.dashboardView.infraActive}
               </span>
             </div>
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span>Webhook Discord • Snapshots</span>
-              <span style={{ color: 'var(--text-secondary)' }}>MULTI-CAM</span>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Webhook Discord • Snapshots</span>
+              <span style={{ color: 'var(--text-secondary)', flexShrink: 0 }}>MULTI-CAM</span>
             </div>
           </div>
 
           {/* Node 4: PostgreSQL Database */}
           <div className="dashboard-infra-card">
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(192, 132, 252, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(192, 132, 252, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Database size={15} color="#c084fc" />
                 </div>
-                <div>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {t.dashboardView.infraDb}
                   </div>
-                  <div style={{ fontSize: '0.66rem', color: '#c084fc', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ fontSize: '0.66rem', color: '#c084fc', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     Port :5432 • PVC 10Gi
                   </div>
                 </div>
               </div>
-              <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 6px', borderRadius: '3px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.4)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 6px', borderRadius: '3px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.4)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 {t.dashboardView.infraConnected}
               </span>
             </div>
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span>Local-Path Storage Bound</span>
-              <span style={{ color: '#10b981' }}>PERSISTENT</span>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Local-Path Storage Bound</span>
+              <span style={{ color: '#10b981', flexShrink: 0 }}>PERSISTENT</span>
             </div>
           </div>
         </div>

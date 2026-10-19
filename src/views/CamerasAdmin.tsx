@@ -248,9 +248,13 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                       </td>
 
                       {/* Source / Device */}
-                      <td style={{ padding: '16px 18px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', maxWidth: '240px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={cam.sourceUrl || cam.device || '/dev/video0'}>
+                      <td style={{ padding: '16px 18px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', maxWidth: '240px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={cam.sourceUrl || (cam.connectionMode === 'push' ? `rtmp://mediamtx:1935/${cam.name}` : cam.device || '')}>
                         {cam.sourceUrl ? (
                           <span style={{ color: 'var(--accent-cyan)' }}>{cam.sourceUrl}</span>
+                        ) : cam.connectionMode === 'push' ? (
+                          <span style={{ color: '#c084fc' }}>rtmp://.../{cam.name}</span>
+                        ) : cam.connectionMode === 'test' || cam.sourceType === 'test' ? (
+                          <span style={{ color: 'var(--accent-amber)' }}>SMPTE Synthetic</span>
                         ) : (
                           cam.device || '/dev/video0'
                         )}
@@ -421,9 +425,9 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                   color: cam.sourceUrl ? 'var(--accent-cyan)' : 'var(--text-secondary)'
                 }}>
                   <span style={{ color: 'var(--text-muted)', fontSize: '0.62rem', display: 'block', marginBottom: '2px', textTransform: 'uppercase' }}>
-                    {cam.sourceUrl ? 'URL RTSP / STREAM' : 'DISPOSITIVO'}
+                    {cam.sourceUrl ? 'URL RTSP / STREAM' : cam.connectionMode === 'push' ? 'INGESTA PUSH (RTMP)' : cam.connectionMode === 'test' ? 'GENERADOR' : 'DISPOSITIVO'}
                   </span>
-                  {cam.sourceUrl || cam.device || '/dev/video0'}
+                  {cam.sourceUrl || (cam.connectionMode === 'push' ? `rtmp://.../${cam.name}` : cam.connectionMode === 'test' ? 'SMPTE Test Pattern' : (cam.device || '/dev/video0'))}
                 </div>
 
                 {/* Parameters row */}

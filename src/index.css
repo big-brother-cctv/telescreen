@@ -727,10 +727,24 @@ input:focus, select:focus, textarea:focus {
   transition: all 0.2s ease;
 }
 
+.dashboard-panel {
+  background: rgba(13, 16, 24, 0.85);
+  border: 1px solid var(--border-party);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .dashboard-snapshots-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
   gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .dashboard-feeds-grid {
@@ -738,6 +752,7 @@ input:focus, select:focus, textarea:focus {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
   gap: 16px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .dashboard-infra-grid {
@@ -745,6 +760,7 @@ input:focus, select:focus, textarea:focus {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .dashboard-infra-card {
@@ -757,6 +773,9 @@ input:focus, select:focus, textarea:focus {
   justify-content: space-between;
   gap: 8px;
   transition: all 0.2s ease;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .dashboard-infra-card:hover {
@@ -795,9 +814,26 @@ input:focus, select:focus, textarea:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
+
+  .dashboard-infra-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 868px) {
+  .dashboard-feeds-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 @media (max-width: 640px) {
+  .dashboard-panel {
+    padding: 12px;
+    gap: 12px;
+  }
+
   .dashboard-metrics-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
@@ -824,6 +860,10 @@ input:focus, select:focus, textarea:focus {
   .dashboard-infra-grid {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  .dashboard-infra-card {
+    padding: 10px 12px;
   }
 
   .alerts-gallery-grid {

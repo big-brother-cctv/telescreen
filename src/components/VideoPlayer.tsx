@@ -673,18 +673,18 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
       {/* Camera Info Footer (NORMAL MODE) */}
       {!isFullscreen && (
         <div style={{
-          padding: '10px 14px',
+          padding: '8px 12px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           background: 'var(--bg-surface)',
           borderTop: '1px solid var(--border-subtle)',
-          gap: '10px'
+          gap: '8px'
         }}>
           <div style={{ minWidth: 0, flex: 1 }}>
             <div style={{ 
               fontWeight: 800, 
-              fontSize: '0.875rem', 
+              fontSize: '0.85rem', 
               color: '#fff', 
               fontFamily: 'var(--font-display)', 
               display: 'flex', 
@@ -694,28 +694,43 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap'
             }}>
-              <span>{camera.name.toUpperCase()}</span>
-              <span className="cam-info-extended" style={{ fontSize: '0.65rem', color: 'var(--accent-amber)', fontFamily: 'var(--font-mono)' }}>
-                [{camera.device || '/dev/video0'}]
-              </span>
-            </div>
-            
-            <div className="cam-info-extended" style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px', gap: '8px' }}>
-              <span>CODEC: <b style={{ color: 'var(--text-secondary)' }}>{camera.codec || 'libx264'}</b></span>
-              <span>•</span>
-              <span>PRESET: <b style={{ color: 'var(--text-secondary)' }}>{camera.preset || 'ultrafast'}</b></span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{camera.name.toUpperCase()}</span>
+              {/* Badge contextual limpio según tipo de fuente */}
+              {camera.sourceType === 'v4l2' || camera.connectionMode === 'local' ? (
+                <span style={{ fontSize: '0.62rem', color: 'var(--accent-amber)', fontFamily: 'var(--font-mono)', padding: '1px 5px', background: 'rgba(245, 158, 11, 0.12)', borderRadius: '3px', flexShrink: 0 }}>
+                  {camera.device || 'USB'}
+                </span>
+              ) : camera.connectionMode === 'push' ? (
+                <span style={{ fontSize: '0.62rem', color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', padding: '1px 5px', background: 'rgba(0, 240, 255, 0.1)', borderRadius: '3px', flexShrink: 0 }}>
+                  RTMP
+                </span>
+              ) : camera.sourceType === 'test' || camera.connectionMode === 'test' ? (
+                <span style={{ fontSize: '0.62rem', color: 'var(--accent-amber)', fontFamily: 'var(--font-mono)', padding: '1px 5px', background: 'rgba(245, 158, 11, 0.1)', borderRadius: '3px', flexShrink: 0 }}>
+                  TEST
+                </span>
+              ) : null}
             </div>
           </div>
 
-          <button
-            onClick={setupPlayer}
-            disabled={isRetrying}
-            className="btn-ghost"
-            style={{ padding: '6px 9px', fontSize: '0.72rem', flexShrink: 0 }}
-            title={t.videoPlayer.restartStream}
-          >
-            <RefreshCw size={13} className={isRetrying ? 'animate-spin' : ''} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+            <button
+              onClick={setupPlayer}
+              disabled={isRetrying}
+              className="btn-ghost"
+              style={{ padding: '6px 8px', fontSize: '0.72rem' }}
+              title={t.videoPlayer.restartStream}
+            >
+              <RefreshCw size={13} className={isRetrying ? 'animate-spin' : ''} />
+            </button>
+            <button
+              onClick={toggleFullscreen}
+              className="btn-ghost"
+              style={{ padding: '6px 8px', fontSize: '0.72rem' }}
+              title={t.videoPlayer.fullscreen}
+            >
+              <Maximize2 size={13} />
+            </button>
+          </div>
         </div>
       )}
 
