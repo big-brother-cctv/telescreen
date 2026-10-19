@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.0](https://github.com/big-brother-cctv/telescreen/compare/v0.20.1...v0.21.0) (2026-10-19)
+
+
+### Features
+
+* update README with telescreen documentation and setup instructions ([f285b03](https://github.com/big-brother-cctv/telescreen/commit/f285b03183350de07f0f24a9e1c7c7ed157e5925))
+
 ## [0.20.1](https://github.com/big-brother-cctv/telescreen/compare/v0.20.0...v0.20.1) (2026-10-19)
 
 
