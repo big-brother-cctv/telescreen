@@ -499,6 +499,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 key={cam.id || cam.name}
                 camera={cam}
                 onStreamStatusChange={handleStreamStatus}
+                isThumbnail={true}
               />
             ))}
           </div>

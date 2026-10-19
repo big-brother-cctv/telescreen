@@ -9,9 +9,14 @@ interface VideoPlayerProps {
   camera: Camera;
   onEdit?: (camera: Camera) => void;
   onStreamStatusChange?: (cameraName: string, isPlaying: boolean) => void;
+  isThumbnail?: boolean;
 }
 
-export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera, onStreamStatusChange }) => {
+export const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  camera,
+  onStreamStatusChange,
+  isThumbnail = false,
+}) => {
   const { t } = useLanguage();
   const { activeAlertCameras, setIsDrawerOpen } = useAlerts();
   const hasActiveAlarm = activeAlertCameras.has(camera.name);
@@ -24,6 +29,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera, onStreamStatus
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [controlsVisible, setControlsVisible] = useState<boolean>(true);
   const [isSelected, setIsSelected] = useState<boolean>(false);
+  const [hasSubstream, setHasSubstream] = useState<boolean>(false);
 
   // Sync real-time stream playback state with parent (e.g. Dashboard live indicator)
   useEffect(() => {
@@ -36,9 +42,29 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera, onStreamStatus
       }
     };
   }, [camera.name, isPlaying, onStreamStatusChange]);
+
   const [activeProtocol, setActiveProtocol] = useState<'webrtc' | 'hls'>('webrtc');
   const [preferredProtocol, setPreferredProtocol] = useState<'webrtc' | 'hls'>('webrtc');
   const [streamQuality, setStreamQuality] = useState<'main' | 'sub'>('main');
+
+  // Auto-detect substream (_sub) availability in MediaMTX and adapt initial quality
+  useEffect(() => {
+    if (!camera.name) return;
+    let isCancelled = false;
+    fetch(`/stream/${encodeURIComponent(camera.name)}_sub/index.m3u8`, { method: 'HEAD', cache: 'no-store' })
+      .then((res) => {
+        if (!isCancelled && res.ok) {
+          setHasSubstream(true);
+          if (isThumbnail) {
+            setStreamQuality('sub');
+          }
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isCancelled = true;
+    };
+  }, [camera.name, isThumbnail]);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Auto-hide preview touch selection after 4s
@@ -181,8 +207,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera, onStreamStatus
       try {
         const pc = new RTCPeerConnection({
           iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
+            {
+              urls: [
+                'stun:stun.l.google.com:19302',
+                'stun:stun1.l.google.com:19302',
+                'stun:stun2.l.google.com:19302',
+                'stun:stun.cloudflare.com:3478',
+              ],
+            },
           ],
           bundlePolicy: 'max-bundle',
         });
@@ -360,6 +392,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera, onStreamStatus
       } catch {}
     }
     setIsFullscreen(false);
+    // Auto-downgrade to substream if returning to thumbnail mode to save bandwidth
+    if (isThumbnail && hasSubstream) {
+      setStreamQuality('sub');
+    }
   };
 
   const toggleFullscreen = () => {
@@ -369,6 +405,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera, onStreamStatus
     if (isFullscreen || document.fullscreenElement || (document as any).webkitFullscreenElement) {
       exitFullscreenMode();
       return;
+    }
+
+    // Auto-upgrade to high-def mainstream when entering fullscreen
+    if (hasSubstream) {
+      setStreamQuality('main');
     }
 
     // En móviles o pantallas táctiles, usar exclusivamente el fullscreen de la webapp (CSS en capa fija con safe-area)
@@ -529,9 +570,17 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera, onStreamStatus
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                setStreamQuality(prev => prev === 'main' ? 'sub' : 'main');
+                if (hasSubstream) {
+                  setStreamQuality((prev) => (prev === 'main' ? 'sub' : 'main'));
+                }
               }}
-              title={streamQuality === 'main' ? "HD (Stream principal) - Clic para cambiar a SD (Sub-stream ligero)" : "SD (Sub-stream) - Clic para HD"}
+              title={
+                !hasSubstream
+                  ? 'HD (Stream único disponible)'
+                  : streamQuality === 'main'
+                  ? 'HD (Stream principal) - Clic para cambiar a SD (Sub-stream ligero)'
+                  : 'SD (Sub-stream ligero) - Clic para HD'
+              }
               style={{
                 fontSize: '0.65rem',
                 fontWeight: 800,
@@ -541,8 +590,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera, onStreamStatus
                 color: streamQuality === 'main' ? 'var(--accent-cyan)' : '#c084fc',
                 fontFamily: 'var(--font-mono)',
                 border: `1px solid ${streamQuality === 'main' ? 'rgba(56, 189, 248, 0.4)' : 'rgba(168, 85, 247, 0.4)'}`,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap'
+                cursor: hasSubstream ? 'pointer' : 'default',
+                opacity: hasSubstream ? 1 : 0.8,
+                whiteSpace: 'nowrap',
               }}
             >
               {streamQuality === 'main' ? 'HD' : 'SD'}
@@ -741,13 +791,22 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera, onStreamStatus
               </button>
 
               {/* Substream / Quality selector */}
+              {/* Quality Substream Switcher HUD */}
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setStreamQuality(prev => prev === 'main' ? 'sub' : 'main');
+                  if (hasSubstream) {
+                    setStreamQuality((prev) => (prev === 'main' ? 'sub' : 'main'));
+                  }
                 }}
-                title={streamQuality === 'main' ? "HD (Stream principal) - Clic para cambiar a SD (Sub-stream ligero)" : "SD (Sub-stream ligero) - Clic para HD"}
+                title={
+                  !hasSubstream
+                    ? 'HD (Stream único disponible)'
+                    : streamQuality === 'main'
+                    ? 'HD (Stream principal) - Clic para cambiar a SD (Sub-stream ligero)'
+                    : 'SD (Sub-stream ligero) - Clic para HD'
+                }
                 style={{
                   pointerEvents: 'auto',
                   fontSize: '0.62rem',
@@ -758,7 +817,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera, onStreamStatus
                   color: streamQuality === 'main' ? 'var(--accent-cyan)' : '#c084fc',
                   fontFamily: 'var(--font-mono)',
                   border: `1px solid ${streamQuality === 'main' ? 'rgba(56, 189, 248, 0.4)' : 'rgba(168, 85, 247, 0.4)'}`,
-                  cursor: 'pointer',
+                  cursor: hasSubstream ? 'pointer' : 'default',
+                  opacity: hasSubstream ? 1 : 0.8,
                   whiteSpace: 'nowrap',
                 }}
               >

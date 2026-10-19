@@ -181,7 +181,11 @@ export const LiveGrid: React.FC<LiveGridProps> = ({ cameras, isLoading, onRefres
       {filteredCameras.length > 0 ? (
         <div className={`cctv-grid-${layout}`}>
           {filteredCameras.map((camera) => (
-            <VideoPlayer key={camera.id || camera.name} camera={camera} />
+            <VideoPlayer
+              key={camera.id || camera.name}
+              camera={camera}
+              isThumbnail={layout !== '1x1'}
+            />
           ))}
         </div>
       ) : (
