@@ -159,6 +159,19 @@ export interface Translations {
     nameRequiredError: string;
     urlRequiredError: string;
     defaultSaveError: string;
+    motionDetectionTitle: string;
+    motionActive: string;
+    motionPaused: string;
+    motionSensitivity: string;
+    motionSensitivityHigh: string;
+    motionSensitivityMedium: string;
+    motionSensitivityLow: string;
+    motionPersistence: string;
+    motionFrame1: string;
+    motionFrame2: string;
+    motionFrame3: string;
+    motionFrame5: string;
+    motionCooldown: string;
   };
   usersAdmin: {
     title: string;
@@ -276,6 +289,20 @@ export interface Translations {
     testAlert: string;
     markAllSeen: string;
     manageCameras: string;
+    noCamerasConnected: string;
+    liveAndStandby: string;
+    streamsInSystem: string;
+    pending: string;
+    totalHistory: string;
+    sectors: string;
+    noActiveAlarms: string;
+    soundActive: string;
+    soundMuted: string;
+    soundMuteTooltip: string;
+    soundUnmuteTooltip: string;
+    soundSynthesizer: string;
+    noCamerasConfigured: string;
+    infrastructure: string;
   };
   alertsTab: {
     title: string;
@@ -291,6 +318,16 @@ export interface Translations {
     zoomSnapshot: string;
     emptyTitle: string;
     emptyDesc: string;
+    searchPlaceholder: string;
+    showingCount: string;
+    noPhoto: string;
+    hoursAgo: string;
+    colSnapshot: string;
+    colCamera: string;
+    colTimeDate: string;
+    colLabel: string;
+    colStatus: string;
+    colActions: string;
   };
 }
 
@@ -454,6 +491,19 @@ export const translations: Record<Language, Translations> = {
       nameRequiredError: 'El nombre de la cámara es obligatorio',
       urlRequiredError: 'Debes indicar la URL RTSP o HTTP de la cámara IP',
       defaultSaveError: 'Error al guardar la configuración de la cámara',
+      motionDetectionTitle: 'Detección de Movimiento (Motion Daemon)',
+      motionActive: 'ACTIVADA',
+      motionPaused: 'PAUSADA',
+      motionSensitivity: 'Sensibilidad de Detección (Umbral: {t} px)',
+      motionSensitivityHigh: '⚡ Alta (150px)',
+      motionSensitivityMedium: '🎯 Media (350px)',
+      motionSensitivityLow: '🛡️ Baja (600px)',
+      motionPersistence: 'Persistencia (Frames Mínimos)',
+      motionFrame1: '1 Frame (Instantáneo - muy sensible)',
+      motionFrame2: '2 Frames (Recomendado - personas)',
+      motionFrame3: '3 Frames (Movimiento sostenido)',
+      motionFrame5: '5 Frames (Muy estricto)',
+      motionCooldown: 'Enfriamiento / Cooldown (Segundos)',
     },
     usersAdmin: {
       title: 'Gestión de Usuarios',
@@ -571,6 +621,20 @@ export const translations: Record<Language, Translations> = {
       testAlert: 'Simular Detección ⚡',
       markAllSeen: 'Marcar Todo Visto',
       manageCameras: 'Ajustes de Cámaras',
+      noCamerasConnected: 'Sin cámaras conectadas',
+      liveAndStandby: '{online} en vivo • {standby} en espera',
+      streamsInSystem: '{count} transmisión(es) RTSP/HLS en sistema',
+      pending: 'PENDIENTES',
+      totalHistory: 'Total histórico: {count} incidentes',
+      sectors: 'SECTORES',
+      noActiveAlarms: 'Ninguna alarma activa en curso',
+      soundActive: 'ACTIVA (CHIRP)',
+      soundMuted: 'SILENCIADA',
+      soundMuteTooltip: 'Silenciar alarma',
+      soundUnmuteTooltip: 'Activar alarma acústica',
+      soundSynthesizer: 'Sintetizador Web Audio API local',
+      noCamerasConfigured: 'No hay cámaras configuradas en el sistema.',
+      infrastructure: 'INFRAESTRUCTURA',
     },
     alertsTab: {
       title: 'HISTORIAL DE NOTIFICACIONES Y CAPTURAS',
@@ -586,6 +650,16 @@ export const translations: Record<Language, Translations> = {
       zoomSnapshot: 'Ampliar captura',
       emptyTitle: 'SECTOR SEGURO',
       emptyDesc: 'No hay alertas ni detecciones de movimiento registradas con los filtros seleccionados.',
+      searchPlaceholder: 'Buscar cámara o etiqueta...',
+      showingCount: 'Mostrando {filtered} de {total}',
+      noPhoto: 'Sin foto',
+      hoursAgo: 'hace {h}h',
+      colSnapshot: 'CAPTURA',
+      colCamera: 'CÁMARA',
+      colTimeDate: 'HORA / FECHA',
+      colLabel: 'ETIQUETA',
+      colStatus: 'ESTADO',
+      colActions: 'ACCIONES',
     },
   },
   en: {
@@ -747,6 +821,19 @@ export const translations: Record<Language, Translations> = {
       nameRequiredError: 'Camera name is required',
       urlRequiredError: 'You must provide the RTSP or HTTP URL for the IP camera',
       defaultSaveError: 'Failed to save camera configuration',
+      motionDetectionTitle: 'Motion Detection (Motion Daemon)',
+      motionActive: 'ACTIVE',
+      motionPaused: 'PAUSED',
+      motionSensitivity: 'Detection Sensitivity (Threshold: {t} px)',
+      motionSensitivityHigh: '⚡ High (150px)',
+      motionSensitivityMedium: '🎯 Medium (350px)',
+      motionSensitivityLow: '🛡️ Low (600px)',
+      motionPersistence: 'Persistence (Minimum Frames)',
+      motionFrame1: '1 Frame (Instant - very sensitive)',
+      motionFrame2: '2 Frames (Recommended - persons)',
+      motionFrame3: '3 Frames (Sustained motion)',
+      motionFrame5: '5 Frames (Strict)',
+      motionCooldown: 'Cooldown Period (Seconds)',
     },
     usersAdmin: {
       title: 'User Management',
@@ -864,6 +951,20 @@ export const translations: Record<Language, Translations> = {
       testAlert: 'Simulate Detection ⚡',
       markAllSeen: 'Mark All Seen',
       manageCameras: 'Camera Settings',
+      noCamerasConnected: 'No cameras connected',
+      liveAndStandby: '{online} live • {standby} standby',
+      streamsInSystem: '{count} RTSP/HLS stream(s) in system',
+      pending: 'PENDING',
+      totalHistory: 'Historical total: {count} incidents',
+      sectors: 'SECTORS',
+      noActiveAlarms: 'No active alarms in progress',
+      soundActive: 'ACTIVE (CHIRP)',
+      soundMuted: 'MUTED',
+      soundMuteTooltip: 'Mute acoustic alarm',
+      soundUnmuteTooltip: 'Enable acoustic alarm',
+      soundSynthesizer: 'Local Web Audio API synthesizer',
+      noCamerasConfigured: 'No cameras configured in the system.',
+      infrastructure: 'INFRASTRUCTURE',
     },
     alertsTab: {
       title: 'NOTIFICATIONS & SNAPSHOT ARCHIVE',
@@ -879,6 +980,16 @@ export const translations: Record<Language, Translations> = {
       zoomSnapshot: 'Zoom snapshot',
       emptyTitle: 'SECTOR SECURE',
       emptyDesc: 'No alerts or motion events recorded matching the selected filters.',
+      searchPlaceholder: 'Search camera or label...',
+      showingCount: 'Showing {filtered} of {total}',
+      noPhoto: 'No photo',
+      hoursAgo: '{h}h ago',
+      colSnapshot: 'SNAPSHOT',
+      colCamera: 'CAMERA',
+      colTimeDate: 'TIME / DATE',
+      colLabel: 'LABEL',
+      colStatus: 'STATUS',
+      colActions: 'ACTIONS',
     },
   },
 };

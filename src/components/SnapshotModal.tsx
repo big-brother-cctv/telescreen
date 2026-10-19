@@ -94,10 +94,10 @@ export const SnapshotModal: React.FC = () => {
                 alignItems: 'center',
                 gap: '4px',
               }}
-              title="Descargar captura"
+              title={t.alertsTab.downloadSnapshot}
             >
               <Download size={14} />
-              <span>Guardar</span>
+              <span>{t.common.save}</span>
             </button>
 
             <button

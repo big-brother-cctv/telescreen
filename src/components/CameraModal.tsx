@@ -616,12 +616,12 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <ShieldAlert size={16} color={formData.motionEnabled !== false ? 'var(--accent-red)' : 'var(--text-muted)'} />
                 <span style={{ fontSize: '0.82rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Detección de Movimiento (Motion Daemon)
+                  {t.cameraModal.motionDetectionTitle}
                 </span>
               </div>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none' }}>
                 <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: formData.motionEnabled !== false ? 'var(--accent-teal)' : 'var(--text-muted)', fontWeight: 700 }}>
-                  {formData.motionEnabled !== false ? 'ACTIVADA' : 'PAUSADA'}
+                  {formData.motionEnabled !== false ? t.cameraModal.motionActive : t.cameraModal.motionPaused}
                 </span>
                 <input
                   type="checkbox"
@@ -638,19 +638,19 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                     <label style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>
-                      Sensibilidad de Detección (Umbral: {formData.motionThreshold || 350} px)
+                      {t.cameraModal.motionSensitivity.replace('{t}', String(formData.motionThreshold || 350))}
                     </label>
                     <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                      {(formData.motionThreshold || 350) <= 200 ? '⚡ Alta (Reactiva)' : (formData.motionThreshold || 350) <= 450 ? '🎯 Media (Recomendada)' : '🛡️ Baja (Filtro fuerte)'}
+                      {(formData.motionThreshold || 350) <= 200 ? t.cameraModal.motionSensitivityHigh : (formData.motionThreshold || 350) <= 450 ? t.cameraModal.motionSensitivityMedium : t.cameraModal.motionSensitivityLow}
                     </span>
                   </div>
 
                   {/* Presets rápidos */}
                   <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
                     {[
-                      { label: '⚡ Alta (150px)', val: 150 },
-                      { label: '🎯 Media (350px)', val: 350 },
-                      { label: '🛡️ Baja (600px)', val: 600 },
+                      { label: t.cameraModal.motionSensitivityHigh, val: 150 },
+                      { label: t.cameraModal.motionSensitivityMedium, val: 350 },
+                      { label: t.cameraModal.motionSensitivityLow, val: 600 },
                     ].map((p) => (
                       <button
                         key={p.val}
@@ -689,24 +689,24 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
                   {/* Frames mínimos consecutivos */}
                   <div>
                     <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 700, textTransform: 'uppercase' }}>
-                      Persistencia (Frames Mínimos)
+                      {t.cameraModal.motionPersistence}
                     </label>
                     <select
                       value={formData.motionFrames || 2}
                       onChange={(e) => setFormData({ ...formData, motionFrames: Number(e.target.value) })}
                       style={{ width: '100%' }}
                     >
-                      <option value="1">1 Frame (Instantáneo - muy sensible)</option>
-                      <option value="2">2 Frames (Recomendado - personas)</option>
-                      <option value="3">3 Frames (Movimiento sostenido)</option>
-                      <option value="5">5 Frames (Muy estricto)</option>
+                      <option value="1">{t.cameraModal.motionFrame1}</option>
+                      <option value="2">{t.cameraModal.motionFrame2}</option>
+                      <option value="3">{t.cameraModal.motionFrame3}</option>
+                      <option value="5">{t.cameraModal.motionFrame5}</option>
                     </select>
                   </div>
 
                   {/* Cooldown entre alertas */}
                   <div>
                     <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 700, textTransform: 'uppercase' }}>
-                      Enfriamiento / Cooldown (Segundos)
+                      {t.cameraModal.motionCooldown}
                     </label>
                     <input
                       type="number"

@@ -699,4 +699,132 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
+/* =========================================================================
+   DASHBOARD & ALERTS RESPONSIVE GRIDS
+   ========================================================================= */
+
+.dashboard-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dashboard-metric-card {
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justifyContent: space-between;
+  transition: all 0.2s ease;
+}
+
+.dashboard-snapshots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  gap: 14px;
+}
+
+.dashboard-feeds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+}
+
+.alerts-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+}
+
+.alerts-filter-bar {
+  background: rgba(13, 16, 24, 0.85);
+  border: 1px solid var(--border-party);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justifyContent: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.alerts-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .dashboard-metric-card {
+    padding: 12px;
+  }
+
+  .dashboard-metric-card .metric-value {
+    font-size: 1.35rem !important;
+  }
+
+  .dashboard-snapshots-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .dashboard-feeds-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .alerts-gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .alerts-filter-bar {
+    padding: 10px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .alerts-filter-group {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .alerts-filter-group select,
+  .alerts-filter-group input {
+    width: 100% !important;
+  }
+
+  .alerts-filter-group .status-pill-group {
+    width: 100%;
+    display: flex;
+  }
+
+  .alerts-filter-group .status-pill-group button {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+@media (max-width: 400px) {
+  .dashboard-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 

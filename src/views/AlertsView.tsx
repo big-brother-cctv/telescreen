@@ -73,7 +73,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
       const mins = Math.floor(diffSec / 60);
       if (mins < 60) return t.alerts.minutesAgo.replace('{m}', String(mins));
       const hours = Math.floor(mins / 60);
-      return `hace ${hours}h`;
+      return t.alertsTab.hoursAgo.replace('{h}', String(hours));
     } catch {
       return '';
     }
@@ -105,7 +105,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
   }, [alerts, selectedCamera, statusFilter, searchQuery]);
 
   return (
-    <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '1600px', margin: '0 auto', width: '100%' }}>
+    <div className="responsive-container" style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
       {/* View Header */}
       <div
         style={{
@@ -113,7 +113,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '16px',
+          gap: '14px',
           borderBottom: '1px solid var(--border-party)',
           paddingBottom: '16px',
         }}
@@ -121,8 +121,8 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div
             style={{
-              width: '42px',
-              height: '42px',
+              width: '40px',
+              height: '40px',
               borderRadius: '8px',
               background: 'rgba(225, 29, 72, 0.2)',
               border: '1px solid var(--accent-red)',
@@ -130,17 +130,18 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
               alignItems: 'center',
               justifyContent: 'center',
               boxShadow: '0 0 15px rgba(225, 29, 72, 0.3)',
+              flexShrink: 0,
             }}
           >
-            <ShieldAlert size={22} color="var(--accent-red)" />
+            <ShieldAlert size={20} color="var(--accent-red)" />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <h1
                 style={{
                   fontFamily: 'var(--font-display)',
                   fontWeight: 900,
-                  fontSize: '1.3rem',
+                  fontSize: '1.25rem',
                   letterSpacing: '0.04em',
                   color: '#fff',
                   margin: 0,
@@ -154,7 +155,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
                   style={{
                     background: 'var(--accent-red)',
                     color: '#fff',
-                    fontSize: '0.7rem',
+                    fontSize: '0.68rem',
                     fontWeight: 800,
                     fontFamily: 'var(--font-mono)',
                     padding: '2px 8px',
@@ -162,14 +163,14 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
                     boxShadow: '0 0 10px var(--accent-red)',
                   }}
                 >
-                  {unreadCount} PENDIENTES
+                  {unreadCount} {t.dashboardView.pending}
                 </span>
               )}
             </div>
             <p
               style={{
                 color: 'var(--text-muted)',
-                fontSize: '0.78rem',
+                fontSize: '0.76rem',
                 margin: '4px 0 0 0',
                 fontFamily: 'var(--font-mono)',
               }}
@@ -227,24 +228,12 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
       </div>
 
       {/* Filter and View Mode Control Bar */}
-      <div
-        style={{
-          background: 'rgba(13, 16, 24, 0.8)',
-          border: '1px solid var(--border-party)',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '12px',
-        }}
-      >
+      <div className="alerts-filter-bar">
         {/* Left: Filter Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', flex: 1 }}>
+        <div className="alerts-filter-group">
           {/* Camera Selector */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Filter size={14} color="var(--text-muted)" />
+            <Filter size={14} color="var(--text-muted)" style={{ flexShrink: 0 }} />
             <select
               value={selectedCamera}
               onChange={(e) => setSelectedCamera(e.target.value)}
@@ -271,7 +260,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
           </div>
 
           {/* Status Filter Buttons */}
-          <div style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.4)', borderRadius: '4px', padding: '2px', border: '1px solid var(--border-subtle)' }}>
+          <div className="status-pill-group" style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.4)', borderRadius: '4px', padding: '2px', border: '1px solid var(--border-subtle)' }}>
             <button
               onClick={() => setStatusFilter('all')}
               style={{
@@ -327,7 +316,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar cámara o etiqueta..."
+              placeholder={t.alertsTab.searchPlaceholder}
               style={{
                 background: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid var(--border-subtle)',
@@ -343,9 +332,9 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
         </div>
 
         {/* Right: Layout Switcher (Gallery vs Table) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            Mostrando {filteredAlerts.length} de {alerts.length}
+            {t.alertsTab.showingCount.replace('{filtered}', String(filteredAlerts.length)).replace('{total}', String(alerts.length))}
           </span>
           <div style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.4)', borderRadius: '4px', padding: '2px', border: '1px solid var(--border-subtle)' }}>
             <button
@@ -427,13 +416,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
         </div>
       ) : viewMode === 'gallery' ? (
         /* Large Photo Gallery Mode */
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-            gap: '18px',
-          }}
-        >
+        <div className="alerts-gallery-grid">
           {filteredAlerts.map((alert) => {
             const snapshotUrl = alert.snapshotPath
               ? `/api/alerts/snapshots/${alert.snapshotPath.split('/').pop()}`
@@ -518,7 +501,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
                       }}
                     >
                       <AlertTriangle size={28} color="var(--accent-red)" />
-                      <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)' }}>Sin imagen adjunta</span>
+                      <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)' }}>{t.alertsTab.noPhoto}</span>
                     </div>
                   )}
 
@@ -710,22 +693,22 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
       ) : (
         /* Table / List Mode */
         <div
+          className="table-responsive-wrapper"
           style={{
             background: 'rgba(13, 16, 24, 0.8)',
             border: '1px solid var(--border-party)',
             borderRadius: '8px',
-            overflow: 'hidden',
           }}
         >
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.78rem' }}>
+          <table style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.78rem' }}>
             <thead>
               <tr style={{ background: 'rgba(18, 22, 34, 0.95)', borderBottom: '1px solid var(--border-party)' }}>
-                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>CAPTURA</th>
-                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>CÁMARA</th>
-                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>HORA / FECHA</th>
-                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>ETIQUETA</th>
-                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>ESTADO</th>
-                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textAlign: 'right' }}>ACCIONES</th>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>{t.alertsTab.colSnapshot}</th>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>{t.alertsTab.colCamera}</th>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>{t.alertsTab.colTimeDate}</th>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>{t.alertsTab.colLabel}</th>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>{t.alertsTab.colStatus}</th>
+                <th style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textAlign: 'right' }}>{t.alertsTab.colActions}</th>
               </tr>
             </thead>
             <tbody>
@@ -765,7 +748,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
                           <img src={snapshotUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                       ) : (
-                        <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Sin foto</span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>{t.alertsTab.noPhoto}</span>
                       )}
                     </td>
 
