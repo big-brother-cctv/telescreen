@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.0](https://github.com/big-brother-cctv/telescreen/compare/v0.24.0...v0.25.0) (2026-10-19)
+
+
+### Features
+
+* add platform-aware push notification banners and internationalize alert strings ([a9794a1](https://github.com/big-brother-cctv/telescreen/commit/a9794a1e64c4c1273bc3eb76f34a5aed8055355c))
+
 ## [0.24.0](https://github.com/big-brother-cctv/telescreen/compare/v0.23.0...v0.24.0) (2026-10-19)
 
 
