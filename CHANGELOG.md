@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.0](https://github.com/big-brother-cctv/telescreen/compare/v0.25.0...v0.26.0) (2026-10-19)
+
+
+### Features
+
+* improve browser notification permission handling and error feedback for insecure or blocked contexts ([118a4fc](https://github.com/big-brother-cctv/telescreen/commit/118a4fcd127bb89655de60306ceee5b6fd17a563))
+
 ## [0.25.0](https://github.com/big-brother-cctv/telescreen/compare/v0.24.0...v0.25.0) (2026-10-19)
 
 
