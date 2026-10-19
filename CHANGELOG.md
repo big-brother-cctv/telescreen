@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.22.0](https://github.com/big-brother-cctv/telescreen/compare/v0.21.0...v0.22.0) (2026-10-19)
+
+
+### Features
+
+* add auto-detection and dynamic switching for camera substreams in VideoPlayer ([da255a6](https://github.com/big-brother-cctv/telescreen/commit/da255a67734c44223c3fa10ab0bfca0c709417b7))
+* improve mobile safe-area padding and add real-time stream status tracking in dashboard ([de0c445](https://github.com/big-brother-cctv/telescreen/commit/de0c4455c82e74703e97c52631370c24bdbf2f23))
+
 ## [0.21.0](https://github.com/big-brother-cctv/telescreen/compare/v0.20.1...v0.21.0) (2026-10-19)
 
 
