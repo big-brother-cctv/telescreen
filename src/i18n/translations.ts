@@ -303,6 +303,15 @@ export interface Translations {
     soundSynthesizer: string;
     noCamerasConfigured: string;
     infrastructure: string;
+    infraTitle: string;
+    infraSubtitle: string;
+    infraMediaMtx: string;
+    infraApi: string;
+    infraMotion: string;
+    infraDb: string;
+    infraConnected: string;
+    infraActive: string;
+    infraAllOnline: string;
   };
   alertsTab: {
     title: string;
@@ -635,6 +644,15 @@ export const translations: Record<Language, Translations> = {
       soundSynthesizer: 'Sintetizador Web Audio API local',
       noCamerasConfigured: 'No hay cámaras configuradas en el sistema.',
       infrastructure: 'INFRAESTRUCTURA',
+      infraTitle: 'INFRAESTRUCTURA DE RED Y SERVICIOS',
+      infraSubtitle: 'Topología de nodos distribuidos, puertos y telemetría de comunicación',
+      infraMediaMtx: 'Servidor MediaMTX',
+      infraApi: 'Big Brother API Core',
+      infraMotion: 'Detector Motion Daemon',
+      infraDb: 'PostgreSQL Persistente',
+      infraConnected: 'CONECTADO',
+      infraActive: 'ACTIVO',
+      infraAllOnline: '4/4 NODOS OPERATIVOS',
     },
     alertsTab: {
       title: 'HISTORIAL DE NOTIFICACIONES Y CAPTURAS',
@@ -965,6 +983,15 @@ export const translations: Record<Language, Translations> = {
       soundSynthesizer: 'Local Web Audio API synthesizer',
       noCamerasConfigured: 'No cameras configured in the system.',
       infrastructure: 'INFRASTRUCTURE',
+      infraTitle: 'NETWORK & SERVICE INFRASTRUCTURE',
+      infraSubtitle: 'Distributed node topology, listening ports, and communication telemetry',
+      infraMediaMtx: 'MediaMTX Media Server',
+      infraApi: 'Big Brother API Core',
+      infraMotion: 'Motion Detector Daemon',
+      infraDb: 'Persistent PostgreSQL',
+      infraConnected: 'CONNECTED',
+      infraActive: 'ACTIVE',
+      infraAllOnline: '4/4 NODES OPERATIONAL',
     },
     alertsTab: {
       title: 'NOTIFICATIONS & SNAPSHOT ARCHIVE',

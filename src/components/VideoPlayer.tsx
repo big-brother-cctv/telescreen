@@ -244,6 +244,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
       ref={containerRef}
       className={`glass-panel telescreen-player-container ${isFullscreen ? 'player-fullscreen' : ''} ${hasActiveAlarm ? 'alarm-active' : ''}`}
       onClick={handleContainerClick}
+      onDoubleClick={(e) => {
+        e.stopPropagation();
+        toggleFullscreen();
+      }}
       onMouseMove={resetControlsTimer}
       style={{
         overflow: 'hidden',
@@ -255,6 +259,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
         background: '#000',
         boxShadow: isFullscreen ? 'none' : '0 8px 30px rgba(0, 0, 0, 0.65)',
         transition: 'all 0.2s ease',
+        width: '100%',
       }}
       onMouseEnter={(e) => {
         if (!isFullscreen) {
@@ -398,14 +403,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
           <div style={{
             position: 'absolute',
             top: '8px',
-            left: '10px',
-            right: '10px',
+            left: '8px',
+            right: '8px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             pointerEvents: 'none',
             zIndex: 20,
-            gap: '8px',
+            gap: '6px',
+            flexWrap: 'wrap',
           }}>
             {/* Live indicator */}
             <div style={{
@@ -450,13 +456,13 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '5px',
-                  padding: '3px 8px',
+                  gap: '4px',
+                  padding: '3px 7px',
                   borderRadius: '4px',
                   background: 'rgba(225, 29, 72, 0.95)',
                   boxShadow: '0 0 14px rgba(225, 29, 72, 0.85)',
                   color: '#fff',
-                  fontSize: '0.66rem',
+                  fontSize: '0.65rem',
                   fontWeight: 900,
                   fontFamily: 'var(--font-mono)',
                   letterSpacing: '0.04em',
@@ -464,10 +470,13 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
                   pointerEvents: 'auto',
                   border: '1px solid #ff335f',
                   animation: 'pulse-red 1.2s infinite',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
                 }}
               >
-                <AlertCircle size={12} />
-                <span>{t.alerts.badge}: {t.alerts.motionDetected.toUpperCase()}</span>
+                <AlertCircle size={11} />
+                <span className="desktop-only">{t.alerts.badge}: {t.alerts.motionDetected.toUpperCase()}</span>
+                <span className="mobile-only">{t.alerts.badge}</span>
               </div>
             )}
 
