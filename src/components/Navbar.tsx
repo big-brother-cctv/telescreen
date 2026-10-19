@@ -104,7 +104,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
         {/* Brand & CCTV Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
           <div 
-            onClick={() => onNavigate('grid')}
+            onClick={() => onNavigate('dashboard')}
             style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', minWidth: 0 }}
           >
             <div style={{

@@ -283,7 +283,7 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                             fontSize: '0.72rem',
                             color: '#fda4af'
                           }}>
-                            {cam.fps || 25} FPS
+                            {cam.fps || 30} FPS
                           </span>
                         </div>
                       </td>
@@ -436,7 +436,7 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
                     {cam.resolution || '1280x720'}
                   </span>
                   <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', padding: '2px 6px', background: 'rgba(225,29,72,0.12)', border: '1px solid rgba(225,29,72,0.3)', borderRadius: '3px', color: '#fda4af' }}>
-                    {cam.fps || 25} FPS
+                    {cam.fps || 30} FPS
                   </span>
                   <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', padding: '2px 6px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '3px', color: 'var(--accent-amber)' }}>
                     {cam.codec || 'libx264'}

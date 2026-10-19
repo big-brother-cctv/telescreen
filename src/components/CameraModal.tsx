@@ -20,7 +20,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
     sourceUrl: '',
     device: '',
     resolution: '1280x720',
-    fps: '25',
+    fps: '30',
     codec: 'libx264',
     preset: 'ultrafast',
     tune: 'zerolatency',
@@ -48,7 +48,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
         sourceUrl: camera.sourceUrl || '',
         device: isHardware ? (camera.device || '/dev/video0') : (camera.device || ''),
         resolution: camera.resolution || '1280x720',
-        fps: camera.fps || '25',
+        fps: camera.fps || '30',
         codec: camera.codec || 'libx264',
         preset: camera.preset || 'ultrafast',
         tune: camera.tune || 'zerolatency',
@@ -71,7 +71,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
         sourceUrl: '',
         device: '',
         resolution: '1280x720',
-        fps: '25',
+        fps: '30',
         codec: 'libx264',
         preset: 'ultrafast',
         tune: 'zerolatency',
@@ -561,7 +561,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
                 {t.cameraModal.fpsLabel}
               </label>
               <select
-                value={formData.fps || '25'}
+                value={formData.fps || '30'}
                 onChange={(e) => setFormData({ ...formData, fps: e.target.value })}
                 style={{ width: '100%' }}
               >

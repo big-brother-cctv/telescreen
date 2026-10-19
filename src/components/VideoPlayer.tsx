@@ -561,7 +561,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
               border: '1px solid rgba(255, 255, 255, 0.15)',
               whiteSpace: 'nowrap'
             }}>
-              {camera.resolution || '1280x720'} • {camera.fps ? `${camera.fps} FPS` : '25 FPS'}
+              {camera.resolution || '1280x720'} • {camera.fps ? `${camera.fps} FPS` : '30 FPS'}
             </span>
           </div>
 
@@ -788,7 +788,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
                 fontFamily: 'var(--font-mono)',
                 border: '1px solid rgba(225, 29, 72, 0.4)'
               }}>
-                {camera.fps ? `${camera.fps} FPS` : '25 FPS'}
+                {camera.fps ? `${camera.fps} FPS` : '30 FPS'}
               </span>
             </div>
           </div>
@@ -807,7 +807,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ camera }) => {
             pointerEvents: 'none',
             zIndex: 20,
           }}>
-            {t.videoPlayer.sectorNode.replace('{id}', String(camera.id || 1))}
+            {t.videoPlayer.sectorNode.replace('{name}', camera.name.toUpperCase())}
           </div>
         )}
 

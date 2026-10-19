@@ -49,7 +49,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   const onlineCount = cameras.filter((c) => c.status === 'online').length;
   const standbyCount = cameras.filter((c) => c.status === 'standby' || !c.status).length;
-  const isOnlineSystem = cameras.length > 0;
 
   // Sectores en alarma activa (combinando eventos SSE en tiempo real y alertas no leídas recientes)
   const activeAlarmSectors = useMemo(() => {
@@ -155,24 +154,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               {t.dashboardView.totalCameras}
             </span>
             <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: 'rgba(0, 240, 255, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Radio size={16} color="var(--accent-teal)" />
+              <CameraIcon size={16} color="var(--accent-teal)" />
             </div>
           </div>
           <div style={{ marginTop: '12px' }}>
             <div className="metric-value" style={{ fontWeight: 900, color: '#fff', fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '1.75rem' }}>{onlineCount > 0 ? onlineCount : cameras.length}</span>
+              <span style={{ fontSize: '1.75rem', color: onlineCount > 0 ? '#10b981' : 'var(--text-muted)' }}>{onlineCount}</span>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                / {cameras.length} {onlineCount > 0 ? 'ONLINE' : 'CANALES'}
+                / {cameras.length} ONLINE
               </span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', fontSize: '0.7rem', color: isOnlineSystem ? '#10b981' : 'var(--accent-amber)' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: isOnlineSystem ? '#10b981' : 'var(--accent-amber)', flexShrink: 0 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', fontSize: '0.7rem', color: onlineCount > 0 ? '#10b981' : 'var(--accent-amber)' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: onlineCount > 0 ? '#10b981' : 'var(--accent-amber)', flexShrink: 0 }} />
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {cameras.length === 0
                   ? t.dashboardView.noCamerasConnected
-                  : onlineCount > 0
-                  ? t.dashboardView.liveAndStandby.replace('{online}', String(onlineCount)).replace('{standby}', String(standbyCount))
-                  : t.dashboardView.streamsInSystem.replace('{count}', String(cameras.length))}
+                  : t.dashboardView.liveAndStandby.replace('{online}', String(onlineCount)).replace('{standby}', String(standbyCount))}
               </span>
             </div>
           </div>
@@ -229,8 +226,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: 700, textTransform: 'uppercase' }}>
               {t.dashboardView.activeAlarms}
             </span>
-            <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Activity size={16} color="var(--accent-party)" />
+            <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: activeAlarmSectors.size > 0 ? 'rgba(225, 29, 72, 0.2)' : 'rgba(245, 158, 11, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Activity size={16} color={activeAlarmSectors.size > 0 ? 'var(--accent-red)' : 'var(--accent-amber)'} />
             </div>
           </div>
           <div style={{ marginTop: '12px' }}>
@@ -501,7 +498,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     {t.dashboardView.infraMediaMtx}
                   </div>
                   <div style={{ fontSize: '0.66rem', color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    RTSP :8554 • HLS :8888
+                    RTSP :8554 • HLS :8888 • WHEP :8889
                   </div>
                 </div>
               </div>
@@ -510,8 +507,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </span>
             </div>
             <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cameras.length} {t.dashboardView.totalCameras.toLowerCase()}</span>
-              <span style={{ color: 'var(--text-secondary)', flexShrink: 0 }}>API :9997</span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>UDP :8189 (ICE) • API :9997</span>
+              <span style={{ color: 'var(--text-secondary)', flexShrink: 0 }}>LAT: &lt;0.2s</span>
             </div>
           </div>
 
@@ -527,7 +524,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     {t.dashboardView.infraApi}
                   </div>
                   <div style={{ fontSize: '0.66rem', color: 'var(--accent-teal)', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    REST :8080 • Gin Engine
+                    REST :8080 • Go 1.22 Runtime
                   </div>
                 </div>
               </div>
@@ -536,8 +533,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </span>
             </div>
             <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>JWT Auth • SSE Stream</span>
-              <span style={{ color: '#10b981', flexShrink: 0 }}>HEALTH OK</span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>SSE :8080 • /healthz OK</span>
+              <span style={{ color: '#10b981', flexShrink: 0 }}>UPTIME: 99.9%</span>
             </div>
           </div>
 
@@ -553,7 +550,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     {t.dashboardView.infraMotion}
                   </div>
                   <div style={{ fontSize: '0.66rem', color: 'var(--accent-amber)', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    Motion Daemon :8083
+                    Motion Daemon :8083 • Ingest RTSP
                   </div>
                 </div>
               </div>
@@ -562,8 +559,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </span>
             </div>
             <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Webhook Discord • Snapshots</span>
-              <span style={{ color: 'var(--text-secondary)', flexShrink: 0 }}>MULTI-CAM</span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Diff Threshold: 1500px • Rate: 30fps</span>
+              <span style={{ color: 'var(--text-secondary)', flexShrink: 0 }}>PIPELINE OK</span>
             </div>
           </div>
 
@@ -579,7 +576,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     {t.dashboardView.infraDb}
                   </div>
                   <div style={{ fontSize: '0.66rem', color: '#c084fc', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    Port :5432 • PVC 10Gi
+                    Port :5432 • Max Conn: 100
                   </div>
                 </div>
               </div>
@@ -588,7 +585,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </span>
             </div>
             <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Local-Path Storage Bound</span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>PVC 10Gi (local-path) • Bound</span>
               <span style={{ color: '#10b981', flexShrink: 0 }}>PERSISTENT</span>
             </div>
           </div>
