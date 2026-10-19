@@ -21,6 +21,8 @@ export interface Camera {
   motionThreshold?: number;
   motionFrames?: number;
   motionCooldown?: number;
+  aiMode?: 'all' | 'person' | 'vehicles' | 'animals' | 'none';
+  aiConfidence?: number;
 }
 
 export type UserRole = 'admin' | 'operator' | 'viewer';

@@ -172,6 +172,17 @@ export interface Translations {
     motionFrame3: string;
     motionFrame5: string;
     motionCooldown: string;
+    aiFilterTitle: string;
+    aiModeLabel: string;
+    aiModeAll: string;
+    aiModePerson: string;
+    aiModeVehicles: string;
+    aiModeAnimals: string;
+    aiModeNone: string;
+    aiConfidenceLabel: string;
+    aiConfPermissive: string;
+    aiConfBalanced: string;
+    aiConfStrict: string;
   };
   usersAdmin: {
     title: string;
@@ -531,6 +542,17 @@ export const translations: Record<Language, Translations> = {
       motionFrame3: '3 Frames (Movimiento sostenido)',
       motionFrame5: '5 Frames (Muy estricto)',
       motionCooldown: 'Enfriamiento / Cooldown (Segundos)',
+      aiFilterTitle: 'Filtro de Inteligencia Artificial (YOLOv8)',
+      aiModeLabel: 'Objetivos a Notificar (Filtro IA)',
+      aiModeAll: '🎯 Personas, Vehículos y Mascotas',
+      aiModePerson: '👤 Solo Personas',
+      aiModeVehicles: '🚗 Personas y Vehículos',
+      aiModeAnimals: '🐾 Solo Mascotas y Animales',
+      aiModeNone: '⚡ Sin filtro IA (Cualquier movimiento)',
+      aiConfidenceLabel: 'Sensibilidad de la IA (Confianza mínima)',
+      aiConfPermissive: '⚡ Muy sensible (20% - gatos y noche)',
+      aiConfBalanced: '🎯 Equilibrada (28% - recomendado)',
+      aiConfStrict: '🛡️ Estricta (45% - nítida)',
     },
     usersAdmin: {
       title: 'Gestión de Usuarios',
@@ -888,6 +910,17 @@ export const translations: Record<Language, Translations> = {
       motionFrame3: '3 Frames (Sustained motion)',
       motionFrame5: '5 Frames (Strict)',
       motionCooldown: 'Cooldown Period (Seconds)',
+      aiFilterTitle: 'AI Detection Filter (YOLOv8)',
+      aiModeLabel: 'Target Filter Mode',
+      aiModeAll: '🎯 Persons, Vehicles & Pets',
+      aiModePerson: '👤 Persons Only',
+      aiModeVehicles: '🚗 Persons & Vehicles',
+      aiModeAnimals: '🐾 Pets & Animals Only',
+      aiModeNone: '⚡ No AI Filter (All Motion Events)',
+      aiConfidenceLabel: 'AI Sensitivity (Min Confidence)',
+      aiConfPermissive: '⚡ High Sensitivity (20% - cats & night)',
+      aiConfBalanced: '🎯 Balanced (28% - recommended)',
+      aiConfStrict: '🛡️ Strict (45% - sharp only)',
     },
     usersAdmin: {
       title: 'User Management',

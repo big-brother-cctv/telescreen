@@ -30,6 +30,8 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
     motionThreshold: 350,
     motionFrames: 2,
     motionCooldown: 15,
+    aiMode: 'all',
+    aiConfidence: 0.28,
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -58,6 +60,8 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
         motionThreshold: camera.motionThreshold || 350,
         motionFrames: camera.motionFrames || 2,
         motionCooldown: camera.motionCooldown || 15,
+        aiMode: camera.aiMode || 'all',
+        aiConfidence: camera.aiConfidence !== undefined ? camera.aiConfidence : 0.28,
       });
       if (mode === 'push') setActiveTab('push');
       else if (mode === 'test' || camera.sourceType === 'test') setActiveTab('test');
@@ -81,6 +85,8 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
         motionThreshold: 350,
         motionFrames: 2,
         motionCooldown: 15,
+        aiMode: 'all',
+        aiConfidence: 0.28,
       });
       setActiveTab('ip');
     }
@@ -719,6 +725,98 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
                       style={{ width: '100%' }}
                     />
                   </div>
+                </div>
+
+                {/* Filtro de Inteligencia Artificial (YOLOv8) */}
+                <div style={{
+                  marginTop: '8px',
+                  paddingTop: '12px',
+                  borderTop: '1px solid var(--border-subtle)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ShieldAlert size={14} style={{ color: 'var(--accent-red)' }} />
+                    <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      {t.cameraModal.aiFilterTitle}
+                    </span>
+                  </div>
+
+                  {/* Selector de Objetivos / AI Mode */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 700, textTransform: 'uppercase' }}>
+                      {t.cameraModal.aiModeLabel}
+                    </label>
+                    <select
+                      value={formData.aiMode || 'all'}
+                      onChange={(e) => setFormData({ ...formData, aiMode: e.target.value as Camera['aiMode'] })}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="all">{t.cameraModal.aiModeAll}</option>
+                      <option value="person">{t.cameraModal.aiModePerson}</option>
+                      <option value="vehicles">{t.cameraModal.aiModeVehicles}</option>
+                      <option value="animals">{t.cameraModal.aiModeAnimals}</option>
+                      <option value="none">{t.cameraModal.aiModeNone}</option>
+                    </select>
+                  </div>
+
+                  {/* Sensibilidad de la IA / AI Confidence */}
+                  {formData.aiMode !== 'none' && (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <label style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>
+                          {t.cameraModal.aiConfidenceLabel}
+                        </label>
+                        <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                          {Math.round((formData.aiConfidence !== undefined ? formData.aiConfidence : 0.28) * 100)}%
+                        </span>
+                      </div>
+
+                      {/* Presets de Confianza IA */}
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+                        {[
+                          { label: t.cameraModal.aiConfPermissive, val: 0.20 },
+                          { label: t.cameraModal.aiConfBalanced, val: 0.28 },
+                          { label: t.cameraModal.aiConfStrict, val: 0.45 },
+                        ].map((p) => {
+                          const currentVal = formData.aiConfidence !== undefined ? formData.aiConfidence : 0.28;
+                          const isSelected = Math.abs(currentVal - p.val) < 0.02;
+                          return (
+                            <button
+                              key={p.val}
+                              type="button"
+                              onClick={() => setFormData({ ...formData, aiConfidence: p.val })}
+                              style={{
+                                flex: 1,
+                                padding: '4px 6px',
+                                fontSize: '0.65rem',
+                                fontFamily: 'var(--font-mono)',
+                                fontWeight: 700,
+                                borderRadius: '4px',
+                                border: `1px solid ${isSelected ? 'var(--accent-red)' : 'var(--border-subtle)'}`,
+                                background: isSelected ? 'rgba(225, 29, 72, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                                color: isSelected ? '#fff' : 'var(--text-secondary)',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {p.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <input
+                        type="range"
+                        min="0.10"
+                        max="0.80"
+                        step="0.02"
+                        value={formData.aiConfidence !== undefined ? formData.aiConfidence : 0.28}
+                        onChange={(e) => setFormData({ ...formData, aiConfidence: Number(e.target.value) })}
+                        style={{ width: '100%', accentColor: 'var(--accent-red)' }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
