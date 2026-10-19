@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.0](https://github.com/big-brother-cctv/telescreen/compare/v0.23.0...v0.24.0) (2026-10-19)
+
+
+### Features
+
+* add browser notification toggle and mobile setup guide banners to alerts UI ([86186d3](https://github.com/big-brother-cctv/telescreen/commit/86186d34ab35ae338d91c040fb0072cdaaf85e80))
+
 ## [0.23.0](https://github.com/big-brother-cctv/telescreen/compare/v0.22.0...v0.23.0) (2026-10-19)
 
 
