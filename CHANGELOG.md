@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0](https://github.com/big-brother-cctv/telescreen/compare/v0.19.0...v0.20.0) (2026-10-19)
+
+
+### Features
+
+* add WebRTC WHEP support with automatic HLS fallback and stream controls to VideoPlayer ([6e88f1a](https://github.com/big-brother-cctv/telescreen/commit/6e88f1a5e198cc9e46f06227d8e7be1362776cf4))
+
 ## [0.19.0](https://github.com/big-brother-cctv/telescreen/compare/v0.18.0...v0.19.0) (2026-10-19)
 
 
