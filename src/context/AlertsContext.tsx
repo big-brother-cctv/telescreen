@@ -90,11 +90,71 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setActiveToasts((prev) => prev.filter((item) => item.id !== id));
   };
 
+  const triggerNativeNotification = (newAlert: MotionAlert) => {
+    if (typeof window === 'undefined' || !('Notification' in window) || Notification.permission !== 'granted') {
+      return;
+    }
+
+    const snapshotUrl = newAlert.snapshotPath
+      ? `/api/alerts/snapshots/${newAlert.snapshotPath.split('/').pop()}`
+      : '/favicon-96x96.png';
+    const title = `🚨 CCTV - ${newAlert.cameraName.toUpperCase()}`;
+    const body = `${t.alerts.motionDetected} (${newAlert.label || 'motion'})`;
+
+    // 1. Try modern Service Worker registration showNotification (Required for iOS PWA and Android Mobile)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready
+        .then((reg) => {
+          return reg.showNotification(title, {
+            body,
+            icon: '/favicon-96x96.png',
+            badge: '/favicon-96x96.png',
+            image: snapshotUrl,
+            vibrate: [200, 100, 200, 100, 200],
+            tag: `bb-alert-${newAlert.id}`,
+            renotify: true,
+            data: { url: '/?view=alerts', id: newAlert.id },
+          } as NotificationOptions);
+        })
+        .catch(() => {
+          // Fallback to legacy desktop Notification constructor
+          try {
+            new Notification(title, {
+              body,
+              icon: snapshotUrl,
+              tag: `bb-alert-${newAlert.id}`,
+            });
+          } catch {}
+        });
+    } else {
+      try {
+        new Notification(title, {
+          body,
+          icon: snapshotUrl,
+          tag: `bb-alert-${newAlert.id}`,
+        });
+      } catch {}
+    }
+  };
+
   const requestNotificationPermission = async (): Promise<boolean> => {
     if (typeof window === 'undefined' || !('Notification' in window)) return false;
     try {
       const perm = await Notification.requestPermission();
       setNotificationPermission(perm);
+      if (perm === 'granted' && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.ready
+          .then((reg) => {
+            reg.showNotification('🚨 Big Brother Telescreen', {
+              body: 'Notificaciones tácticas nativas activadas correctamente',
+              icon: '/favicon-96x96.png',
+              badge: '/favicon-96x96.png',
+              vibrate: [100, 50, 100],
+              tag: 'bb-welcome',
+            } as NotificationOptions);
+          })
+          .catch(() => {});
+      }
       return perm === 'granted';
     } catch {
       return false;
@@ -149,6 +209,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
             brandNewAlerts.forEach((a) => {
               if (a.cameraName) markCameraActive(a.cameraName);
+              triggerNativeNotification(a);
             });
 
             if (localStorage.getItem('bb_alert_sound') !== 'false') {
@@ -219,19 +280,8 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
               playTacticalAlarmTone();
             }
 
-            // Notificación nativa del navegador
-            if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-              const snapshotUrl = newAlert.snapshotPath ? `/api/alerts/snapshots/${newAlert.snapshotPath.split('/').pop()}` : '/favicon.svg';
-              try {
-                new Notification(`🚨 CCTV - ${newAlert.cameraName.toUpperCase()}`, {
-                  body: `${t.alerts.motionDetected} (${newAlert.label || 'motion'})`,
-                  icon: snapshotUrl,
-                  tag: `bb-alert-${newAlert.id}`,
-                });
-              } catch {
-                // Ignore
-              }
-            }
+            // Notificación nativa del navegador / Service Worker PWA
+            triggerNativeNotification(newAlert);
           } catch (e) {
             console.error('Error handling SSE alert event:', e);
           }
