@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.1](https://github.com/big-brother-cctv/telescreen/compare/v0.28.0...v0.28.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* remove AI label badges and fullscreen toggle from UI components ([69cf69d](https://github.com/big-brother-cctv/telescreen/commit/69cf69dc60a81913242012a513752e60a926aaeb))
+
 ## [0.28.0](https://github.com/big-brother-cctv/telescreen/compare/v0.27.0...v0.28.0) (2026-10-20)
 
 
