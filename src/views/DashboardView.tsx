@@ -3,6 +3,7 @@ import type { Camera } from '../types';
 import { useAlerts } from '../context/AlertsContext';
 import { useLanguage } from '../i18n/LanguageContext';
 import { VideoPlayer } from '../components/VideoPlayer';
+import { getAiLabelInfo } from '../utils/aiLabel';
 import {
   Radio,
   ShieldAlert,
@@ -36,7 +37,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onNavigate,
   onAddCamera,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const {
     alerts,
     unreadCount,
@@ -431,6 +432,35 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     >
                       {alert.acknowledged ? t.alerts.acked.toUpperCase() : t.alerts.badge}
                     </div>
+
+                    {/* Cartel IA en foto de Dashboard */}
+                    {(() => {
+                      const aiInfo = getAiLabelInfo(alert.label, language);
+                      return (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            background: 'rgba(10, 13, 20, 0.85)',
+                            backdropFilter: 'blur(4px)',
+                            color: aiInfo.isAi ? 'var(--accent-party)' : 'var(--text-secondary)',
+                            fontSize: '0.62rem',
+                            fontWeight: 800,
+                            fontFamily: 'var(--font-mono)',
+                            padding: '2px 6px',
+                            borderRadius: '3px',
+                            border: `1px solid ${aiInfo.isAi ? 'rgba(0, 240, 255, 0.35)' : 'rgba(255, 255, 255, 0.12)'}`,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}
+                        >
+                          <span>{aiInfo.icon}</span>
+                          <span>{aiInfo.text}</span>
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Details Footer */}
@@ -444,8 +474,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         <span>{formatTime(alert.detectedAt)}</span>
                       </div>
                     </div>
-                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
-                      {getTimeAgo(alert.detectedAt)} • {alert.label?.toUpperCase() || 'MOTION'}
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>{getTimeAgo(alert.detectedAt)} •</span>
+                      {(() => {
+                        const ai = getAiLabelInfo(alert.label, language);
+                        return (
+                          <span style={{ color: ai.isAi ? 'var(--accent-party)' : 'inherit', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                            <span>{ai.icon}</span>
+                            <span>{ai.text}</span>
+                          </span>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>

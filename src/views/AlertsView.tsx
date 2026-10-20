@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import type { Camera } from '../types';
 import { useAlerts } from '../context/AlertsContext';
 import { useLanguage } from '../i18n/LanguageContext';
+import { getAiLabelInfo } from '../utils/aiLabel';
 import {
   ShieldAlert,
   Clock,
@@ -26,7 +27,7 @@ interface AlertsViewProps {
 }
 
 export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const {
     alerts,
     unreadCount,
@@ -35,6 +36,10 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
     deleteAlert,
     clearAllAlerts,
     refreshAlerts,
+    totalAlerts,
+    hasMore,
+    loadMoreAlerts,
+    isLoadingMore,
     setPreviewImage,
     browserNotificationsEnabled,
     notificationPermission,
@@ -555,9 +560,29 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
                         alt="Motion Snapshot"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={(e) => {
-                          (e.target as HTMLElement).style.display = 'none';
+                          const target = e.target as HTMLElement;
+                          target.style.display = 'none';
+                          const fallback = target.parentElement?.querySelector('.snapshot-fallback');
+                          if (fallback) (fallback as HTMLElement).style.display = 'flex';
                         }}
                       />
+                      <div
+                        className="snapshot-fallback"
+                        style={{
+                          display: 'none',
+                          height: '100%',
+                          width: '100%',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          color: 'var(--text-muted)',
+                          background: 'rgba(0,0,0,0.85)',
+                        }}
+                      >
+                        <AlertTriangle size={24} color="var(--accent-red)" />
+                        <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)' }}>{t.alertsTab.noPhoto}</span>
+                      </div>
                       <div
                         style={{
                           position: 'absolute',
@@ -612,25 +637,36 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
                     {alert.acknowledged ? t.alerts.acked.toUpperCase() : t.alerts.badge}
                   </div>
 
-                  {/* Confidence Badge */}
-                  {alert.confidence && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: '10px',
-                        right: '10px',
-                        background: 'rgba(0, 0, 0, 0.75)',
-                        color: '#fff',
-                        fontSize: '0.62rem',
-                        fontFamily: 'var(--font-mono)',
-                        padding: '2px 6px',
-                        borderRadius: '3px',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                      }}
-                    >
-                      {Math.round(alert.confidence * 100)}% CONF
-                    </div>
-                  )}
+                  {/* Cartel con lo que la IA estima que es el objeto detectado */}
+                  {(() => {
+                    const aiInfo = getAiLabelInfo(alert.label, language);
+                    return (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '10px',
+                          right: '10px',
+                          background: 'rgba(10, 13, 20, 0.88)',
+                          backdropFilter: 'blur(6px)',
+                          color: aiInfo.isAi ? 'var(--accent-party)' : 'var(--text-secondary)',
+                          fontSize: '0.64rem',
+                          fontWeight: 800,
+                          fontFamily: 'var(--font-mono)',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          border: `1px solid ${aiInfo.isAi ? 'rgba(0, 240, 255, 0.45)' : 'rgba(255, 255, 255, 0.15)'}`,
+                          letterSpacing: '0.04em',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.6)',
+                        }}
+                      >
+                        <span>{aiInfo.icon}</span>
+                        <span>{aiInfo.text}</span>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Card Info & Actions */}
@@ -849,7 +885,15 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
                     </td>
 
                     <td style={{ padding: '10px 16px', fontFamily: 'var(--font-mono)', color: 'var(--accent-party)' }}>
-                      {alert.label?.toUpperCase() || 'MOTION'}
+                      {(() => {
+                        const aiInfo = getAiLabelInfo(alert.label, language);
+                        return (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                            <span>{aiInfo.icon}</span>
+                            <span>{aiInfo.text}</span>
+                          </span>
+                        );
+                      })()}
                     </td>
 
                     <td style={{ padding: '10px 16px' }}>
@@ -907,6 +951,35 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Load More Button */}
+      {hasMore && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '12px' }}>
+          <button
+            type="button"
+            onClick={loadMoreAlerts}
+            disabled={isLoadingMore}
+            className="btn-ghost"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 24px',
+              border: '1px solid var(--border-party)',
+              borderRadius: '6px',
+              fontSize: '0.82rem',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 700,
+              color: 'var(--accent-teal)',
+              background: 'rgba(0, 240, 255, 0.05)',
+              cursor: isLoadingMore ? 'wait' : 'pointer',
+            }}
+          >
+            <RefreshCw size={15} style={{ animation: isLoadingMore ? 'spin 1s linear infinite' : 'none' }} />
+            <span>{isLoadingMore ? t.common.saving : `${t.alertsTab.loadMore} (${alerts.length} / ${totalAlerts})`}</span>
+          </button>
         </div>
       )}
     </div>

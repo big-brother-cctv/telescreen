@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAlerts } from '../context/AlertsContext';
 import { useLanguage } from '../i18n/LanguageContext';
+import { getAiLabelInfo } from '../utils/aiLabel';
 import {
   Bell,
   BellOff,
@@ -18,7 +19,7 @@ import {
 } from 'lucide-react';
 
 export const AlertsDrawer: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const {
     alerts,
     unreadCount,
@@ -519,6 +520,34 @@ export const AlertsDrawer: React.FC = () => {
                         >
                           <Maximize2 size={14} color="#fff" />
                         </div>
+
+                        {/* Cartel IA en thumbnail del Drawer */}
+                        {(() => {
+                          const aiInfo = getAiLabelInfo(alert.label, language);
+                          return (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                bottom: '3px',
+                                right: '3px',
+                                background: 'rgba(10, 13, 20, 0.88)',
+                                color: aiInfo.isAi ? 'var(--accent-party)' : 'var(--text-secondary)',
+                                fontSize: '0.56rem',
+                                fontWeight: 800,
+                                fontFamily: 'var(--font-mono)',
+                                padding: '1px 4px',
+                                borderRadius: '2px',
+                                border: '1px solid rgba(255, 255, 255, 0.15)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '3px',
+                              }}
+                            >
+                              <span>{aiInfo.icon}</span>
+                              <span>{aiInfo.text}</span>
+                            </div>
+                          );
+                        })()}
                       </div>
                     ) : (
                       <div
@@ -558,9 +587,20 @@ export const AlertsDrawer: React.FC = () => {
                           color: 'var(--text-muted)',
                           fontFamily: 'var(--font-mono)',
                           marginTop: '2px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
                         }}
                       >
-                        {t.alerts.labelPrefix}: {alert.label?.toUpperCase() || 'MOTION'}
+                        <span>{t.alerts.labelPrefix}:</span>
+                        {(() => {
+                          const aiInfo = getAiLabelInfo(alert.label, language);
+                          return (
+                            <span style={{ color: aiInfo.isAi ? 'var(--accent-party)' : 'inherit', fontWeight: 700 }}>
+                              {aiInfo.icon} {aiInfo.text}
+                            </span>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>

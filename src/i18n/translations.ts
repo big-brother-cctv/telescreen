@@ -366,6 +366,7 @@ export interface Translations {
     colLabel: string;
     colStatus: string;
     colActions: string;
+    loadMore: string;
   };
 }
 
@@ -736,6 +737,7 @@ export const translations: Record<Language, Translations> = {
       colLabel: 'ETIQUETA',
       colStatus: 'ESTADO',
       colActions: 'ACCIONES',
+      loadMore: 'Cargar más alertas',
     },
   },
   en: {
@@ -1104,6 +1106,7 @@ export const translations: Record<Language, Translations> = {
       colLabel: 'LABEL',
       colStatus: 'STATUS',
       colActions: 'ACTIONS',
+      loadMore: 'Load more alerts',
     },
   },
 };

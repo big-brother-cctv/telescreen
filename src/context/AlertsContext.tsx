@@ -19,6 +19,10 @@ interface AlertsContextType {
   deleteAlert: (id: number) => Promise<void>;
   clearAllAlerts: () => Promise<void>;
   refreshAlerts: () => Promise<void>;
+  totalAlerts: number;
+  hasMore: boolean;
+  loadMoreAlerts: () => Promise<void>;
+  isLoadingMore: boolean;
   isDrawerOpen: boolean;
   setIsDrawerOpen: (open: boolean) => void;
   previewImage: { url: string; title: string; time: string } | null;
@@ -65,6 +69,8 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const { t } = useLanguage();
   const [alerts, setAlerts] = useState<MotionAlert[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [totalAlerts, setTotalAlerts] = useState<number>(0);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [activeAlertCameras, setActiveAlertCameras] = useState<Set<string>>(new Set());
   const [activeToasts, setActiveToasts] = useState<MotionAlert[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
@@ -225,12 +231,16 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     if (!authStorage.getToken()) return;
     try {
       const [resAlerts, resUnread] = await Promise.allSettled([
-        api.getAlerts({ limit: 40 }),
+        api.getAlerts({ limit: 100 }),
         api.getUnreadAlertsCount(),
       ]);
 
       if (resAlerts.status === 'fulfilled' && resAlerts.value?.alerts) {
         const fetchedAlerts = resAlerts.value.alerts;
+
+        if (typeof resAlerts.value.total === 'number') {
+          setTotalAlerts(resAlerts.value.total);
+        }
 
         // Si entran alertas nuevas vía polling, activar toast, sonido y bordes activos
         if (previousAlertIdsRef.current.size > 0) {
@@ -255,13 +265,42 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         }
 
         previousAlertIdsRef.current = new Set(fetchedAlerts.map((a) => a.id));
-        setAlerts(fetchedAlerts);
+        setAlerts((prev) => {
+          if (prev.length > fetchedAlerts.length) {
+            const fetchedIds = new Set(fetchedAlerts.map((a) => a.id));
+            const olderAlerts = prev.filter((a) => !fetchedIds.has(a.id));
+            return [...fetchedAlerts, ...olderAlerts];
+          }
+          return fetchedAlerts;
+        });
       }
       if (resUnread.status === 'fulfilled' && typeof resUnread.value?.unreadCount === 'number') {
         setUnreadCount(resUnread.value.unreadCount);
       }
     } catch (err) {
       console.error('Error refreshing alerts:', err);
+    }
+  };
+
+  const loadMoreAlerts = async () => {
+    if (!authStorage.getToken() || isLoadingMore) return;
+    setIsLoadingMore(true);
+    try {
+      const res = await api.getAlerts({ limit: 50, offset: alerts.length });
+      if (res?.alerts && res.alerts.length > 0) {
+        setAlerts((prev) => {
+          const existingIds = new Set(prev.map((a) => a.id));
+          const newAlerts = res.alerts.filter((a) => !existingIds.has(a.id));
+          return [...prev, ...newAlerts];
+        });
+      }
+      if (typeof res?.total === 'number') {
+        setTotalAlerts(res.total);
+      }
+    } catch (err) {
+      console.error('Error loading more alerts:', err);
+    } finally {
+      setIsLoadingMore(false);
     }
   };
 
@@ -296,9 +335,10 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
             setAlerts((prev) => {
               if (prev.some((a) => a.id === newAlert.id)) return prev;
-              return [newAlert, ...prev.slice(0, 49)];
+              return [newAlert, ...prev.slice(0, 249)];
             });
             setUnreadCount((c) => c + 1);
+            setTotalAlerts((t) => t + 1);
 
             // Añadir al toast flotante visible en pantalla
             setActiveToasts((prev) => [newAlert, ...prev.filter((t) => t.id !== newAlert.id)].slice(0, 3));
@@ -426,6 +466,10 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         deleteAlert,
         clearAllAlerts,
         refreshAlerts,
+        totalAlerts,
+        hasMore: alerts.length < totalAlerts,
+        loadMoreAlerts,
+        isLoadingMore,
         isDrawerOpen,
         setIsDrawerOpen,
         previewImage,

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAlerts } from '../context/AlertsContext';
 import { useLanguage } from '../i18n/LanguageContext';
+import { getAiLabelInfo } from '../utils/aiLabel';
 import type { MotionAlert } from '../types';
 import {
   Clock,
@@ -17,7 +18,7 @@ interface SingleToastProps {
 }
 
 const SingleMotionToast: React.FC<SingleToastProps> = ({ alert, onDismiss }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { ackAlert, setIsDrawerOpen, setPreviewImage } = useAlerts();
   const [isAcked, setIsAcked] = useState(alert.acknowledged);
 
@@ -191,6 +192,35 @@ const SingleMotionToast: React.FC<SingleToastProps> = ({ alert, onDismiss }) => 
             >
               <Maximize2 size={16} color="#fff" />
             </div>
+
+            {/* Cartel IA sobre la foto en notificación */}
+            {(() => {
+              const aiInfo = getAiLabelInfo(alert.label, language);
+              return (
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '4px',
+                    right: '4px',
+                    background: 'rgba(10, 13, 20, 0.9)',
+                    color: aiInfo.isAi ? 'var(--accent-party)' : 'var(--text-secondary)',
+                    fontSize: '0.58rem',
+                    fontWeight: 800,
+                    fontFamily: 'var(--font-mono)',
+                    padding: '1px 5px',
+                    borderRadius: '3px',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '3px',
+                    zIndex: 2,
+                  }}
+                >
+                  <span>{aiInfo.icon}</span>
+                  <span>{aiInfo.text}</span>
+                </div>
+              );
+            })()}
           </div>
         ) : (
           <div
@@ -245,7 +275,15 @@ const SingleMotionToast: React.FC<SingleToastProps> = ({ alert, onDismiss }) => 
               marginTop: '2px',
             }}
           >
-            {t.alerts.sectorPrefix}: <span style={{ color: 'var(--accent-party)' }}>{alert.label?.toUpperCase() || 'MOTION'}</span>
+            {t.alerts.sectorPrefix}:{' '}
+            {(() => {
+              const aiInfo = getAiLabelInfo(alert.label, language);
+              return (
+                <span style={{ color: aiInfo.isAi ? 'var(--accent-party)' : 'inherit', fontWeight: 700 }}>
+                  {aiInfo.icon} {aiInfo.text}
+                </span>
+              );
+            })()}
           </div>
         </div>
       </div>
