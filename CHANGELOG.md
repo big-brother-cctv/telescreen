@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.28.0](https://github.com/big-brother-cctv/telescreen/compare/v0.27.0...v0.28.0) (2026-10-20)
+
+
+### Features
+
+* enhance alert views with AI-powered object labels and pagination support ([d73d7d4](https://github.com/big-brother-cctv/telescreen/commit/d73d7d44e92aee9a6d090071cf0fd7690483a367))
+
+
+### Bug Fixes
+
+* remove emojis from UI components, translations, and notification titles ([b4d67eb](https://github.com/big-brother-cctv/telescreen/commit/b4d67eb4c86267c5028cd527427faad6eeb24464))
+
 ## [0.27.0](https://github.com/big-brother-cctv/telescreen/compare/v0.26.0...v0.27.0) (2026-10-19)
 
 
