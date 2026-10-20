@@ -470,16 +470,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         <span>{formatTime(alert.detectedAt)}</span>
                       </div>
                     </div>
-                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>{getTimeAgo(alert.detectedAt)} •</span>
-                      {(() => {
-                        const ai = getAiLabelInfo(alert.label, language);
-                        return (
-                          <span style={{ color: ai.isAi ? 'var(--accent-party)' : 'inherit', fontWeight: 700 }}>
-                            {ai.text}
-                          </span>
-                        );
-                      })()}
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                      <span>{getTimeAgo(alert.detectedAt)}</span>
                     </div>
                   </div>
                 </div>

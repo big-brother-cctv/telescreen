@@ -263,24 +263,19 @@ const SingleMotionToast: React.FC<SingleToastProps> = ({ alert, onDismiss }) => 
             <span>{formatTime(alert.detectedAt)}</span>
           </div>
 
-          <div
-            style={{
-              fontSize: '0.68rem',
-              color: 'var(--text-secondary)',
-              fontFamily: 'var(--font-mono)',
-              marginTop: '2px',
-            }}
-          >
-            {t.alerts.sectorPrefix}:{' '}
-            {(() => {
-              const aiInfo = getAiLabelInfo(alert.label, language);
-              return (
-                <span style={{ color: aiInfo.isAi ? 'var(--accent-party)' : 'inherit', fontWeight: 700 }}>
-                  {aiInfo.text}
-                </span>
-              );
-            })()}
-          </div>
+          {!snapshotUrl && (
+            <div
+              style={{
+                fontSize: '0.68rem',
+                color: 'var(--accent-party)',
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 700,
+                marginTop: '2px',
+              }}
+            >
+              {getAiLabelInfo(alert.label, language).text}
+            </div>
+          )}
         </div>
       </div>
 

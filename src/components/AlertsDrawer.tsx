@@ -520,30 +520,6 @@ export const AlertsDrawer: React.FC = () => {
                         >
                           <Maximize2 size={14} color="#fff" />
                         </div>
-
-                        {/* Cartel IA en thumbnail del Drawer */}
-                        {(() => {
-                          const aiInfo = getAiLabelInfo(alert.label, language);
-                          return (
-                            <div
-                              style={{
-                                position: 'absolute',
-                                bottom: '3px',
-                                right: '3px',
-                                background: 'rgba(10, 13, 20, 0.88)',
-                                color: aiInfo.isAi ? 'var(--accent-party)' : 'var(--text-secondary)',
-                                fontSize: '0.56rem',
-                                fontWeight: 800,
-                                fontFamily: 'var(--font-mono)',
-                                padding: '1px 4px',
-                                borderRadius: '2px',
-                                border: '1px solid rgba(255, 255, 255, 0.15)',
-                              }}
-                            >
-                              {aiInfo.text}
-                            </div>
-                          );
-                        })()}
                       </div>
                     ) : (
                       <div

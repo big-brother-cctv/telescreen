@@ -1065,14 +1065,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             >
               <RefreshCw size={13} className={isRetrying ? 'animate-spin' : ''} />
             </button>
-            <button
-              onClick={toggleFullscreen}
-              className="btn-ghost"
-              style={{ padding: '6px 8px', fontSize: '0.72rem' }}
-              title={t.videoPlayer.fullscreen}
-            >
-              <Maximize2 size={13} />
-            </button>
           </div>
         </div>
       )}
