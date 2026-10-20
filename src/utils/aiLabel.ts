@@ -1,34 +1,33 @@
 export interface AiLabelInfo {
   text: string;
-  icon: string;
   isAi: boolean;
   confidencePercent?: number;
 }
 
-const LABELS_DICTIONARY: Record<string, { es: string; en: string; icon: string }> = {
-  person: { es: 'PERSONA', en: 'PERSON', icon: '👤' },
-  cat: { es: 'GATO', en: 'CAT', icon: '🐱' },
-  dog: { es: 'PERRO', en: 'DOG', icon: '🐶' },
-  car: { es: 'COCHE', en: 'CAR', icon: '🚗' },
-  truck: { es: 'CAMIÓN', en: 'TRUCK', icon: '🚚' },
-  bus: { es: 'AUTOBÚS', en: 'BUS', icon: '🚌' },
-  motorcycle: { es: 'MOTO', en: 'MOTORCYCLE', icon: '🏍️' },
-  bicycle: { es: 'BICICLETA', en: 'BICYCLE', icon: '🚲' },
-  bird: { es: 'PÁJARO', en: 'BIRD', icon: '🐦' },
-  horse: { es: 'CABALLO', en: 'HORSE', icon: '🐴' },
-  backpack: { es: 'MOCHILA', en: 'BACKPACK', icon: '🎒' },
-  umbrella: { es: 'PARAGUAS', en: 'UMBRELLA', icon: '☂️' },
+const LABELS_DICTIONARY: Record<string, { es: string; en: string }> = {
+  person: { es: 'PERSONA', en: 'PERSON' },
+  cat: { es: 'GATO', en: 'CAT' },
+  dog: { es: 'PERRO', en: 'DOG' },
+  car: { es: 'COCHE', en: 'CAR' },
+  truck: { es: 'CAMIÓN', en: 'TRUCK' },
+  bus: { es: 'AUTOBÚS', en: 'BUS' },
+  motorcycle: { es: 'MOTO', en: 'MOTORCYCLE' },
+  bicycle: { es: 'BICICLETA', en: 'BICYCLE' },
+  bird: { es: 'PÁJARO', en: 'BIRD' },
+  horse: { es: 'CABALLO', en: 'HORSE' },
+  backpack: { es: 'MOCHILA', en: 'BACKPACK' },
+  umbrella: { es: 'PARAGUAS', en: 'UMBRELLA' },
 };
 
 /**
  * Parsea el label de detección (ej. "person (84%)" o "cat") y devuelve
- * el nombre del objeto estimado por la IA junto a su icono y porcentaje.
+ * el nombre del objeto estimado por la IA junto a su porcentaje.
+ * 100% libre de emojis para mantener la estética táctica y profesional.
  */
 export function getAiLabelInfo(rawLabel?: string, lang: 'es' | 'en' = 'es'): AiLabelInfo {
   if (!rawLabel || rawLabel.toLowerCase() === 'motion' || rawLabel.toLowerCase() === 'movimiento') {
     return {
       text: lang === 'es' ? 'MOVIMIENTO' : 'MOTION',
-      icon: '⚡',
       isAi: false,
     };
   }
@@ -44,7 +43,6 @@ export function getAiLabelInfo(rawLabel?: string, lang: 'es' | 'en' = 'es'): AiL
     const localizedName = lang === 'en' ? entry.en : entry.es;
     return {
       text: `${localizedName}${confSuffix}`,
-      icon: entry.icon,
       isAi: true,
       confidencePercent: confNum,
     };
@@ -52,7 +50,6 @@ export function getAiLabelInfo(rawLabel?: string, lang: 'es' | 'en' = 'es'): AiL
 
   return {
     text: `${name.toUpperCase()}${confSuffix}`,
-    icon: '🎯',
     isAi: true,
     confidencePercent: confNum,
   };

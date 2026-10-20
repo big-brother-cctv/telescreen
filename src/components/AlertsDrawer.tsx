@@ -538,13 +538,9 @@ export const AlertsDrawer: React.FC = () => {
                                 padding: '1px 4px',
                                 borderRadius: '2px',
                                 border: '1px solid rgba(255, 255, 255, 0.15)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '3px',
                               }}
                             >
-                              <span>{aiInfo.icon}</span>
-                              <span>{aiInfo.text}</span>
+                              {aiInfo.text}
                             </div>
                           );
                         })()}
@@ -597,7 +593,7 @@ export const AlertsDrawer: React.FC = () => {
                           const aiInfo = getAiLabelInfo(alert.label, language);
                           return (
                             <span style={{ color: aiInfo.isAi ? 'var(--accent-party)' : 'inherit', fontWeight: 700 }}>
-                              {aiInfo.icon} {aiInfo.text}
+                              {aiInfo.text}
                             </span>
                           );
                         })()}

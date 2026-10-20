@@ -104,7 +104,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const snapshotUrl = newAlert.snapshotPath
       ? `/api/alerts/snapshots/${newAlert.snapshotPath.split('/').pop()}`
       : '/favicon-96x96.png';
-    const title = `🚨 CCTV - ${newAlert.cameraName.toUpperCase()}`;
+    const title = `[ALERTA] CCTV - ${newAlert.cameraName.toUpperCase()}`;
     const body = `${t.alerts.motionDetected} (${newAlert.label || 'motion'})`;
 
     try {

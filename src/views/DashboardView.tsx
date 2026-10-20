@@ -451,13 +451,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                             padding: '2px 6px',
                             borderRadius: '3px',
                             border: `1px solid ${aiInfo.isAi ? 'rgba(0, 240, 255, 0.35)' : 'rgba(255, 255, 255, 0.12)'}`,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
                           }}
                         >
-                          <span>{aiInfo.icon}</span>
-                          <span>{aiInfo.text}</span>
+                          {aiInfo.text}
                         </div>
                       );
                     })()}
@@ -479,9 +475,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       {(() => {
                         const ai = getAiLabelInfo(alert.label, language);
                         return (
-                          <span style={{ color: ai.isAi ? 'var(--accent-party)' : 'inherit', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                            <span>{ai.icon}</span>
-                            <span>{ai.text}</span>
+                          <span style={{ color: ai.isAi ? 'var(--accent-party)' : 'inherit', fontWeight: 700 }}>
+                            {ai.text}
                           </span>
                         );
                       })()}

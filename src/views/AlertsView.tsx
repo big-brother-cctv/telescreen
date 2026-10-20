@@ -656,14 +656,10 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
                           borderRadius: '4px',
                           border: `1px solid ${aiInfo.isAi ? 'rgba(0, 240, 255, 0.45)' : 'rgba(255, 255, 255, 0.15)'}`,
                           letterSpacing: '0.04em',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px',
                           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.6)',
                         }}
                       >
-                        <span>{aiInfo.icon}</span>
-                        <span>{aiInfo.text}</span>
+                        {aiInfo.text}
                       </div>
                     );
                   })()}
@@ -885,15 +881,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
                     </td>
 
                     <td style={{ padding: '10px 16px', fontFamily: 'var(--font-mono)', color: 'var(--accent-party)' }}>
-                      {(() => {
-                        const aiInfo = getAiLabelInfo(alert.label, language);
-                        return (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                            <span>{aiInfo.icon}</span>
-                            <span>{aiInfo.text}</span>
-                          </span>
-                        );
-                      })()}
+                      {getAiLabelInfo(alert.label, language).text}
                     </td>
 
                     <td style={{ padding: '10px 16px' }}>

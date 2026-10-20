@@ -210,14 +210,10 @@ const SingleMotionToast: React.FC<SingleToastProps> = ({ alert, onDismiss }) => 
                     padding: '1px 5px',
                     borderRadius: '3px',
                     border: '1px solid rgba(255, 255, 255, 0.15)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '3px',
                     zIndex: 2,
                   }}
                 >
-                  <span>{aiInfo.icon}</span>
-                  <span>{aiInfo.text}</span>
+                  {aiInfo.text}
                 </div>
               );
             })()}
@@ -280,7 +276,7 @@ const SingleMotionToast: React.FC<SingleToastProps> = ({ alert, onDismiss }) => 
               const aiInfo = getAiLabelInfo(alert.label, language);
               return (
                 <span style={{ color: aiInfo.isAi ? 'var(--accent-party)' : 'inherit', fontWeight: 700 }}>
-                  {aiInfo.icon} {aiInfo.text}
+                  {aiInfo.text}
                 </span>
               );
             })()}
