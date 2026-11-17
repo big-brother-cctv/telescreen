@@ -60,6 +60,10 @@ export const api = {
       method: 'POST',
     }),
 
+  // Credenciales para publicar en MediaMTX desde móviles/OBS (solo admin/operator)
+  getPublishCredentials: () =>
+    request<{ user: string; password: string; configured: boolean }>('/media/publish-credentials'),
+
   endMediaSession: async () => {
     try {
       await fetch(`${API_BASE}/media/session`, { method: 'DELETE' });

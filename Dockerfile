@@ -13,7 +13,12 @@ RUN npm run build
 FROM nginx:alpine
 
 COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# nginx.conf se procesa como plantilla al arrancar (envsubst de la imagen oficial).
+# Solo se sustituyen variables MEDIAMTX_* para no tocar variables propias de nginx ($host, $uri...).
+# MEDIAMTX_READ_AUTH = base64("reader:<MEDIA_READ_TOKEN>"); vacío = no se envía credencial a MediaMTX.
+ENV NGINX_ENVSUBST_FILTER=MEDIAMTX_ \
+    MEDIAMTX_READ_AUTH=""
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 

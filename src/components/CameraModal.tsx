@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Save, Radio, Globe, Tv, HardDrive, Share2, Terminal, Copy, Check, Info, ShieldAlert } from 'lucide-react';
 import type { Camera } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
+import { api } from '../services/api';
 
 interface CameraModalProps {
   camera: Partial<Camera> | null;
@@ -38,6 +39,17 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const serverHost = window.location.hostname || 'localhost';
+  const [publishCreds, setPublishCreds] = useState<{ user: string; password: string; configured: boolean } | null>(null);
+
+  // MediaMTX exige credenciales para publicar: se incluyen en las URLs para copiarlas al móvil/OBS
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+    api.getPublishCredentials()
+      .then((creds) => { if (!cancelled) setPublishCreds(creds); })
+      .catch(() => { if (!cancelled) setPublishCreds(null); });
+    return () => { cancelled = true; };
+  }, [isOpen]);
 
   useEffect(() => {
     if (camera) {
@@ -152,12 +164,19 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
   };
 
   const streamName = formData.name?.trim() || 'nueva-camara';
-  const rtspPushUrl = `rtsp://${serverHost}:8554/${streamName}`;
-  const rtmpPushUrl = `rtmp://${serverHost}:1935/${streamName}`;
+  const hasCreds = Boolean(publishCreds?.configured);
+  const rtspUserInfo = hasCreds
+    ? `${encodeURIComponent(publishCreds!.user)}:${encodeURIComponent(publishCreds!.password)}@`
+    : '';
+  const rtmpQuery = hasCreds
+    ? `?user=${encodeURIComponent(publishCreds!.user)}&pass=${encodeURIComponent(publishCreds!.password)}`
+    : '';
+  const rtspPushUrl = `rtsp://${rtspUserInfo}${serverHost}:8554/${streamName}`;
+  const rtmpPushUrl = `rtmp://${serverHost}:1935/${streamName}${rtmpQuery}`;
   const edgeDockerCmd = `docker run -d --restart=unless-stopped --device=/dev/video0 \\
   -e CAMERA_NAME="${streamName}" \\
   -e API_URL="http://${serverHost}:8080/api" \\
-  -e MEDIAMTX_URL="rtsp://${serverHost}:8554/${streamName}" \\
+  -e MEDIAMTX_URL="rtsp://${rtspUserInfo}${serverHost}:8554" \\
   big-brother-cctv-camera`;
 
   return (
