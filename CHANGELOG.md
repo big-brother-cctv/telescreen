@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.30.0](https://github.com/big-brother-cctv/telescreen/compare/v0.29.0...v0.30.0) (2026-11-17)
+
+
+### Features
+
+* forward MediaMTX read credentials and show publish URLs with credentials ([4f0e6a8](https://github.com/big-brother-cctv/telescreen/commit/4f0e6a8d50ea259cf22ee98bc0e2f1eb4ba16bb4))
+* forward MediaMTX read credentials and show publish URLs with credentials ([8b7f383](https://github.com/big-brother-cctv/telescreen/commit/8b7f383b0186d73ed39677a6904ee718fc3d70ce))
+
 ## [0.29.0](https://github.com/big-brother-cctv/telescreen/compare/v0.28.1...v0.29.0) (2026-11-17)
 
 
