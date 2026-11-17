@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.29.0](https://github.com/big-brother-cctv/telescreen/compare/v0.28.1...v0.29.0) (2026-11-17)
+
+
+### Features
+
+* use media session cookie for streams, snapshots and alerts ([4e00a09](https://github.com/big-brother-cctv/telescreen/commit/4e00a09a5e2214935dab397c094f1379d46fb317))
+* use media session cookie for streams, snapshots and alerts ([de8edd4](https://github.com/big-brother-cctv/telescreen/commit/de8edd412e92790d91a5ab42974339cee808bfff))
+
 ## [0.28.1](https://github.com/big-brother-cctv/telescreen/compare/v0.28.0...v0.28.1) (2026-10-20)
 
 
