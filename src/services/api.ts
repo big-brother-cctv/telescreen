@@ -54,11 +54,19 @@ export const api = {
       body: JSON.stringify({ username, password }),
     }),
 
-  register: (user: Partial<User> & { password: string }) =>
-    request<string>('/auth/register', {
+  // Sesión de medios: cookie HttpOnly que autoriza SSE, snapshots y streams (HLS/WebRTC)
+  startMediaSession: () =>
+    request<{ expiresIn: number }>('/media/session', {
       method: 'POST',
-      body: JSON.stringify(user),
     }),
+
+  endMediaSession: async () => {
+    try {
+      await fetch(`${API_BASE}/media/session`, { method: 'DELETE' });
+    } catch {
+      // Ignorar: la cookie caduca sola
+    }
+  },
 
   // Cameras
   getCameras: () => request<Camera[]>('/cameras'),

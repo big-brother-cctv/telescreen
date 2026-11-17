@@ -21,6 +21,8 @@ export const App: React.FC = () => {
   const [cameras, setCameras] = useState<Camera[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  // Los reproductores, snapshots y el SSE necesitan la cookie de medios antes de pedir nada
+  const [mediaReady, setMediaReady] = useState<boolean>(false);
 
   // Modal de edición / creación de cámara
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -29,8 +31,10 @@ export const App: React.FC = () => {
   // Escuchar evento de expiración de sesión
   useEffect(() => {
     const handleAuthExpired = () => {
+      api.endMediaSession();
       setIsAuthenticated(false);
       setCurrentUser(null);
+      setMediaReady(false);
     };
     window.addEventListener('bb_auth_expired', handleAuthExpired);
     return () => window.removeEventListener('bb_auth_expired', handleAuthExpired);
@@ -56,6 +60,26 @@ export const App: React.FC = () => {
     }
   };
 
+  // Abrir y renovar la sesión de medios (cookie HttpOnly, TTL 2h) mientras haya sesión
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let cancelled = false;
+
+    const startMedia = () =>
+      api.startMediaSession()
+        .catch((e) => console.warn('No se pudo abrir la sesión de medios:', e))
+        .finally(() => {
+          if (!cancelled) setMediaReady(true);
+        });
+
+    startMedia();
+    const interval = setInterval(startMedia, 30 * 60 * 1000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [isAuthenticated]);
+
   useEffect(() => {
     if (isAuthenticated) {
       loadData();
@@ -69,9 +93,11 @@ export const App: React.FC = () => {
   }, [isAuthenticated]);
 
   const handleLogout = () => {
+    api.endMediaSession();
     authStorage.clearToken();
     setIsAuthenticated(false);
     setCurrentUser(null);
+    setMediaReady(false);
   };
 
   const handleSaveCamera = async (cameraData: Partial<Camera>) => {
@@ -90,6 +116,10 @@ export const App: React.FC = () => {
 
   if (!isAuthenticated) {
     return <LoginView onSuccess={() => setIsAuthenticated(true)} />;
+  }
+
+  if (!mediaReady) {
+    return null;
   }
 
   return (
