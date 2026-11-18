@@ -755,16 +755,10 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
 
       {/* Modal Unificado (Creación / Edición) */}
       {modalMode && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
+        <div className="modal-overlay" style={{
           zIndex: 100,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
           background: 'rgba(0, 0, 0, 0.85)',
           backdropFilter: 'blur(10px)',
-          padding: '12px',
         }}>
           <div className="glass-panel brutalist-border" style={{
             width: '100%',
@@ -773,8 +767,9 @@ export const UsersAdmin: React.FC<UsersAdminProps> = ({ users, currentUserId, on
             padding: '24px 18px',
             borderRadius: '12px',
             boxShadow: '0 24px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(225, 29, 72, 0.15)',
-            maxHeight: '92vh',
-            overflowY: 'auto'
+            maxHeight: '100%',
+            overflowY: 'auto',
+            overscrollBehavior: 'contain'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 900, textTransform: 'uppercase', color: '#fff', margin: 0 }}>

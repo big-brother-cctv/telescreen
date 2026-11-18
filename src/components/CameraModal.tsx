@@ -180,21 +180,15 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
   big-brother-cctv-camera`;
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
+    <div className="modal-overlay" style={{
       zIndex: 100,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
       background: 'rgba(0, 0, 0, 0.88)',
       backdropFilter: 'blur(10px)',
-      padding: '12px',
     }}>
       <div className="glass-panel brutalist-border" style={{
         width: '100%',
         maxWidth: '680px',
-        maxHeight: '94vh',
+        maxHeight: '100%',
         display: 'flex',
         flexDirection: 'column',
         background: '#0a0d14',
@@ -379,7 +373,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({ camera, isOpen, onClos
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} style={{ padding: '20px', maxHeight: '72vh', overflowY: 'auto' }}>
+        <form onSubmit={handleSubmit} style={{ padding: '20px', flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain' }}>
           {error && (
             <div style={{
               padding: '10px 14px',

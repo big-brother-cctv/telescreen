@@ -314,6 +314,7 @@ export interface Translations {
     rulesError: string;
     classMotion: string;
     classOther: string;
+    offlineBanner: string;
   };
   dashboardView: {
     title: string;
@@ -702,6 +703,7 @@ export const translations: Record<Language, Translations> = {
       rulesError: 'No se pudieron guardar las reglas.',
       classMotion: 'MOVIMIENTO',
       classOther: 'OTROS',
+      offlineBanner: 'SIN CONEXIÓN · sin vídeo ni alertas en directo hasta que vuelva la red',
     },
     dashboardView: {
       title: 'CENTRO DE CONTROL CCTV',
@@ -1088,6 +1090,7 @@ export const translations: Record<Language, Translations> = {
       rulesError: 'Could not save the rules.',
       classMotion: 'MOTION',
       classOther: 'OTHER',
+      offlineBanner: 'OFFLINE · no live video or alerts until the connection is back',
     },
     dashboardView: {
       title: 'CCTV COMMAND CENTER',

@@ -133,7 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
             </div>
-            <div style={{ minWidth: 0 }}>
+            <div className="navbar-brand-text" style={{ minWidth: 0 }}>
               <div style={{
                 fontFamily: 'var(--font-display)',
                 fontWeight: 800,
@@ -420,9 +420,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             <AlarmModeToggle compact />
           </div>
 
-          {/* Mobile User Compact Capsule */}
+          {/* Mobile User Compact Capsule (se oculta en móviles estrechos: no cabe junto al resto) */}
           <div
-            className="mobile-only"
+            className="mobile-only hide-xs"
             title={`@${user?.username || user?.name || ''} (${clearanceLabel})`}
             style={{
               alignItems: 'center',
@@ -450,7 +450,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             onClick={onLogout}
             title={t.navbar.logout}
             aria-label={t.navbar.logout}
-            className="btn-ghost"
+            className="btn-ghost touch-target"
             style={{
               width: '32px',
               height: '32px',
@@ -475,7 +475,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
         bottom: 0,
         left: 0,
         right: 0,
-        height: 'calc(58px + env(safe-area-inset-bottom, 0px))',
+        height: 'calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px))',
         background: 'rgba(10, 12, 17, 0.96)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',

@@ -23,17 +23,12 @@ export const SnapshotModal: React.FC = () => {
   return (
     <div
       onClick={() => setPreviewImage(null)}
+      className="modal-overlay"
       style={{
-        position: 'fixed',
-        inset: 0,
         background: 'rgba(0, 0, 0, 0.92)',
         backdropFilter: 'blur(12px)',
         zIndex: 10000,
-        display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
         animation: 'fadeIn 0.2s ease',
       }}
     >
@@ -41,8 +36,8 @@ export const SnapshotModal: React.FC = () => {
         onClick={(e) => e.stopPropagation()}
         style={{
           position: 'relative',
-          maxWidth: '92vw',
-          maxHeight: '88vh',
+          maxWidth: '100%',
+          maxHeight: '100%',
           display: 'flex',
           flexDirection: 'column',
           background: '#090a0f',
@@ -135,7 +130,7 @@ export const SnapshotModal: React.FC = () => {
               preload="metadata"
               style={{
                 maxWidth: '100%',
-                maxHeight: 'calc(88vh - 50px)',
+                maxHeight: 'calc(100dvh - 50px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 32px)',
                 display: 'block',
                 background: '#000',
               }}
@@ -146,7 +141,7 @@ export const SnapshotModal: React.FC = () => {
               alt="Motion Alert Snapshot"
               style={{
                 maxWidth: '100%',
-                maxHeight: 'calc(88vh - 50px)',
+                maxHeight: 'calc(100dvh - 50px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 32px)',
                 objectFit: 'contain',
                 display: 'block',
               }}

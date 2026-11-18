@@ -1,5 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+// Fuentes empaquetadas con la app (funcionan offline y sin peticiones a Google Fonts)
+import '@fontsource-variable/space-grotesk'
+import '@fontsource-variable/jetbrains-mono'
+import '@fontsource-variable/plus-jakarta-sans'
 import './index.css'
 import App from './App.tsx'
 import { LanguageProvider } from './i18n/LanguageContext.tsx'
