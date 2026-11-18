@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.32.0](https://github.com/big-brother-cctv/telescreen/compare/v0.31.0...v0.32.0) (2026-11-18)
+
+
+### Features
+
+* home/away toggle and notification rules editor ([5098de7](https://github.com/big-brother-cctv/telescreen/commit/5098de7cfd2c5b3a72f28db89e6a3d5a1646cda9))
+* home/away toggle and notification rules editor ([8084ad0](https://github.com/big-brother-cctv/telescreen/commit/8084ad03f488cbf67f68b7c43dffcd5482c89005))
+
 ## [0.31.0](https://github.com/big-brother-cctv/telescreen/compare/v0.30.1...v0.31.0) (2026-11-18)
 
 
