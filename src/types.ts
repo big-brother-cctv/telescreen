@@ -52,4 +52,21 @@ export interface MotionAlert {
   confidence: number;
   acknowledged: boolean;
   severity: string;
+  /** false si el modo casa/fuera decidió no avisar (se guarda igualmente) */
+  notified?: boolean;
+}
+
+export type AlarmMode = 'home' | 'away';
+
+export interface NotificationSettings {
+  mode: AlarmMode;
+  home: string[];
+  away: string[];
+  updatedAt?: string;
+  updatedBy?: string;
+}
+
+export interface NotificationSettingsResponse {
+  settings: NotificationSettings;
+  classes: string[];
 }

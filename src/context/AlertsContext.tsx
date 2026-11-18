@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react';
-import type { MotionAlert } from '../types';
+import type { MotionAlert, AlarmMode, NotificationSettings } from '../types';
 import { api, authStorage } from '../services/api';
 import { useLanguage } from '../i18n/LanguageContext';
 import { ensurePushSubscription, isPushSupported } from '../utils/push';
@@ -15,6 +15,10 @@ interface AlertsContextType {
   browserNotificationsEnabled: boolean;
   notificationPermission: NotificationPermission;
   requestNotificationPermission: () => Promise<boolean>;
+  notificationSettings: NotificationSettings | null;
+  notificationClasses: string[];
+  setAlarmMode: (mode: AlarmMode) => Promise<void>;
+  updateNotificationRules: (home: string[], away: string[]) => Promise<void>;
   pushSupported: boolean;
   pushActive: boolean;
   sendTestPush: () => Promise<number>;
@@ -87,6 +91,37 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(() => {
     return typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'default';
   });
+
+  // Modo casa/fuera: decide en la API si una alerta avisa (alert.notified)
+  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings | null>(null);
+  const [notificationClasses, setNotificationClasses] = useState<string[]>([]);
+
+  const refreshNotificationSettings = async () => {
+    try {
+      const res = await api.getNotificationSettings();
+      setNotificationSettings(res.settings);
+      setNotificationClasses(res.classes);
+    } catch (e) {
+      console.debug('No se pudo cargar el modo casa/fuera:', e);
+    }
+  };
+
+  const setAlarmMode = async (mode: AlarmMode) => {
+    const prev = notificationSettings;
+    if (prev) setNotificationSettings({ ...prev, mode }); // optimista
+    try {
+      const res = await api.setAlarmMode(mode);
+      setNotificationSettings(res.settings);
+    } catch (e) {
+      setNotificationSettings(prev);
+      throw e;
+    }
+  };
+
+  const updateNotificationRules = async (home: string[], away: string[]) => {
+    const res = await api.updateNotificationRules(home, away);
+    setNotificationSettings(res.settings);
+  };
 
   // Web Push activo: el service worker notifica con la app en segundo plano o cerrada
   const [pushActive, setPushActive] = useState<boolean>(false);
@@ -270,8 +305,9 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
         // Si entran alertas nuevas vía polling, activar toast, sonido y bordes activos
         if (initialLoadDoneRef.current) {
+          // Solo las que deben avisar según el modo casa/fuera (notified=false: silenciosas)
           const brandNewAlerts = fetchedAlerts.filter(
-            (a) => !previousAlertIdsRef.current.has(a.id) && !a.acknowledged
+            (a) => !previousAlertIdsRef.current.has(a.id) && !a.acknowledged && a.notified !== false
           );
           if (brandNewAlerts.length > 0) {
             setActiveToasts((prev) => [
@@ -345,9 +381,11 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     if (!authStorage.getToken()) return;
 
     refreshAlerts();
+    refreshNotificationSettings();
 
     const pollInterval = setInterval(() => {
       refreshAlerts();
+      refreshNotificationSettings(); // el modo puede cambiarse desde otro dispositivo
     }, 30000);
 
     return () => clearInterval(pollInterval);
@@ -380,6 +418,9 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             });
             setUnreadCount((c) => c + 1);
             setTotalAlerts((t) => t + 1);
+
+            // Modo casa/fuera: alerta registrada pero sin aviso (ni toast, ni alarma, ni notificación)
+            if (newAlert.notified === false) return;
 
             // Añadir al toast flotante visible en pantalla
             setActiveToasts((prev) => [newAlert, ...prev.filter((t) => t.id !== newAlert.id)].slice(0, 3));
@@ -502,6 +543,10 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         browserNotificationsEnabled: notificationPermission === 'granted',
         notificationPermission,
         requestNotificationPermission,
+        notificationSettings,
+        notificationClasses,
+        setAlarmMode,
+        updateNotificationRules,
         pushSupported: isPushSupported(),
         pushActive,
         sendTestPush,

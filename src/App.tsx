@@ -151,7 +151,10 @@ export const App: React.FC = () => {
           )}
 
           {currentView === 'alerts' && (
-            <AlertsView cameras={cameras} />
+            <AlertsView
+              cameras={cameras}
+              canEditRules={currentUser?.role === 'admin' || currentUser?.role === 'operator' || currentUser?.username === 'admin'}
+            />
           )}
 
           {currentView === 'grid' && (
