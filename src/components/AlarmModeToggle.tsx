@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, ShieldAlert } from 'lucide-react';
+import { Home, ShieldCheck } from 'lucide-react';
 import { useAlerts } from '../context/AlertsContext';
 import { useLanguage } from '../i18n/LanguageContext';
 
@@ -35,9 +35,10 @@ export const AlarmModeToggle: React.FC<{ compact?: boolean }> = ({ compact = fal
       aria-label={isHome ? t.alerts.modeHomeTooltip : t.alerts.modeAwayTooltip}
       aria-pressed={!isHome}
       style={{
-        gap: '6px',
-        padding: compact ? '5px 8px' : '6px 10px',
-        fontSize: '0.7rem',
+        justifyContent: 'center',
+        gap: compact ? '5px' : '6px',
+        padding: compact ? '5px 9px' : '6px 10px',
+        fontSize: compact ? '0.66rem' : '0.7rem',
         fontWeight: 800,
         fontFamily: 'var(--font-mono)',
         letterSpacing: '0.05em',
@@ -48,8 +49,10 @@ export const AlarmModeToggle: React.FC<{ compact?: boolean }> = ({ compact = fal
         flexShrink: 0,
       }}
     >
-      {isHome ? <Home size={14} /> : <ShieldAlert size={14} />}
-      {!compact && <span>{isHome ? t.alerts.modeHome : t.alerts.modeAway}</span>}
+      {/* ShieldCheck (vigilando) para no confundirse con el escudo "!" de Notificaciones */}
+      {isHome ? <Home size={14} style={{ flexShrink: 0 }} /> : <ShieldCheck size={14} style={{ flexShrink: 0 }} />}
+      {/* También en móvil: solo con el icono no se sabía qué modo estaba activo */}
+      <span style={{ lineHeight: 1 }}>{isHome ? t.alerts.modeHome : t.alerts.modeAway}</span>
     </button>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, ShieldAlert } from 'lucide-react';
+import { Home, ShieldCheck } from 'lucide-react';
 import { useAlerts } from '../context/AlertsContext';
 import { useLanguage } from '../i18n/LanguageContext';
 import { getAiLabelInfo } from '../utils/aiLabel';
@@ -48,11 +48,12 @@ export const NotificationRulesPanel: React.FC = () => {
           fontSize: '0.72rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color,
           textTransform: 'uppercase', paddingTop: '5px',
         }}>
-          {mode === 'home' ? <Home size={13} /> : <ShieldAlert size={13} />}
+          {mode === 'home' ? <Home size={13} /> : <ShieldCheck size={13} />}
           {mode === 'home' ? t.alerts.rulesHome : t.alerts.rulesAway}
           {isCurrent && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: color, boxShadow: `0 0 6px ${color}` }} />}
         </div>
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', flex: 1 }}>
+        {/* flex-basis 260px: en móvil las clases bajan a su propia línea a todo el ancho */}
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', flex: '1 1 260px' }}>
           {notificationClasses.map((cls) => {
             const on = active.includes(cls);
             return (

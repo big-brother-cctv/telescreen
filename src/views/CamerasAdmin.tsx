@@ -62,9 +62,9 @@ export const CamerasAdmin: React.FC<CamerasAdminProps> = ({ cameras, onAdd, onEd
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          {/* Compact Tactical Search */}
-          <div style={{ position: 'relative', width: '160px' }}>
+        <div className="view-toolbar" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          {/* Compact Tactical Search (en móvil ocupa el ancho libre) */}
+          <div className="view-toolbar-search" style={{ position: 'relative', width: '160px' }}>
             <Search size={13} color="var(--text-muted)" style={{ position: 'absolute', left: '9px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
