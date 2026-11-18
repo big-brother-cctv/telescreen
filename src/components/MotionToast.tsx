@@ -63,8 +63,7 @@ const SingleMotionToast: React.FC<SingleToastProps> = ({ alert, onDismiss }) => 
   return (
     <div
       style={{
-        width: '380px',
-        maxWidth: 'calc(100vw - 32px)',
+        width: '100%',
         background: 'rgba(13, 16, 24, 0.96)',
         backdropFilter: 'blur(16px)',
         border: `1px solid ${isAcked ? 'var(--accent-teal)' : 'rgba(225, 29, 72, 0.7)'}`,
@@ -357,18 +356,7 @@ export const MotionToastContainer: React.FC = () => {
   if (!activeToasts || activeToasts.length === 0) return null;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: '24px',
-        right: '24px',
-        zIndex: 9999,
-        display: 'flex',
-        flexDirection: 'column-reverse',
-        gap: '12px',
-        pointerEvents: 'auto',
-      }}
-    >
+    <div className="toast-stack">
       {activeToasts.map((alert) => (
         <SingleMotionToast
           key={alert.id}

@@ -13,10 +13,37 @@ import { CameraModal } from './components/CameraModal';
 import { AlertsProvider } from './context/AlertsContext';
 import { MotionToastContainer } from './components/MotionToast';
 import { SnapshotModal } from './components/SnapshotModal';
+import { ConnectionBanner } from './components/ConnectionBanner';
+
+type View = 'dashboard' | 'grid' | 'alerts' | 'admin' | 'users';
+const VIEWS: View[] = ['dashboard', 'grid', 'alerts', 'admin', 'users'];
+
+// La vista vive en la URL (?view=alerts): enlaces de notificaciones push, accesos directos
+// de la PWA y el gesto "atrás" de Android funcionan como en una app nativa.
+function viewFromUrl(): View {
+  const v = new URLSearchParams(window.location.search).get('view');
+  return VIEWS.includes(v as View) ? (v as View) : 'dashboard';
+}
 
 export const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(Boolean(authStorage.getToken()));
-  const [currentView, setCurrentView] = useState<'dashboard' | 'grid' | 'alerts' | 'admin' | 'users'>('dashboard');
+  const [currentView, setCurrentViewState] = useState<View>(viewFromUrl);
+
+  const setCurrentView = (view: View) => {
+    if (view === currentView) return;
+    const url = new URL(window.location.href);
+    if (view === 'dashboard') url.searchParams.delete('view');
+    else url.searchParams.set('view', view);
+    window.history.pushState({ view }, '', url);
+    setCurrentViewState(view);
+    window.scrollTo({ top: 0 });
+  };
+
+  useEffect(() => {
+    const onPopState = () => setCurrentViewState(viewFromUrl());
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
   
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [cameras, setCameras] = useState<Camera[]>([]);
@@ -128,13 +155,14 @@ export const App: React.FC = () => {
 
   return (
     <AlertsProvider>
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
         <Navbar
           currentView={currentView}
           onNavigate={setCurrentView}
           user={currentUser}
           onLogout={handleLogout}
         />
+        <ConnectionBanner />
 
         <main style={{ flex: 1 }}>
           {currentView === 'dashboard' && (

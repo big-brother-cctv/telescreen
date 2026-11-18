@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import { NotificationRulesPanel } from '../components/NotificationRulesPanel';
 import type { Camera } from '../types';
 import { useAlerts } from '../context/AlertsContext';
@@ -36,7 +37,10 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras, canEditRules = 
 
   const [selectedCamera, setSelectedCamera] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'unread' | 'read'>('all');
-  const [viewMode, setViewMode] = useState<'gallery' | 'table'>('gallery');
+  const [viewModePref, setViewMode] = useState<'gallery' | 'table'>('gallery');
+  // En móvil la tabla (mín. 650 px) obliga a desplazar en horizontal: siempre galería
+  const isMobile = useIsMobile();
+  const viewMode = isMobile ? 'gallery' : viewModePref;
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
@@ -429,7 +433,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras, canEditRules = 
           <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
             {t.alertsTab.showingCount.replace('{filtered}', String(filteredAlerts.length)).replace('{total}', String(alerts.length))}
           </span>
-          <div style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.4)', borderRadius: '4px', padding: '2px', border: '1px solid var(--border-subtle)' }}>
+          <div className="desktop-only" style={{ background: 'rgba(0, 0, 0, 0.4)', borderRadius: '4px', padding: '2px', border: '1px solid var(--border-subtle)' }}>
             <button
               onClick={() => setViewMode('gallery')}
               title={t.alertsTab.galleryMode}

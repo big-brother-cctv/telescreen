@@ -30,7 +30,7 @@ export const AlarmModeToggle: React.FC<{ compact?: boolean }> = ({ compact = fal
       type="button"
       onClick={toggle}
       disabled={busy}
-      className="btn-ghost"
+      className="btn-ghost touch-target"
       title={isHome ? t.alerts.modeHomeTooltip : t.alerts.modeAwayTooltip}
       aria-label={isHome ? t.alerts.modeHomeTooltip : t.alerts.modeAwayTooltip}
       aria-pressed={!isHome}

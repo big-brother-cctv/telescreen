@@ -1,4 +1,7 @@
 :root {
+  /* Controles nativos (scrollbars, selects, date pickers) en modo oscuro */
+  color-scheme: dark;
+
   --bg-base: #08090d;
   --bg-surface: #0f121a;
   --bg-card: #141824;
@@ -30,9 +33,12 @@
   --radius-md: 8px;
   --radius-lg: 12px;
 
-  --font-display: 'Space Grotesk', -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Space Grotesk Variable', 'Space Grotesk', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* Altura de la barra de navegación inferior en móvil (sin la zona segura) */
+  --mobile-nav-height: 58px;
 
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.55);
 }
@@ -675,7 +681,7 @@ input:focus, select:focus, textarea:focus {
 
   /* Padding inferior para la barra móvil de navegación teniendo en cuenta el home indicator */
   body {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(var(--mobile-nav-height) + 6px + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -1008,5 +1014,107 @@ input:focus, select:focus, textarea:focus {
   .alerts-gallery-grid {
     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 24px;
+  }
+}
+
+/* =========================================================================
+   PWA / MÓVIL: MODALES, AVISOS, TÁCTIL Y ACCESIBILIDAD
+   ========================================================================= */
+
+/* Overlay de modales: el relleno respeta notch, barra de estado translúcida (iOS PWA)
+   y home indicator, para que la cabecera y el botón de cerrar nunca queden tapados. */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding:
+    max(12px, env(safe-area-inset-top, 0px))
+    max(12px, env(safe-area-inset-right, 0px))
+    max(12px, env(safe-area-inset-bottom, 0px))
+    max(12px, env(safe-area-inset-left, 0px));
+  overscroll-behavior: contain;
+}
+
+/* Pila de avisos de movimiento */
+.toast-stack {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 380px;
+  max-width: calc(100vw - 48px);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+@media (max-width: 868px) {
+  /* Encima de la barra inferior y a todo el ancho disponible */
+  .toast-stack {
+    left: max(12px, env(safe-area-inset-left, 0px));
+    right: max(12px, env(safe-area-inset-right, 0px));
+    bottom: calc(var(--mobile-nav-height) + 12px + env(safe-area-inset-bottom, 0px));
+    width: auto;
+    max-width: none;
+    gap: 8px;
+  }
+}
+
+/* Pantallas táctiles: áreas de toque de al menos 40 px (guía de Apple/Google: 44/48 px) */
+@media (pointer: coarse) {
+  .btn-primary, .btn-amber, .btn-ghost, .btn-danger {
+    min-height: 40px;
+  }
+  .touch-target {
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+}
+
+/* Sin ratón, los :hover se quedan "pegados" tras tocar: anular desplazamientos y brillos */
+@media (hover: none) {
+  .btn-primary:hover, .btn-amber:hover, .fullscreen-btn:hover {
+    transform: none;
+  }
+  .entity-card:hover, .mobile-entity-card:hover {
+    border-color: var(--border-subtle);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Foco visible solo con teclado (no al tocar) */
+:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: none; /* ya tienen su propio anillo de foco */
+}
+
+/* Respetar "Reducir movimiento" del sistema: el ticker y los pulsos continuos marean */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ticker-track {
+    animation: none !important;
+  }
+}
+
+/* Barra superior en móviles estrechos: priorizar modo casa/fuera y salir frente a la marca */
+@media (max-width: 480px) {
+  .hide-xs {
+    display: none !important;
+  }
+}
+@media (max-width: 400px) {
+  .navbar-brand-text {
+    display: none !important;
   }
 }
