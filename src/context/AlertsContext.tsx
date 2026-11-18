@@ -86,6 +86,8 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const cameraAlertTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const previousAlertIdsRef = useRef<Set<number>>(new Set());
+  // true tras la primera carga: antes de eso, las alertas recibidas son historial, no novedades
+  const initialLoadDoneRef = useRef<boolean>(false);
 
   const setSoundEnabled = (val: boolean) => {
     setSoundEnabledState(val);
@@ -243,7 +245,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         }
 
         // Si entran alertas nuevas vía polling, activar toast, sonido y bordes activos
-        if (previousAlertIdsRef.current.size > 0) {
+        if (initialLoadDoneRef.current) {
           const brandNewAlerts = fetchedAlerts.filter(
             (a) => !previousAlertIdsRef.current.has(a.id) && !a.acknowledged
           );
@@ -264,7 +266,9 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           }
         }
 
-        previousAlertIdsRef.current = new Set(fetchedAlerts.map((a) => a.id));
+        // Unión (no reemplazo): conserva los ids llegados por SSE que aún no salen en esta página
+        fetchedAlerts.forEach((a) => previousAlertIdsRef.current.add(a.id));
+        initialLoadDoneRef.current = true;
         setAlerts((prev) => {
           if (prev.length > fetchedAlerts.length) {
             const fetchedIds = new Set(fetchedAlerts.map((a) => a.id));
@@ -304,7 +308,8 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
-  // Carga inicial y bucle de polling resiliente cada 4s
+  // Carga inicial y polling de respaldo: el tiempo real llega por SSE; el polling solo
+  // reconcilia contadores y recupera alertas perdidas si el SSE se cayó un momento
   useEffect(() => {
     if (!authStorage.getToken()) return;
 
@@ -312,7 +317,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     const pollInterval = setInterval(() => {
       refreshAlerts();
-    }, 4000);
+    }, 30000);
 
     return () => clearInterval(pollInterval);
   }, []);
@@ -332,6 +337,11 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         eventSource.addEventListener('alert', (event: MessageEvent) => {
           try {
             const newAlert: MotionAlert = JSON.parse(event.data);
+
+            // Ya notificada (p. ej. reconexión del SSE): no repetir toast ni alarma
+            if (previousAlertIdsRef.current.has(newAlert.id)) return;
+            // Registrar el id para que el polling de respaldo no la trate como nueva
+            previousAlertIdsRef.current.add(newAlert.id);
 
             setAlerts((prev) => {
               if (prev.some((a) => a.id === newAlert.id)) return prev;
