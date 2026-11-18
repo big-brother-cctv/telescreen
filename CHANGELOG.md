@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.34.0](https://github.com/big-brother-cctv/telescreen/compare/v0.33.0...v0.34.0) (2026-11-18)
+
+
+### Features
+
+* PWA offline shell and mobile/responsive polish ([11a6f17](https://github.com/big-brother-cctv/telescreen/commit/11a6f17557b3cd49431c29607ccb1d5fa36d605d))
+* PWA offline shell and mobile/responsive polish ([4a0cac6](https://github.com/big-brother-cctv/telescreen/commit/4a0cac67ad214209063f813149f280fe7a3d4283))
+
 ## [0.33.0](https://github.com/big-brother-cctv/telescreen/compare/v0.32.0...v0.33.0) (2026-11-18)
 
 
