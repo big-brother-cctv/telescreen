@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.31.0](https://github.com/big-brother-cctv/telescreen/compare/v0.30.1...v0.31.0) (2026-11-18)
+
+
+### Features
+
+* receive alerts as web push notifications ([24f765f](https://github.com/big-brother-cctv/telescreen/commit/24f765fe291cab8e6a8e69edb806ad625eef17a8))
+* receive alerts as web push notifications ([598768f](https://github.com/big-brother-cctv/telescreen/commit/598768fe84019d299b9fbecf541c16f1608c5eb6))
+
 ## [0.30.1](https://github.com/big-brother-cctv/telescreen/compare/v0.30.0...v0.30.1) (2026-11-18)
 
 
