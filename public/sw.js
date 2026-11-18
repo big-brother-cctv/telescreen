@@ -1,5 +1,5 @@
 // Big Brother Telescreen - Tactical Service Worker & Web Push Engine
-const CACHE_NAME = 'telescreen-sw-v1';
+const CACHE_NAME = 'telescreen-sw-v2';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -41,7 +41,17 @@ self.addEventListener('push', (event) => {
     data: data.data || { url: '/' },
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // App visible: la página ya muestra el toast y hace sonar la alarma (vía SSE).
+      // Las notificaciones de prueba se muestran siempre.
+      const appVisible = windowClients.some((c) => c.visibilityState === 'visible' || c.focused);
+      if (appVisible && options.tag !== 'bb-push-test') {
+        return undefined;
+      }
+      return self.registration.showNotification(title, options);
+    })
+  );
 });
 
 // Notification Click: Focus existing window or open new window to view alert

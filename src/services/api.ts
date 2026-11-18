@@ -60,6 +60,23 @@ export const api = {
       method: 'POST',
     }),
 
+  // Web Push
+  getVapidPublicKey: () => request<{ publicKey: string }>('/push/vapid-public-key'),
+
+  subscribePush: (subscription: PushSubscriptionJSON) =>
+    request<void>('/push/subscriptions', {
+      method: 'POST',
+      body: JSON.stringify(subscription),
+    }),
+
+  unsubscribePush: (endpoint: string) =>
+    request<void>('/push/subscriptions', {
+      method: 'DELETE',
+      body: JSON.stringify({ endpoint }),
+    }),
+
+  sendTestPush: () => request<{ devices: number }>('/push/test', { method: 'POST' }),
+
   // Credenciales para publicar en MediaMTX desde móviles/OBS (solo admin/operator)
   getPublishCredentials: () =>
     request<{ user: string; password: string; configured: boolean }>('/media/publish-credentials'),

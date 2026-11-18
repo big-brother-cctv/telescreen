@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Camera, User } from './types';
 import { api, authStorage } from './services/api';
+import { disablePushSubscription } from './utils/push';
 import { Navbar } from './components/Navbar';
 import { DashboardView } from './views/DashboardView';
 import { AlertsView } from './views/AlertsView';
@@ -92,7 +93,10 @@ export const App: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Antes de borrar el token: la baja push necesita la sesión. Así un dispositivo
+    // compartido deja de recibir las alertas de esta cuenta.
+    await disablePushSubscription();
     api.endMediaSession();
     authStorage.clearToken();
     setIsAuthenticated(false);
