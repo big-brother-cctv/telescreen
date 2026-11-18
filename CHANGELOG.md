@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.30.1](https://github.com/big-brother-cctv/telescreen/compare/v0.30.0...v0.30.1) (2026-11-18)
+
+
+### Bug Fixes
+
+* stop duplicate alert toasts and alarms ([2aa3035](https://github.com/big-brother-cctv/telescreen/commit/2aa3035c6db0d0f1812b409457a759653ad67662))
+* stop duplicate alert toasts and alarms ([45babcd](https://github.com/big-brother-cctv/telescreen/commit/45babcd8435b9cef58cb62ebae50c19b24867b56))
+
 ## [0.30.0](https://github.com/big-brother-cctv/telescreen/compare/v0.29.0...v0.30.0) (2026-11-17)
 
 
