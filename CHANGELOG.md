@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.34.1](https://github.com/big-brother-cctv/telescreen/compare/v0.34.0...v0.34.1) (2026-11-18)
+
+
+### Bug Fixes
+
+* iPhone launch screens and centered home/away toggle ([06fe044](https://github.com/big-brother-cctv/telescreen/commit/06fe04417101dec5905d4532e40b445a951052be))
+* iPhone launch screens and centered home/away toggle ([353638c](https://github.com/big-brother-cctv/telescreen/commit/353638c05390d13370ba123b1cf81e27559e9d64))
+
 ## [0.34.0](https://github.com/big-brother-cctv/telescreen/compare/v0.33.0...v0.34.0) (2026-11-18)
 
 
