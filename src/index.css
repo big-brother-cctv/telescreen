@@ -49,6 +49,11 @@
   padding: 0;
 }
 
+html {
+  /* Fondo oscuro también en html: el rebote del scroll en iOS no debe mostrar blanco */
+  background-color: #08090d;
+}
+
 html, body {
   /* Prevenir zoom táctil no deseado en PWA / WebApp */
   touch-action: manipulation;
@@ -1071,6 +1076,7 @@ input:focus, select:focus, textarea:focus {
   .touch-target {
     min-width: 40px !important;
     min-height: 40px !important;
+    justify-content: center;
   }
 }
 
@@ -1116,5 +1122,17 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 @media (max-width: 400px) {
   .navbar-brand-text {
     display: none !important;
+  }
+}
+
+/* Barras de herramientas de vista (Directo, Cámaras): en móvil el buscador crece */
+@media (max-width: 868px) {
+  .view-toolbar {
+    width: 100%;
+  }
+  .view-toolbar-search {
+    flex: 1 1 160px;
+    width: auto !important;
+    min-width: 140px;
   }
 }
