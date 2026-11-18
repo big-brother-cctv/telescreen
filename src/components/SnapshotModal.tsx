@@ -11,8 +11,10 @@ export const SnapshotModal: React.FC = () => {
 
   const handleDownload = () => {
     const a = document.createElement('a');
-    a.href = previewImage.url;
-    a.download = `snapshot_${previewImage.title}_${Date.now()}.jpg`;
+    a.href = previewImage.clipUrl || previewImage.url;
+    a.download = previewImage.clipUrl
+      ? `clip_${previewImage.title}_${Date.now()}.mp4`
+      : `snapshot_${previewImage.title}_${Date.now()}.jpg`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -121,16 +123,35 @@ export const SnapshotModal: React.FC = () => {
 
         {/* Snapshot Image with tactical grid backdrop */}
         <div style={{ background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <img
-            src={previewImage.url}
-            alt="Motion Alert Snapshot"
-            style={{
-              maxWidth: '100%',
-              maxHeight: 'calc(88vh - 50px)',
-              objectFit: 'contain',
-              display: 'block',
-            }}
-          />
+          {previewImage.clipUrl ? (
+            // Clip del evento (búfer de MediaMTX); la foto hace de póster mientras carga
+            <video
+              src={previewImage.clipUrl}
+              poster={previewImage.url}
+              controls
+              autoPlay
+              muted
+              playsInline
+              preload="metadata"
+              style={{
+                maxWidth: '100%',
+                maxHeight: 'calc(88vh - 50px)',
+                display: 'block',
+                background: '#000',
+              }}
+            />
+          ) : (
+            <img
+              src={previewImage.url}
+              alt="Motion Alert Snapshot"
+              style={{
+                maxWidth: '100%',
+                maxHeight: 'calc(88vh - 50px)',
+                objectFit: 'contain',
+                display: 'block',
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

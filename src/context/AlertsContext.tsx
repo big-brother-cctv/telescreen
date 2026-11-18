@@ -33,8 +33,8 @@ interface AlertsContextType {
   isLoadingMore: boolean;
   isDrawerOpen: boolean;
   setIsDrawerOpen: (open: boolean) => void;
-  previewImage: { url: string; title: string; time: string } | null;
-  setPreviewImage: (img: { url: string; title: string; time: string } | null) => void;
+  previewImage: { url: string; title: string; time: string; clipUrl?: string } | null;
+  setPreviewImage: (img: { url: string; title: string; time: string; clipUrl?: string } | null) => void;
 }
 
 const AlertsContext = createContext<AlertsContextType | undefined>(undefined);
@@ -82,7 +82,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [activeAlertCameras, setActiveAlertCameras] = useState<Set<string>>(new Set());
   const [activeToasts, setActiveToasts] = useState<MotionAlert[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-  const [previewImage, setPreviewImage] = useState<{ url: string; title: string; time: string } | null>(null);
+  const [previewImage, setPreviewImage] = useState<{ url: string; title: string; time: string; clipUrl?: string } | null>(null);
 
   const [soundEnabled, setSoundEnabledState] = useState<boolean>(() => {
     return localStorage.getItem('bb_alert_sound') !== 'false';

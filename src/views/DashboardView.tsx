@@ -378,6 +378,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       setPreviewImage({
                         url: snapshotUrl,
                         title: alert.cameraName.toUpperCase(),
+                        clipUrl: alert.clipPath || undefined,
                         time: formatTime(alert.detectedAt),
                       })
                     }

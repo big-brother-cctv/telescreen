@@ -4,24 +4,7 @@ import type { Camera } from '../types';
 import { useAlerts } from '../context/AlertsContext';
 import { useLanguage } from '../i18n/LanguageContext';
 import { getAiLabelInfo } from '../utils/aiLabel';
-import {
-  ShieldAlert,
-  Clock,
-  Check,
-  Trash2,
-  Maximize2,
-  Download,
-  Filter,
-  CheckCheck,
-  Grid,
-  List,
-  RefreshCw,
-  Search,
-  Calendar,
-  AlertTriangle,
-  Bell,
-  BellOff
-} from 'lucide-react';
+import { ShieldAlert, Clock, Check, Trash2, Maximize2, Download, Filter, CheckCheck, Grid, List, RefreshCw, Search, Calendar, AlertTriangle, Bell, BellOff, Play } from 'lucide-react';
 
 interface AlertsViewProps {
   cameras: Camera[];
@@ -559,6 +542,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras, canEditRules = 
                     setPreviewImage({
                       url: snapshotUrl,
                       title: alert.cameraName.toUpperCase(),
+                      clipUrl: alert.clipPath || undefined,
                       time: `${formatDate(alert.detectedAt)} ${formatTime(alert.detectedAt)}`,
                     })
                   }
@@ -571,6 +555,19 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras, canEditRules = 
                   }}
                   title={snapshotUrl ? t.alertsTab.zoomSnapshot : ''}
                 >
+                  {alert.clipPath && (
+                    <span
+                      style={{
+                        position: 'absolute', top: '8px', right: '8px', zIndex: 2,
+                        display: 'inline-flex', alignItems: 'center', gap: '4px',
+                        padding: '2px 7px', borderRadius: '4px',
+                        background: 'rgba(0, 0, 0, 0.75)', border: '1px solid var(--accent-red)',
+                        color: '#fff', fontSize: '0.62rem', fontWeight: 800, fontFamily: 'var(--font-mono)',
+                      }}
+                    >
+                      <Play size={10} fill="#fff" /> CLIP
+                    </span>
+                  )}
                   {snapshotUrl ? (
                     <>
                       <img
@@ -869,6 +866,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras, canEditRules = 
                             setPreviewImage({
                               url: snapshotUrl,
                               title: alert.cameraName.toUpperCase(),
+                              clipUrl: alert.clipPath || undefined,
                               time: `${formatDate(alert.detectedAt)} ${formatTime(alert.detectedAt)}`,
                             })
                           }

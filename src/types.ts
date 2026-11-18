@@ -54,6 +54,8 @@ export interface MotionAlert {
   severity: string;
   /** false si el modo casa/fuera decidió no avisar (se guarda igualmente) */
   notified?: boolean;
+  /** clip de vídeo del evento (aparece ~10-40 s después de la alerta) */
+  clipPath?: string;
 }
 
 export type AlarmMode = 'home' | 'away';
