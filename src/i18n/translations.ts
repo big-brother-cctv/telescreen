@@ -297,6 +297,11 @@ export interface Translations {
     closeDrawerAria: string;
     notificationsBlockedHelp: string;
     notificationsInsecureContext: string;
+    pushTestSent: string;
+    pushTestNone: string;
+    pushTestError: string;
+    pushTooltipActive: string;
+    pushIosHint: string;
   };
   dashboardView: {
     title: string;
@@ -668,6 +673,11 @@ export const translations: Record<Language, Translations> = {
       closeDrawerAria: 'Cerrar panel de notificaciones',
       notificationsBlockedHelp: 'Las notificaciones están bloqueadas en tu navegador. Haz clic en el candado en la barra de direcciones para permitirlas.',
       notificationsInsecureContext: 'Las notificaciones del navegador requieren HTTPS. Accede mediante https://telescreen.rdvl.net',
+      pushTestSent: 'Notificación de prueba enviada a {n} dispositivo(s). Debería llegar en unos segundos.',
+      pushTestNone: 'Esta cuenta aún no tiene ningún dispositivo suscrito a push. Vuelve a activar las notificaciones en este dispositivo.',
+      pushTestError: 'No se pudo enviar la notificación de prueba.',
+      pushTooltipActive: 'Notificaciones push activas (también con la app cerrada). Pulsa para enviar una de prueba.',
+      pushIosHint: 'En iPhone/iPad las notificaciones push solo funcionan tras añadir esta web a la pantalla de inicio (Compartir → Añadir a pantalla de inicio).',
     },
     dashboardView: {
       title: 'CENTRO DE CONTROL CCTV',
@@ -1037,6 +1047,11 @@ export const translations: Record<Language, Translations> = {
       closeDrawerAria: 'Close notifications drawer',
       notificationsBlockedHelp: 'Notifications are blocked by your browser. Click the lock icon in the address bar to allow them.',
       notificationsInsecureContext: 'Browser notifications require HTTPS. Please connect via https://telescreen.rdvl.net',
+      pushTestSent: 'Test notification sent to {n} device(s). It should arrive in a few seconds.',
+      pushTestNone: 'This account has no device subscribed to push yet. Enable notifications again on this device.',
+      pushTestError: 'Could not send the test notification.',
+      pushTooltipActive: 'Push notifications active (also with the app closed). Click to send a test.',
+      pushIosHint: 'On iPhone/iPad, push notifications only work after adding this web app to the Home Screen (Share → Add to Home Screen).',
     },
     dashboardView: {
       title: 'CCTV COMMAND CENTER',

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useRef, type Rea
 import type { MotionAlert } from '../types';
 import { api, authStorage } from '../services/api';
 import { useLanguage } from '../i18n/LanguageContext';
+import { ensurePushSubscription, isPushSupported } from '../utils/push';
 
 interface AlertsContextType {
   alerts: MotionAlert[];
@@ -14,6 +15,9 @@ interface AlertsContextType {
   browserNotificationsEnabled: boolean;
   notificationPermission: NotificationPermission;
   requestNotificationPermission: () => Promise<boolean>;
+  pushSupported: boolean;
+  pushActive: boolean;
+  sendTestPush: () => Promise<number>;
   ackAlert: (id: number) => Promise<void>;
   ackAllAlerts: () => Promise<void>;
   deleteAlert: (id: number) => Promise<void>;
@@ -84,6 +88,21 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     return typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'default';
   });
 
+  // Web Push activo: el service worker notifica con la app en segundo plano o cerrada
+  const [pushActive, setPushActive] = useState<boolean>(false);
+  const pushActiveRef = useRef<boolean>(false);
+  const activatePush = async () => {
+    const ok = await ensurePushSubscription();
+    pushActiveRef.current = ok;
+    setPushActive(ok);
+    return ok;
+  };
+
+  const sendTestPush = async (): Promise<number> => {
+    const res = await api.sendTestPush();
+    return res?.devices ?? 0;
+  };
+
   const cameraAlertTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const previousAlertIdsRef = useRef<Set<number>>(new Set());
   // true tras la primera carga: antes de eso, las alertas recibidas son historial, no novedades
@@ -100,6 +119,10 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const triggerNativeNotification = (newAlert: MotionAlert) => {
     if (typeof window === 'undefined' || !('Notification' in window) || Notification.permission !== 'granted') {
+      return;
+    }
+    // Con Web Push activo la notificación la muestra el service worker (evita duplicados)
+    if (pushActiveRef.current) {
       return;
     }
 
@@ -173,6 +196,7 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       }
 
       if (perm === 'granted') {
+        await activatePush();
         const welcomeTitle = t.alerts.welcomeTitle;
         const welcomeBody = t.alerts.welcomeBody;
 
@@ -307,6 +331,13 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       setIsLoadingMore(false);
     }
   };
+
+  // Reactivar/renovar la suscripción push en cada carga si el permiso ya está concedido
+  useEffect(() => {
+    if (!authStorage.getToken() || !isPushSupported() || Notification.permission !== 'granted') return;
+    activatePush();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Carga inicial y polling de respaldo: el tiempo real llega por SSE; el polling solo
   // reconcilia contadores y recupera alertas perdidas si el SSE se cayó un momento
@@ -471,6 +502,9 @@ export const AlertsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         browserNotificationsEnabled: notificationPermission === 'granted',
         notificationPermission,
         requestNotificationPermission,
+        pushSupported: isPushSupported(),
+        pushActive,
+        sendTestPush,
         ackAlert,
         ackAllAlerts,
         deleteAlert,

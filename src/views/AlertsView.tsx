@@ -44,6 +44,8 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
     browserNotificationsEnabled,
     notificationPermission,
     requestNotificationPermission,
+    pushActive,
+    sendTestPush,
   } = useAlerts();
 
   const [selectedCamera, setSelectedCamera] = useState<string>('all');
@@ -236,9 +238,20 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
           </button>
 
           <button
-            onClick={() => {
+            onClick={async () => {
               if (notificationPermission !== 'granted') {
-                requestNotificationPermission();
+                const ok = await requestNotificationPermission();
+                const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+                const standalone = window.matchMedia?.('(display-mode: standalone)').matches;
+                if (!ok && isIOS && !standalone) alert(t.alerts.pushIosHint);
+                return;
+              }
+              if (!pushActive) return;
+              try {
+                const devices = await sendTestPush();
+                alert(devices > 0 ? t.alerts.pushTestSent.replace('{n}', String(devices)) : t.alerts.pushTestNone);
+              } catch {
+                alert(t.alerts.pushTestError);
               }
             }}
             className="btn-ghost"
@@ -249,7 +262,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
               borderColor: browserNotificationsEnabled ? '#10b981' : 'var(--border-subtle)',
               color: browserNotificationsEnabled ? '#10b981' : 'var(--text-secondary)',
             }}
-            title={browserNotificationsEnabled ? t.alerts.notificationsTooltipActive : t.alerts.notificationsTooltipEnable}
+            title={pushActive ? t.alerts.pushTooltipActive : browserNotificationsEnabled ? t.alerts.notificationsTooltipActive : t.alerts.notificationsTooltipEnable}
           >
             {browserNotificationsEnabled ? <Bell size={14} /> : <BellOff size={14} />}
             <span>{browserNotificationsEnabled ? t.alerts.notificationsBtnActive : t.alerts.notificationsBtnEnable}</span>
