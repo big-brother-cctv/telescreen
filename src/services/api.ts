@@ -1,4 +1,4 @@
-import type { Camera, User, AuthResponse, MotionAlert } from '../types';
+import type { Camera, User, AuthResponse, MotionAlert, AlarmMode, NotificationSettingsResponse } from '../types';
 
 const API_BASE = '/api';
 
@@ -58,6 +58,21 @@ export const api = {
   startMediaSession: () =>
     request<{ expiresIn: number }>('/media/session', {
       method: 'POST',
+    }),
+
+  // Modo casa/fuera y reglas de notificación
+  getNotificationSettings: () => request<NotificationSettingsResponse>('/settings/notifications'),
+
+  setAlarmMode: (mode: AlarmMode) =>
+    request<NotificationSettingsResponse>('/settings/notifications/mode', {
+      method: 'PUT',
+      body: JSON.stringify({ mode }),
+    }),
+
+  updateNotificationRules: (home: string[], away: string[]) =>
+    request<NotificationSettingsResponse>('/settings/notifications/rules', {
+      method: 'PUT',
+      body: JSON.stringify({ home, away }),
     }),
 
   // Web Push

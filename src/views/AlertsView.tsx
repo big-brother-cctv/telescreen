@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { NotificationRulesPanel } from '../components/NotificationRulesPanel';
 import type { Camera } from '../types';
 import { useAlerts } from '../context/AlertsContext';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -24,9 +25,11 @@ import {
 
 interface AlertsViewProps {
   cameras: Camera[];
+  /** admin/operator: puede editar qué detecciones avisan en cada modo */
+  canEditRules?: boolean;
 }
 
-export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
+export const AlertsView: React.FC<AlertsViewProps> = ({ cameras, canEditRules = false }) => {
   const { t, language } = useLanguage();
   const {
     alerts,
@@ -269,6 +272,8 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ cameras }) => {
           </button>
         </div>
       </div>
+
+      {canEditRules && <NotificationRulesPanel />}
 
       {/* Push Notification Guide Banner if permission not granted */}
       {notificationPermission !== 'granted' && (() => {

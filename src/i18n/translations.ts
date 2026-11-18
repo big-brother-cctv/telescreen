@@ -302,6 +302,18 @@ export interface Translations {
     pushTestError: string;
     pushTooltipActive: string;
     pushIosHint: string;
+    modeHome: string;
+    modeAway: string;
+    modeHomeTooltip: string;
+    modeAwayTooltip: string;
+    modeChangeError: string;
+    rulesTitle: string;
+    rulesHint: string;
+    rulesHome: string;
+    rulesAway: string;
+    rulesError: string;
+    classMotion: string;
+    classOther: string;
   };
   dashboardView: {
     title: string;
@@ -678,6 +690,18 @@ export const translations: Record<Language, Translations> = {
       pushTestError: 'No se pudo enviar la notificación de prueba.',
       pushTooltipActive: 'Notificaciones push activas (también con la app cerrada). Pulsa para enviar una de prueba.',
       pushIosHint: 'En iPhone/iPad las notificaciones push solo funcionan tras añadir esta web a la pantalla de inicio (Compartir → Añadir a pantalla de inicio).',
+      modeHome: 'EN CASA',
+      modeAway: 'FUERA',
+      modeHomeTooltip: 'Modo en casa: solo avisan las detecciones elegidas para este modo. Pulsa para pasar a "Fuera".',
+      modeAwayTooltip: 'Modo fuera: vigilancia completa. Pulsa para pasar a "En casa".',
+      modeChangeError: 'No se pudo cambiar el modo.',
+      rulesTitle: 'Qué te avisa en cada modo',
+      rulesHint: 'Las alertas se guardan siempre; esto solo decide si suena la alarma y llega notificación.',
+      rulesHome: 'En casa',
+      rulesAway: 'Fuera',
+      rulesError: 'No se pudieron guardar las reglas.',
+      classMotion: 'MOVIMIENTO',
+      classOther: 'OTROS',
     },
     dashboardView: {
       title: 'CENTRO DE CONTROL CCTV',
@@ -1052,6 +1076,18 @@ export const translations: Record<Language, Translations> = {
       pushTestError: 'Could not send the test notification.',
       pushTooltipActive: 'Push notifications active (also with the app closed). Click to send a test.',
       pushIosHint: 'On iPhone/iPad, push notifications only work after adding this web app to the Home Screen (Share → Add to Home Screen).',
+      modeHome: 'HOME',
+      modeAway: 'AWAY',
+      modeHomeTooltip: 'Home mode: only the detections chosen for this mode notify. Click to switch to "Away".',
+      modeAwayTooltip: 'Away mode: full surveillance. Click to switch to "Home".',
+      modeChangeError: 'Could not change the mode.',
+      rulesTitle: 'What notifies you in each mode',
+      rulesHint: 'Alerts are always stored; this only decides whether the alarm sounds and a notification is sent.',
+      rulesHome: 'Home',
+      rulesAway: 'Away',
+      rulesError: 'Could not save the rules.',
+      classMotion: 'MOTION',
+      classOther: 'OTHER',
     },
     dashboardView: {
       title: 'CCTV COMMAND CENTER',

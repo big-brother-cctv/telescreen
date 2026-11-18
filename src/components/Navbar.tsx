@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AlarmModeToggle } from './AlarmModeToggle';
 import { Users, LogOut, Radio, Terminal, Bell, LayoutDashboard, ShieldAlert, Clock } from 'lucide-react';
 import { api } from '../services/api';
 import type { User } from '../types';
@@ -356,6 +357,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
           {/* Divider on Desktop */}
           <div className="desktop-only" style={{ width: '1px', height: '18px', background: 'var(--border-subtle)', margin: '0 2px' }} />
 
+          {/* Modo casa/fuera (desktop) */}
+          <div className="desktop-only" style={{ alignItems: 'center' }}>
+            <AlarmModeToggle />
+          </div>
+
           {/* Desktop User Capsule (Streamlined, no vertical stack) */}
           <div
             className="desktop-only"
@@ -407,6 +413,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, user, o
             >
               {clearanceLabel}
             </span>
+          </div>
+
+          {/* Modo casa/fuera (móvil, solo icono) */}
+          <div className="mobile-only" style={{ alignItems: 'center' }}>
+            <AlarmModeToggle compact />
           </div>
 
           {/* Mobile User Compact Capsule */}
