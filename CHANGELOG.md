@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.33.0](https://github.com/big-brother-cctv/telescreen/compare/v0.32.0...v0.33.0) (2026-11-18)
+
+
+### Features
+
+* play alert clips in the snapshot viewer ([2aa7121](https://github.com/big-brother-cctv/telescreen/commit/2aa7121cff3bfdd3920dc6b9090e2ad837e1bd23))
+* play alert clips in the snapshot viewer ([75c3315](https://github.com/big-brother-cctv/telescreen/commit/75c3315bbfbfbcf90272ee23afe6636b5ecc5373))
+
 ## [0.32.0](https://github.com/big-brother-cctv/telescreen/compare/v0.31.0...v0.32.0) (2026-11-18)
 
 
